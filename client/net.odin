@@ -95,6 +95,7 @@ net_service_loop :: proc() {
 net_shutdown :: proc() {
     thread.terminate(connect_thread, 0)
 	thread.destroy(connect_thread)
+    
     thread.terminate(net_thread, 0)
 	thread.destroy(net_thread)
 

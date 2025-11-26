@@ -47,7 +47,7 @@ net_service_loop :: proc() {
 			#partial switch event.type {
 			case .CONNECT:
 				fmt.printfln(
-					"A new client has connected from {d}:{d}",
+					"A new client has connected from %d:%d",
 					event.peer.address.host,
 					event.peer.address.port,
 				)
@@ -55,7 +55,7 @@ net_service_loop :: proc() {
 				fmt.println("A client has disconnected.")
 			case .RECEIVE:
 				fmt.printfln(
-					"Recieved packet of length {d} ontaining {v} on channel {d}.",
+					"Recieved packet of length %d containing %v on channel %d.",
 					event.packet.dataLength,
 					event.packet.data,
 					event.channelID,
