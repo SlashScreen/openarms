@@ -24,8 +24,8 @@ headless_main :: proc() {
 		server.server_tick()
 	}
 
-	common.common_shutdown()
 	server.server_shutdown()
+	common.common_shutdown()
 }
 
 default_main :: proc() {
@@ -40,9 +40,9 @@ default_main :: proc() {
 		client.client_tick()
 	}
 
-	common.common_shutdown()
-	server.server_shutdown()
 	client.client_shutdown()
+	server.server_shutdown()
+	common.common_shutdown()
 }
 
 close :: proc(_: ^int, _: ^int) {

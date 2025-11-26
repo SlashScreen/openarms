@@ -6,6 +6,7 @@ server_init :: proc() {
 }
 
 server_tick :: proc() {
+    net_tick()
     sim_tick()
 }
 

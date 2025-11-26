@@ -1,4 +1,5 @@
 package common
 
 PORT :: 1975
-TIMEOUT :: 1000
+TIMEOUT :: 0
+LOCALHOST :: "127.0.0.1"

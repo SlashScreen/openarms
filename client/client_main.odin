@@ -14,6 +14,9 @@ client_tick :: proc() {
         common.broadcast("shutdown", common.NIL_MESSAGE)
         return
     }
+
+    net_tick()
+
     rl.BeginDrawing()
     {
         rl.ClearBackground(rl.WHITE)
