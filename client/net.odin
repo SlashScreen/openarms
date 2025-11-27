@@ -4,6 +4,7 @@ PORT :: 1975
 
 import "../common"
 import "core:fmt"
+import "core:strings"
 import "core:thread"
 import enet "vendor:ENet"
 
@@ -16,6 +17,7 @@ client_host: ^enet.Host
 peer: ^enet.Peer
 connect_thread: ^thread.Thread
 net_thread: ^thread.Thread
+early_exit := false
 
 net_init :: proc() {
 	if enet.initialize() != 0 {
@@ -47,6 +49,8 @@ net_connect_server :: proc() {
 	address.port = PORT
 
 	for i in 0 ..< CONNECT_TRIES {
+		if early_exit {return}
+
 		peer = enet.host_connect(client_host, &address, 1, 0)
 		if (peer == nil) {
 			fmt.println("No available peers available for a connection.")
@@ -76,14 +80,14 @@ net_connect_server :: proc() {
 net_service_loop :: proc() {
 	event: enet.Event
 
-	for {
+	for !early_exit {
 		if enet.host_service(client_host, &event, TIMEOUT) > 0 {
 			#partial switch event.type {
 			case .RECEIVE:
 				fmt.printfln(
-					"Recieved packet of length {d} containing {v} on channel {d}.",
+					"Recieved packet of length %d containing %s on channel %d.",
 					event.packet.dataLength,
-					event.packet.data,
+					strings.string_from_ptr(event.packet.data, int(event.packet.dataLength)),
 					event.channelID,
 				)
 				enet.packet_destroy(event.packet)
@@ -93,10 +97,8 @@ net_service_loop :: proc() {
 }
 
 net_shutdown :: proc() {
-    thread.terminate(connect_thread, 0)
+	early_exit = true
 	thread.destroy(connect_thread)
-    
-    thread.terminate(net_thread, 0)
 	thread.destroy(net_thread)
 
 	enet.host_destroy(client_host)
