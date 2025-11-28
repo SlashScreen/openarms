@@ -1,5 +1,6 @@
 package common
 
+import "core:fmt"
 import "core:encoding/cbor"
 import la "core:math/linalg"
 
@@ -18,8 +19,9 @@ MoveCommand :: struct {
 CreateUnitCommand :: struct {
 	team:      u8,
 	unit_id:   UnitID,
-	archetype: u64,
+	archetype: u32,
 	transform: Transform,
+	target:    Vec2i,
 }
 
 DestroyUnitCommand :: struct {
@@ -27,29 +29,30 @@ DestroyUnitCommand :: struct {
 }
 
 KeyframeData :: struct {
-	unit_id:   UnitID,
-	transform: Transform,
-	target:    Vec2i,
+	unit_id: UnitID,
+	unit:    Unit,
 }
 
 KeyframeCommand :: struct {
 	unit_data: []KeyframeData,
 }
 
-HelloCommand :: struct {}
+HelloCommand :: struct {
+}
 
 NetCommand :: union {
 	MoveCommand,
 	CreateUnitCommand,
 	DestroyUnitCommand,
 	KeyframeCommand,
-    HelloCommand,
+	HelloCommand,
 }
 
 
 // Remember to free the buffer.
 serialize_command_packet :: proc(packet: NetCommand) -> ([]byte, cbor.Marshal_Error) {
-	return cbor.marshal_into_bytes(packet)
+    data, err := cbor.marshal_into_bytes(packet)
+	return data, err
 }
 
 deserialize_command_packet :: proc(buff: []u8) -> (NetCommand, cbor.Unmarshal_Error) {

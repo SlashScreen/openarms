@@ -2,14 +2,15 @@ package client
 
 PORT :: 1975
 
-import "../common"
+import cm "../common"
 import "core:fmt"
 import "core:strings"
 import "core:thread"
+import "core:slice"
 import enet "vendor:ENet"
 
-LOCAL_HOST :: common.LOCALHOST
-TIMEOUT :: common.TIMEOUT
+LOCAL_HOST :: cm.LOCALHOST
+TIMEOUT :: cm.TIMEOUT
 CONNECT_TRIES :: 5
 
 address: enet.Address
@@ -85,11 +86,12 @@ net_service_loop :: proc() {
 			#partial switch event.type {
 			case .RECEIVE:
 				fmt.printfln(
-					"Recieved packet of length %d containing %s on channel %d.",
+					"Recieved packet of length %d containing %q on channel %d.",
 					event.packet.dataLength,
 					strings.string_from_ptr(event.packet.data, int(event.packet.dataLength)),
 					event.channelID,
 				)
+                net_handle_packet(event.packet)
 				enet.packet_destroy(event.packet)
 			}
 		}
@@ -103,4 +105,22 @@ net_shutdown :: proc() {
 
 	enet.host_destroy(client_host)
 	enet.deinitialize()
+}
+
+net_handle_packet :: proc(packet: ^enet.Packet) {
+    data := slice.bytes_from_ptr(packet.data, int(packet.dataLength))
+    command, err := cm.deserialize_command_packet(data)
+    if err != nil {
+        fmt.eprintfln("[CLIENT] Unable to deserialize packet: %v", err)
+        return
+    }
+    switch c in command {
+        case cm.CreateUnitCommand:
+        case cm.DestroyUnitCommand:
+        case cm.HelloCommand:
+        case cm.KeyframeCommand:
+            fmt.println("[CLIENT]: Recieved keyframe.")
+            gs_load_keyframe(c.unit_data)
+        case cm.MoveCommand:
+    }
 }

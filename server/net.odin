@@ -59,12 +59,12 @@ net_service_loop :: proc() {
 					event.peer.address.host,
 					event.peer.address.port,
 				)
-				net_send_peer(cm.CreateUnitCommand{0, cm.UnitID{}, 1975, cm.Transform{}}, event.peer)
+				net_share_state(event.peer)
 			case .DISCONNECT:
 				fmt.println("A client has disconnected.")
 			case .RECEIVE:
 				fmt.printfln(
-					"Recieved packet of length %d containing %s on channel %d.",
+					"Recieved packet of length %d containing %q on channel %d.",
 					event.packet.dataLength,
 					strings.string_from_ptr(event.packet.data, int(event.packet.dataLength)),
 					event.channelID,
@@ -76,22 +76,22 @@ net_service_loop :: proc() {
 }
 
 net_send_all :: proc(data_packet: cm.NetCommand) {
-	encoded, err := cbor.marshal_into_bytes(data_packet)
+	encoded, err := cm.serialize_command_packet(data_packet)
 	if err != nil {
 		fmt.eprintfln("[SERVER] failed to marshal packet: %s", err)
 		return
 	}
-	packet := enet.packet_create(rawptr(&encoded), len(encoded) + 1, enet.PacketFlags{.RELIABLE})
+	packet := enet.packet_create(raw_data(encoded), len(encoded) + 1, enet.PacketFlags{.RELIABLE})
 	enet.host_broadcast(server_host, 0, packet)
 }
 
 net_send_peer :: proc(data_packet: cm.NetCommand, who: ^enet.Peer) {
-	encoded, err := cbor.marshal_into_bytes(data_packet)
+	encoded, err := cm.serialize_command_packet(data_packet)
 	if err != nil {
 		fmt.eprintfln("[SERVER] failed to marshal packet: %s", err)
 		return
 	}
-	packet := enet.packet_create(rawptr(&encoded), len(encoded) + 1, enet.PacketFlags{.RELIABLE})
+	packet := enet.packet_create(raw_data(encoded), len(encoded), enet.PacketFlags{.RELIABLE})
 	_ = enet.peer_send(who, 0, packet)
 }
 
@@ -101,4 +101,11 @@ net_shutdown :: proc() {
 
 	enet.host_destroy(server_host)
 	enet.deinitialize()
+}
+
+net_share_state :: proc(peer: ^enet.Peer) {
+	data := sim_gather_keyframe_for_all()
+	defer delete(data)
+
+	net_send_peer(cm.KeyframeCommand{data}, peer)
 }
