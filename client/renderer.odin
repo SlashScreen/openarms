@@ -31,7 +31,7 @@ BatchKey :: struct {
 BatchEntry :: struct {
 	mesh:      ResourceID,
 	material:  ResourceID,
-	positions: [dynamic]# row_major matrix[4, 4]f32,
+	positions: [dynamic]rl.Matrix,
 }
 
 RenderCommand3D :: union {
@@ -153,11 +153,20 @@ create_model_from_mesh :: proc(mesh: ResourceID) -> (ResourceID, bool) #optional
 
 set_material_albedo :: proc(material, texture: ResourceID) -> bool {
 	res := sm.dynamic_slot_map_get_ptr(&resources, material) or_return
-	mat := res.(Material) or_return
+	mat := (&res.(Material)) or_return
 	tex_res := sm.dynamic_slot_map_get(&resources, texture) or_return
 	tex := tex_res.(Texture) or_return
 
-	rl.SetMaterialTexture(&mat, .ALBEDO, tex)
+	rl.SetMaterialTexture(mat, .ALBEDO, tex)
+
+	return true
+}
+
+set_material_color :: proc(material: ResourceID, color: Color) -> bool {
+	res := sm.dynamic_slot_map_get_ptr(&resources, material) or_return
+	mat := (&res.(Material)) or_return
+
+	mat.maps[rl.MaterialMapIndex.ALBEDO].color = color
 
 	return true
 }
@@ -175,31 +184,29 @@ draw :: proc() {
 	cm.broadcast("render_texture_present", &render_texture)
 }
 
-
 draw_3d :: proc() {
 	rl.BeginMode3D(cameras_3d[main_camera])
 	{
+		rl.ClearBackground(rl.GRAY)
+
 		for command, ok := queue.pop_front_safe(&render_queue_3D);
 		    ok;
 		    command, ok = queue.pop_front_safe(&render_queue_3D) {
 			switch com in command {
 			case DrawMesh:
 				b_key := BatchKey{com.mesh, com.material}
+				fmt.printfln("%v -> \n%v", com.transform, (rl.Matrix)(com.transform))
 
 				if entry, ok := &batch_map[b_key]; ok {
-					append(&entry.positions, (# row_major matrix[4, 4]f32)(com.transform))
-					//fmt.printfln("appended batch array: %v", batch_map[b_key].positions)
+					append(&entry.positions, (rl.Matrix)(com.transform))
+					rl.DrawCubeV(com.transform[3].xyz, [3]f32{1.0, 1.0, 1.0}, rl.RED)
 				} else {
-					entry := BatchEntry {
-						com.mesh,
-						com.material,
-						make([dynamic]# row_major matrix[4, 4]f32),
-					}
+					entry := BatchEntry{com.mesh, com.material, make([dynamic]rl.Matrix)}
 
-					append(&entry.positions, (# row_major matrix[4, 4]f32)(com.transform))
+					append(&entry.positions, (rl.Matrix)(com.transform))
 					batch_map[b_key] = entry
-					//fmt.printfln("added batch array: %v", batch_map[b_key].positions)
 				}
+
 			case:
 				fmt.println("Unknown command ", typeid_of(type_of(com)))
 			}

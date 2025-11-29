@@ -17,9 +17,10 @@ gs_init :: proc() {
 	units = make(map[cm.UnitID]cm.Unit)
 	archetypes = make([dynamic]RuntimeArchetype)
 
-	mesh, _ := create_cube_mesh(cm.Vec3{1.0, 1.0, 1.0})
+	mesh, _ := create_cube_mesh(cm.Vec3{1.5, 1.5, 1.5})
 	material := create_material_default()
 	set_material_albedo(material, missing_texture)
+	//set_material_color(material, Color{1.0, 0.0, 0.0, 1.0})
 	append(&archetypes, RuntimeArchetype{"test", mesh, material})
 }
 
