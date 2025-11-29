@@ -5,9 +5,10 @@ import "core:encoding/cbor"
 import la "core:math/linalg"
 
 Vec2i :: [2]int
-Transform :: matrix[4, 4]f16
+Vec3 :: [3]f32
+Transform :: matrix[4, 4]f32
 
-m4_get_translation :: proc(mat: matrix[4, 4]f32) -> la.Vector3f32 {
+m4_get_translation :: proc(mat: Transform) -> la.Vector3f32 {
 	return mat[3].xyz
 }
 

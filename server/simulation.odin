@@ -37,13 +37,13 @@ sim_tick_world :: proc() {
 sim_tick_units :: proc() {
 	for i in 0 ..< units.size {
 		u := sm.dynamic_slot_map_get_ptr(&units, units.keys[i])
-		tgt := [3]f16{f16(u.target.x), 0.0, f16(u.target.y)}
+		tgt := [3]f32{f32(u.target.x), 0.0, f32(u.target.y)}
 
 		if la.distance(tgt, u.transform[3].xyz) <= TARGET_DISTANCE {
 			continue
 		}
 
-		dir := la.normalize(tgt - u.transform[3].xyz) * (1.0 / f16(TPS))
+		dir := la.normalize(tgt - u.transform[3].xyz) * (1.0 / f32(TPS))
 		u.transform += la.matrix4_translate(dir)
 	}
 }
