@@ -25,6 +25,7 @@ client_tick :: proc() {
 	}
 
 	net_tick()
+    gs_tick()
 
 	draw()
 }

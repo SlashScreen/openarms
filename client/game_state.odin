@@ -1,6 +1,7 @@
 package client
 
 import cm "../common"
+import "core:fmt"
 
 RuntimeArchetype :: struct {
 	name:     string,
@@ -18,6 +19,7 @@ gs_init :: proc() {
 
 	mesh, _ := create_cube_mesh(cm.Vec3{1.0, 1.0, 1.0})
 	material := create_material_default()
+	set_material_albedo(material, missing_texture)
 	append(&archetypes, RuntimeArchetype{"test", mesh, material})
 }
 
@@ -55,9 +57,11 @@ gs_load_keyframe :: proc(data: []cm.KeyframeData) {
 
 gs_tick :: proc() {
 	for _, v in units {
+		fmt.printfln("drawing unit")
+		command: RenderCommand3D = DrawMesh{archetypes[v.archetype].mesh, archetypes[v.archetype].material, v.transform}
 		cm.broadcast(
 			"enqueue_3D",
-			&DrawMesh{archetypes[v.archetype].mesh, archetypes[v.archetype].material, v.transform},
+			&command,
 		)
 	}
 }
