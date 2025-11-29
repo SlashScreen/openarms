@@ -185,6 +185,7 @@ draw :: proc() {
 }
 
 draw_3d :: proc() {
+	rl.UpdateCamera(&cameras_3d[main_camera], .ORBITAL)
 	rl.BeginMode3D(cameras_3d[main_camera])
 	{
 		rl.ClearBackground(rl.GRAY)
@@ -195,7 +196,6 @@ draw_3d :: proc() {
 			switch com in command {
 			case DrawMesh:
 				b_key := BatchKey{com.mesh, com.material}
-				fmt.printfln("%v -> \n%v", com.transform, (rl.Matrix)(com.transform))
 
 				if entry, ok := &batch_map[b_key]; ok {
 					append(&entry.positions, (rl.Matrix)(com.transform))
@@ -216,9 +216,11 @@ draw_3d :: proc() {
 			mesh := sm.dynamic_slot_map_get(&resources, v.mesh) or_continue
 			material := sm.dynamic_slot_map_get(&resources, v.material) or_continue
 			fmt.printfln("batching %d units", len(v.positions))
+			//for t in v.positions do fmt.printf("%v ", t[3].xyz)
+			//fmt.print("\n")
 			rl.DrawMeshInstanced(
-				mesh.(Mesh) or_continue,
-				material.(Material) or_continue,
+				mesh.(Mesh),
+				material.(Material),
 				raw_data(v.positions),
 				c.int(len(v.positions)),
 			)
