@@ -57,7 +57,6 @@ gs_load_keyframe :: proc(data: []cm.KeyframeData) {
 
 gs_tick :: proc() {
 	for _, v in units {
-		fmt.printfln("drawing unit")
 		command: RenderCommand3D = DrawMesh{archetypes[v.archetype].mesh, archetypes[v.archetype].material, v.transform}
 		cm.broadcast(
 			"enqueue_3D",

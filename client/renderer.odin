@@ -97,8 +97,6 @@ renderer_deinit :: proc() {
 renderer_enqueue_3D :: proc(_: ^int, command: ^RenderCommand3D) {
 	if ok, err := queue.enqueue(&render_queue_3D, command^); !ok {
 		fmt.eprintfln("[RENDERER] enqueue error: %q", err)
-	} else {
-		fmt.println("Enqueuing")
 	}
 }
 
@@ -186,10 +184,9 @@ draw_3d :: proc() {
 		    command, ok = queue.pop_front_safe(&render_queue_3D) {
 			switch com in command {
 			case DrawMesh:
-				fmt.println("Draw Mesh")
 				b_key := BatchKey{com.mesh, com.material}
 
-				if entry, ok := batch_map[b_key]; ok {
+				if entry, ok := &batch_map[b_key]; ok {
 					append(&entry.positions, (# row_major matrix[4, 4]f32)(com.transform))
 					//fmt.printfln("appended batch array: %v", batch_map[b_key].positions)
 				} else {
