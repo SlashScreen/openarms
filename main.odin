@@ -1,8 +1,8 @@
 package main
 
 import "client"
-import "server"
 import "common"
+import "server"
 
 running := true
 
@@ -45,6 +45,6 @@ default_main :: proc() {
 	common.common_shutdown()
 }
 
-close :: proc(_: ^int, _: ^int) {
+close :: proc(_ : ^int, _ : ^int) {
 	running = false
 }

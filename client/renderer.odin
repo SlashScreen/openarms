@@ -25,13 +25,13 @@ Texture :: rl.Texture2D
 
 ResourceID :: distinct sm.Key(uint, 32, 32)
 BatchKey :: struct {
-	mesh:     ResourceID,
-	material: ResourceID,
+	mesh :     ResourceID,
+	material : ResourceID,
 }
 BatchEntry :: struct {
-	mesh:      ResourceID,
-	material:  ResourceID,
-	positions: [dynamic]rl.Matrix,
+	mesh :      ResourceID,
+	material :  ResourceID,
+	positions : [dynamic]rl.Matrix,
 }
 
 RenderCommand3D :: union {
@@ -39,25 +39,25 @@ RenderCommand3D :: union {
 }
 
 DrawMesh :: struct {
-	mesh:      ResourceID,
-	material:  ResourceID,
-	transform: cm.Transform,
+	mesh :      ResourceID,
+	material :  ResourceID,
+	transform : cm.Transform,
 }
 
-cameras_3d: [dynamic]rl.Camera3D
-main_camera: uint
-render_queue_3D: queue.Queue(RenderCommand3D)
-resources: sm.DynamicSlotMap(Resource, ResourceID)
-render_texture: rl.RenderTexture2D
-batch_map: map[BatchKey]BatchEntry
+cameras_3d : [dynamic]rl.Camera3D
+main_camera : uint
+render_queue_3D : queue.Queue(RenderCommand3D)
+resources : sm.DynamicSlotMap(Resource, ResourceID)
+render_texture : rl.RenderTexture2D
+batch_map : map[BatchKey]BatchEntry
 
 // Builtins
 
 MISSING_TEXTURE_DATA :: #load("client_resources/missing_texture.png", []u8)
-missing_texture: ResourceID
+missing_texture : ResourceID
 INSTANCING_WORKS :: false
 
-renderer_init :: proc(w, h: uint) {
+renderer_init :: proc(w, h : uint) {
 	render_texture = rl.LoadRenderTexture(c.int(w), c.int(h))
 	cameras_3d = make([dynamic]rl.Camera3D)
 	resources = sm.dynamic_slot_map_make(Resource, ResourceID)
@@ -95,7 +95,7 @@ renderer_deinit :: proc() {
 	queue.destroy(&render_queue_3D)
 }
 
-renderer_enqueue_3D :: proc(_: ^int, command: ^RenderCommand3D) {
+renderer_enqueue_3D :: proc(_ : ^int, command : ^RenderCommand3D) {
 	if ok, err := queue.enqueue(&render_queue_3D, command^); !ok {
 		fmt.eprintfln("[RENDERER] enqueue error: %q", err)
 	}
@@ -104,7 +104,11 @@ renderer_enqueue_3D :: proc(_: ^int, command: ^RenderCommand3D) {
 // Resources
 
 load_builtin_resources :: proc() {
-	image := rl.LoadImageFromMemory(cstring(".png"), raw_data(MISSING_TEXTURE_DATA), c.int(len(MISSING_TEXTURE_DATA)))
+	image := rl.LoadImageFromMemory(
+		cstring(".png"),
+		raw_data(MISSING_TEXTURE_DATA),
+		c.int(len(MISSING_TEXTURE_DATA)),
+	)
 	defer rl.UnloadImage(image)
 
 	tex := rl.LoadTextureFromImage(image)
@@ -113,20 +117,20 @@ load_builtin_resources :: proc() {
 	missing_texture = tex_key
 }
 
-create_cube_mesh :: proc(extents: cm.Vec3) -> (ResourceID, bool) #optional_ok {
+create_cube_mesh :: proc(extents : cm.Vec3) -> (ResourceID, bool) #optional_ok {
 	mesh := rl.GenMeshCube(extents.x, extents.y, extents.z)
-	res: Resource = mesh
+	res : Resource = mesh
 	return sm.dynamic_slot_map_insert_set(&resources, res)
 }
 
 create_material_default :: proc() -> ResourceID {
 	mat := rl.LoadMaterialDefault()
-	res: Resource = mat
+	res : Resource = mat
 	return sm.dynamic_slot_map_insert_set(&resources, res)
 }
 
 // Consumes mesh
-create_model_from_mesh :: proc(mesh: ResourceID) -> (ResourceID, bool) #optional_ok {
+create_model_from_mesh :: proc(mesh : ResourceID) -> (ResourceID, bool) #optional_ok {
 	res, ok_a := sm.dynamic_slot_map_get_ptr(&resources, mesh)
 	if !ok_a {
 		fmt.eprintln("Cannot create a model from an invalid ID")
@@ -141,14 +145,14 @@ create_model_from_mesh :: proc(mesh: ResourceID) -> (ResourceID, bool) #optional
 	sm.dynamic_slot_map_remove(&resources, mesh)
 
 	mdl := rl.LoadModelFromMesh(mesh_data)
-	resource: Resource
+	resource : Resource
 	resource = mdl
 	return sm.dynamic_slot_map_insert_set(&resources, resource)
 }
 
 // Modifying
 
-set_material_albedo :: proc(material, texture: ResourceID) -> bool {
+set_material_albedo :: proc(material, texture : ResourceID) -> bool {
 	res, r_ok := sm.dynamic_slot_map_get_ptr(&resources, material)
 	if !r_ok {
 		fmt.eprintfln("Unknown asset with ID %v", material)
@@ -181,7 +185,7 @@ set_material_albedo :: proc(material, texture: ResourceID) -> bool {
 	return true
 }
 
-set_material_color :: proc(material: ResourceID, color: Color) -> bool {
+set_material_color :: proc(material : ResourceID, color : Color) -> bool {
 	res := sm.dynamic_slot_map_get_ptr(&resources, material) or_return
 	mat := (&res.(Material)) or_return
 
@@ -195,7 +199,7 @@ set_material_color :: proc(material: ResourceID, color: Color) -> bool {
 draw :: proc() {
 	rl.BeginTextureMode(render_texture)
 	{
-		rl.ClearBackground(rl.GRAY)
+		rl.ClearBackground(rl.WHITE)
 		draw_3d()
 	}
 	rl.EndTextureMode()
@@ -213,18 +217,18 @@ draw_3d :: proc() {
 		    command, ok = queue.pop_front_safe(&render_queue_3D) {
 			switch com in command {
 			case DrawMesh:
+				// THis does rudimentary batching
 				b_key := BatchKey{com.mesh, com.material}
+				transposed := la.transpose(com.transform)
 
 				if entry, ok := &batch_map[b_key]; ok {
-					append(&entry.positions, (rl.Matrix)(com.transform))
-					//rl.DrawCubeV(com.transform[3].xyz, [3]f32{1.0, 1.0, 1.0}, rl.RED)
+					append(&entry.positions, transposed)
 				} else {
 					entry := BatchEntry{com.mesh, com.material, make([dynamic]rl.Matrix)}
 
 					append(&entry.positions, (rl.Matrix)(com.transform))
 					batch_map[b_key] = entry
 				}
-
 			case:
 				fmt.println("Unknown command ", typeid_of(type_of(com)))
 			}
@@ -241,11 +245,16 @@ draw_3d :: proc() {
 					c.int(len(v.positions)),
 				)
 			} else {
-				//Instancing is bugged rn 
-				for t in v.positions do rl.DrawMesh(mesh^.(Mesh), material^.(Material), t)
+				//Instancing is bugged rn
+				for t in v.positions {
+					fmt.printfln("drawing batched unit at %v", t[3].xyz)
+					rl.DrawMesh(mesh^.(Mesh), material^.(Material), t)
+				}
 			}
 			clear_dynamic_array(&v.positions)
 		}
+
+		rl.DrawGrid(16, 1.0)
 	}
 	rl.EndMode3D()
 }

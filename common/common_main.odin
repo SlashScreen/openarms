@@ -1,9 +1,9 @@
 package common
 
 common_init :: proc() {
-    message_bus_create()
+	message_bus_create()
 }
 
 common_shutdown :: proc() {
-    message_bus_destroy()
+	message_bus_destroy()
 }

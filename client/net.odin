@@ -4,20 +4,20 @@ PORT :: 1975
 
 import cm "../common"
 import "core:fmt"
+import "core:slice"
 import "core:strings"
 import "core:thread"
-import "core:slice"
 import enet "vendor:ENet"
 
 LOCAL_HOST :: cm.LOCALHOST
 TIMEOUT :: cm.TIMEOUT
 CONNECT_TRIES :: 5
 
-address: enet.Address
-client_host: ^enet.Host
-peer: ^enet.Peer
-connect_thread: ^thread.Thread
-net_thread: ^thread.Thread
+address : enet.Address
+client_host : ^enet.Host
+peer : ^enet.Peer
+connect_thread : ^thread.Thread
+net_thread : ^thread.Thread
 early_exit := false
 
 net_init :: proc() {
@@ -44,7 +44,7 @@ net_tick :: proc() {
 
 
 net_connect_server :: proc() {
-	event: enet.Event
+	event : enet.Event
 
 	enet.address_set_host(&address, cstring(LOCAL_HOST))
 	address.port = PORT
@@ -79,7 +79,7 @@ net_connect_server :: proc() {
 }
 
 net_service_loop :: proc() {
-	event: enet.Event
+	event : enet.Event
 
 	for !early_exit {
 		if enet.host_service(client_host, &event, TIMEOUT) > 0 {
@@ -91,7 +91,7 @@ net_service_loop :: proc() {
 					strings.string_from_ptr(event.packet.data, int(event.packet.dataLength)),
 					event.channelID,
 				)
-                net_handle_packet(event.packet)
+				net_handle_packet(event.packet)
 				enet.packet_destroy(event.packet)
 			}
 		}
@@ -107,20 +107,20 @@ net_shutdown :: proc() {
 	enet.deinitialize()
 }
 
-net_handle_packet :: proc(packet: ^enet.Packet) {
-    data := slice.bytes_from_ptr(packet.data, int(packet.dataLength))
-    command, err := cm.deserialize_command_packet(data)
-    if err != nil {
-        fmt.eprintfln("[CLIENT] Unable to deserialize packet: %v", err)
-        return
-    }
-    switch c in command {
-        case cm.CreateUnitCommand:
-        case cm.DestroyUnitCommand:
-        case cm.HelloCommand:
-        case cm.KeyframeCommand:
-            fmt.println("[CLIENT]: Recieved keyframe.")
-            gs_load_keyframe(c.unit_data)
-        case cm.MoveCommand:
-    }
+net_handle_packet :: proc(packet : ^enet.Packet) {
+	data := slice.bytes_from_ptr(packet.data, int(packet.dataLength))
+	command, err := cm.deserialize_command_packet(data)
+	if err != nil {
+		fmt.eprintfln("[CLIENT] Unable to deserialize packet: %v", err)
+		return
+	}
+	switch c in command {
+	case cm.CreateUnitCommand:
+	case cm.DestroyUnitCommand:
+	case cm.HelloCommand:
+	case cm.KeyframeCommand:
+		fmt.println("[CLIENT]: Recieved keyframe.")
+		gs_load_keyframe(c.unit_data)
+	case cm.MoveCommand:
+	}
 }

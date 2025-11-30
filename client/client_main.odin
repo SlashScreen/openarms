@@ -25,7 +25,7 @@ client_tick :: proc() {
 	}
 
 	net_tick()
-    gs_tick()
+	gs_tick()
 
 	draw()
 }
@@ -37,7 +37,7 @@ client_shutdown :: proc() {
 	renderer_deinit()
 }
 
-window_present :: proc(_: ^int, tex: ^rl.RenderTexture2D) {
+window_present :: proc(_ : ^int, tex : ^rl.RenderTexture2D) {
 	rl.BeginDrawing()
 	{
 		rl.ClearBackground(rl.BLACK)

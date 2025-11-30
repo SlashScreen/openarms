@@ -12,14 +12,14 @@ PORT :: cm.PORT
 TIMEOUT :: cm.TIMEOUT
 PEER_COUNT :: 8
 
-address: enet.Address
-server_host: ^enet.Host
-net_thread: ^thread.Thread
+address : enet.Address
+server_host : ^enet.Host
+net_thread : ^thread.Thread
 early_exit := false
 
 DataPacket :: struct {
-	header: string,
-	data:   any,
+	header : string,
+	data :   any,
 }
 
 net_init :: proc() {
@@ -48,7 +48,7 @@ net_tick :: proc() {
 }
 
 net_service_loop :: proc() {
-	event: enet.Event
+	event : enet.Event
 
 	for !early_exit {
 		if enet.host_service(server_host, &event, TIMEOUT) > 0 {
@@ -75,7 +75,7 @@ net_service_loop :: proc() {
 	}
 }
 
-net_send_all :: proc(data_packet: cm.NetCommand) {
+net_send_all :: proc(data_packet : cm.NetCommand) {
 	encoded, err := cm.serialize_command_packet(data_packet)
 	if err != nil {
 		fmt.eprintfln("[SERVER] failed to marshal packet: %s", err)
@@ -85,7 +85,7 @@ net_send_all :: proc(data_packet: cm.NetCommand) {
 	enet.host_broadcast(server_host, 0, packet)
 }
 
-net_send_peer :: proc(data_packet: cm.NetCommand, who: ^enet.Peer) {
+net_send_peer :: proc(data_packet : cm.NetCommand, who : ^enet.Peer) {
 	encoded, err := cm.serialize_command_packet(data_packet)
 	if err != nil {
 		fmt.eprintfln("[SERVER] failed to marshal packet: %s", err)
@@ -103,7 +103,7 @@ net_shutdown :: proc() {
 	enet.deinitialize()
 }
 
-net_share_state :: proc(peer: ^enet.Peer) {
+net_share_state :: proc(peer : ^enet.Peer) {
 	data := sim_gather_keyframe_for_all()
 	defer delete(data)
 
