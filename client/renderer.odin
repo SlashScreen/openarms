@@ -5,6 +5,7 @@ import sm "../slot_map"
 import c "core:c"
 import queue "core:container/queue"
 import "core:fmt"
+import "core:math"
 import la "core:math/linalg"
 import "core:mem/virtual"
 import rl "vendor:raylib"
@@ -217,16 +218,15 @@ draw_3d :: proc() {
 		    command, ok = queue.pop_front_safe(&render_queue_3D) {
 			switch com in command {
 			case DrawMesh:
-				// THis does rudimentary batching
+				// This does rudimentary batching
 				b_key := BatchKey{com.mesh, com.material}
-				transposed := la.transpose(com.transform)
 
 				if entry, ok := &batch_map[b_key]; ok {
-					append(&entry.positions, transposed)
+					append(&entry.positions, transmute(rl.Matrix)com.transform)
 				} else {
 					entry := BatchEntry{com.mesh, com.material, make([dynamic]rl.Matrix)}
 
-					append(&entry.positions, (rl.Matrix)(com.transform))
+					append(&entry.positions, transmute(rl.Matrix)com.transform)
 					batch_map[b_key] = entry
 				}
 			case:
@@ -247,7 +247,7 @@ draw_3d :: proc() {
 			} else {
 				//Instancing is bugged rn
 				for t in v.positions {
-					fmt.printfln("drawing batched unit at %v", t[3].xyz)
+					fmt.printfln("drawing batched unit at %v", [3]f32{t[0, 3], t[1, 3], t[2, 3]})
 					rl.DrawMesh(mesh^.(Mesh), material^.(Material), t)
 				}
 			}
