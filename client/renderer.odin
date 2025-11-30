@@ -78,7 +78,7 @@ renderer_init :: proc(w, h: uint) {
 	batch_map = make(map[BatchKey]BatchEntry)
 	cm.subscribe("enqueue_3D", cm.NIL_USERDATA, renderer_enqueue_3D)
 
-	load_builin_resources()
+	load_builtin_resources()
 }
 
 renderer_deinit :: proc() {
@@ -103,7 +103,7 @@ renderer_enqueue_3D :: proc(_: ^int, command: ^RenderCommand3D) {
 
 // Resources
 
-load_builin_resources :: proc() {
+load_builtin_resources :: proc() {
 	image := rl.LoadImageFromMemory(cstring(".png"), raw_data(MISSING_TEXTURE_DATA), c.int(len(MISSING_TEXTURE_DATA)))
 	defer rl.UnloadImage(image)
 
@@ -154,7 +154,7 @@ set_material_albedo :: proc(material, texture: ResourceID) -> bool {
 		fmt.eprintfln("Unknown asset with ID %v", material)
 		return false
 	}
-	mat, m_ok := (res.(Material))
+	mat, m_ok := (&res.(Material))
 	if !m_ok {
 		fmt.eprintfln("Asset with ID %v not a material", material)
 		return false
@@ -164,19 +164,19 @@ set_material_albedo :: proc(material, texture: ResourceID) -> bool {
 		tex, t_ok := tex_res.(Texture)
 		if t_ok {
 			fmt.eprintfln("Setting texture to ID. %v", texture)
-			rl.SetMaterialTexture(&mat, .ALBEDO, tex)
+			rl.SetMaterialTexture(mat, .ALBEDO, tex)
 		} else {
 			fmt.eprintfln(
 				"Asset with ID %v not a texture, replacing with missing texture",
 				texture,
 			)
 			tex = sm.dynamic_slot_map_get(&resources, missing_texture).(Texture)
-			rl.SetMaterialTexture(&mat, .ALBEDO, tex)
+			rl.SetMaterialTexture(mat, .ALBEDO, tex)
 		}
 	} else {
 		fmt.eprintfln("Unknown asset with ID %v, replacing with missing texture", texture)
 		tex := sm.dynamic_slot_map_get(&resources, missing_texture).(Texture)
-		rl.SetMaterialTexture(&mat, .ALBEDO, tex)
+		rl.SetMaterialTexture(mat, .ALBEDO, tex)
 	}
 	return true
 }
@@ -197,12 +197,6 @@ draw :: proc() {
 	{
 		rl.ClearBackground(rl.GRAY)
 		draw_3d()
-		rl.DrawTexture(
-			sm.dynamic_slot_map_get(&resources, missing_texture).(Texture),
-			0,
-			0,
-			rl.WHITE,
-		)
 	}
 	rl.EndTextureMode()
 
@@ -248,7 +242,7 @@ draw_3d :: proc() {
 				)
 			} else {
 				//Instancing is bugged rn 
-				for t in v.positions do rl.DrawMesh(mesh^.(Mesh), rl.LoadMaterialDefault(), t)
+				for t in v.positions do rl.DrawMesh(mesh^.(Mesh), material^.(Material), t)
 			}
 			clear_dynamic_array(&v.positions)
 		}
