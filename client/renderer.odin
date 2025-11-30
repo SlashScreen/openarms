@@ -21,7 +21,7 @@ Resource :: union {
 Mesh :: rl.Mesh
 Model :: rl.Model
 Material :: rl.Material
-Texture :: rl.Texture
+Texture :: rl.Texture2D
 
 ResourceID :: distinct sm.Key(uint, 32, 32)
 BatchKey :: struct {
@@ -55,6 +55,7 @@ batch_map: map[BatchKey]BatchEntry
 
 MISSING_TEXTURE_DATA :: #load("client_resources/missing_texture.png", []u8)
 missing_texture: ResourceID
+INSTANCING_WORKS :: false
 
 renderer_init :: proc(w, h: uint) {
 	render_texture = rl.LoadRenderTexture(c.int(w), c.int(h))
@@ -152,13 +153,35 @@ create_model_from_mesh :: proc(mesh: ResourceID) -> (ResourceID, bool) #optional
 // Modifying
 
 set_material_albedo :: proc(material, texture: ResourceID) -> bool {
-	res := sm.dynamic_slot_map_get_ptr(&resources, material) or_return
-	mat := (&res.(Material)) or_return
-	tex_res := sm.dynamic_slot_map_get(&resources, texture) or_return
-	tex := tex_res.(Texture) or_return
+	res, r_ok := sm.dynamic_slot_map_get_ptr(&resources, material)
+	if !r_ok {
+		fmt.eprintfln("Unknown asset with ID %v", material)
+		return false
+	}
+	mat, m_ok := (res.(Material))
+	if !m_ok {
+		fmt.eprintfln("Asset with ID %v not a material", material)
+		return false
+	}
 
-	rl.SetMaterialTexture(mat, .ALBEDO, tex)
-
+	if tex_res, tr_ok := sm.dynamic_slot_map_get(&resources, texture); tr_ok {
+		tex, t_ok := tex_res.(Texture)
+		if t_ok {
+			fmt.eprintfln("Setting texture to ID. %v", texture)
+			rl.SetMaterialTexture(&mat, .ALBEDO, tex)
+		} else {
+			fmt.eprintfln(
+				"Asset with ID %v not a texture, replacing with missing texture",
+				texture,
+			)
+			tex = sm.dynamic_slot_map_get(&resources, missing_texture).(Texture)
+			rl.SetMaterialTexture(&mat, .ALBEDO, tex)
+		}
+	} else {
+		fmt.eprintfln("Unknown asset with ID %v, replacing with missing texture", texture)
+		tex := sm.dynamic_slot_map_get(&resources, missing_texture).(Texture)
+		rl.SetMaterialTexture(&mat, .ALBEDO, tex)
+	}
 	return true
 }
 
@@ -216,16 +239,17 @@ draw_3d :: proc() {
 		for _, &v in batch_map {
 			mesh := sm.dynamic_slot_map_get_ptr(&resources, v.mesh) or_continue
 			material := sm.dynamic_slot_map_get_ptr(&resources, v.material) or_continue
-			fmt.printfln("batching %d units", len(v.positions))
-			for t in v.positions do rl.DrawMesh(mesh^.(Mesh), rl.LoadMaterialDefault(), t)
-			//rl.DrawMesh(mesh.(Mesh), material.(Material), v.positions[0])
-			//fmt.print("\n")
-			rl.DrawMeshInstanced(
-				mesh^.(Mesh),
-				material^.(Material),
-				raw_data(v.positions),
-				c.int(len(v.positions)),
-			)
+			when INSTANCING_WORKS {
+				rl.DrawMeshInstanced(
+					mesh^.(Mesh),
+					material^.(Material),
+					raw_data(v.positions),
+					c.int(len(v.positions)),
+				)
+			} else {
+				//Instancing is bugged rn 
+				for t in v.positions do rl.DrawMesh(mesh^.(Mesh), rl.LoadMaterialDefault(), t)
+			}
 			clear_dynamic_array(&v.positions)
 		}
 	}
