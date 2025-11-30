@@ -104,11 +104,7 @@ renderer_enqueue_3D :: proc(_: ^int, command: ^RenderCommand3D) {
 // Resources
 
 load_builin_resources :: proc() {
-	image := rl.LoadImageFromMemory(
-		cstring("png"),
-		raw_data(MISSING_TEXTURE_DATA),
-		c.int(len(MISSING_TEXTURE_DATA)),
-	)
+	image := rl.LoadImageFromMemory(cstring(".png"), raw_data(MISSING_TEXTURE_DATA), c.int(len(MISSING_TEXTURE_DATA)))
 	defer rl.UnloadImage(image)
 
 	tex := rl.LoadTextureFromImage(image)
@@ -199,8 +195,14 @@ set_material_color :: proc(material: ResourceID, color: Color) -> bool {
 draw :: proc() {
 	rl.BeginTextureMode(render_texture)
 	{
-		rl.ClearBackground(rl.WHITE)
+		rl.ClearBackground(rl.GRAY)
 		draw_3d()
+		rl.DrawTexture(
+			sm.dynamic_slot_map_get(&resources, missing_texture).(Texture),
+			0,
+			0,
+			rl.WHITE,
+		)
 	}
 	rl.EndTextureMode()
 
@@ -212,8 +214,6 @@ draw_3d :: proc() {
 
 	rl.BeginMode3D(cameras_3d[main_camera])
 	{
-		rl.ClearBackground(rl.GRAY)
-
 		for command, ok := queue.pop_front_safe(&render_queue_3D);
 		    ok;
 		    command, ok = queue.pop_front_safe(&render_queue_3D) {
