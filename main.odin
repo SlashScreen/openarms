@@ -48,3 +48,4 @@ default_main :: proc() {
 close :: proc(_ : ^int, _ : ^int) {
 	running = false
 }
+

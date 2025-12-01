@@ -68,7 +68,7 @@ gs_tick :: proc() {
 		}
 
 		dir := la.normalize(tgt - u.transform[3].xyz) * 0.01
-		u.transform += la.matrix4_translate(dir)
+		u.transform *= la.matrix4_translate(dir)
 	}
 
 	for _, v in units {
@@ -80,3 +80,4 @@ gs_tick :: proc() {
 		cm.broadcast("enqueue_3D", &command)
 	}
 }
+

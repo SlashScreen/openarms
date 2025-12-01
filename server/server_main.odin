@@ -14,3 +14,4 @@ server_shutdown :: proc() {
 	sim_shutdown()
 	net_shutdown()
 }
+

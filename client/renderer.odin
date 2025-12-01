@@ -222,11 +222,11 @@ draw_3d :: proc() {
 				b_key := BatchKey{com.mesh, com.material}
 
 				if entry, ok := &batch_map[b_key]; ok {
-					append(&entry.positions, transmute(rl.Matrix)com.transform)
+					append(&entry.positions, (rl.Matrix)(com.transform))
 				} else {
 					entry := BatchEntry{com.mesh, com.material, make([dynamic]rl.Matrix)}
 
-					append(&entry.positions, transmute(rl.Matrix)com.transform)
+					append(&entry.positions, (rl.Matrix)(com.transform))
 					batch_map[b_key] = entry
 				}
 			case:
@@ -258,3 +258,4 @@ draw_3d :: proc() {
 	}
 	rl.EndMode3D()
 }
+
