@@ -104,8 +104,9 @@ net_shutdown :: proc() {
 }
 
 net_share_state :: proc(peer : ^enet.Peer) {
-	data := sim_gather_keyframe_for_all()
+	data := cm.sim_gather_keyframe_for_all()
 	defer delete(data)
 
 	net_send_peer(cm.KeyframeCommand{data}, peer)
 }
+
