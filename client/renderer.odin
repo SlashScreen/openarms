@@ -247,7 +247,6 @@ draw_3d :: proc() {
 			} else {
 				//Instancing is bugged rn
 				for t in v.positions {
-					fmt.printfln("drawing batched unit at %v", [3]f32{t[0, 3], t[1, 3], t[2, 3]})
 					rl.DrawMesh(mesh^.(Mesh), material^.(Material), t)
 				}
 			}

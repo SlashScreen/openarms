@@ -2,11 +2,13 @@ package client
 
 import "../common"
 import c "core:c"
-import "core:fmt"
+import "core:time"
 import rl "vendor:raylib"
 
 WIDTH :: 800
 HEIGHT :: 450
+
+dt_tick : time.Tick
 
 client_init :: proc() {
 	rl.InitWindow(c.int(WIDTH), c.int(HEIGHT), "Hellope!")
@@ -16,6 +18,8 @@ client_init :: proc() {
 	net_init()
 
 	common.subscribe("render_texture_present", common.NIL_USERDATA, window_present)
+
+	dt_tick = time.tick_now()
 }
 
 client_tick :: proc() {
@@ -24,8 +28,11 @@ client_tick :: proc() {
 		return
 	}
 
+	dt := f32(time.duration_seconds(time.tick_since(dt_tick)))
+	dt_tick = time.tick_now()
+
 	net_tick()
-	gs_tick()
+	gs_tick(dt)
 
 	draw()
 }
@@ -51,3 +58,4 @@ window_present :: proc(_ : ^int, tex : ^rl.RenderTexture2D) {
 	}
 	rl.EndDrawing()
 }
+

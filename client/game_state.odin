@@ -59,7 +59,7 @@ gs_load_keyframe :: proc(data : []cm.KeyframeData) {
 	}
 }
 
-gs_tick :: proc() {
+gs_tick :: proc(dt : f32) {
 	for _, &u in units {
 		tgt := [3]f32{f32(u.target.x), 0.0, f32(u.target.y)}
 
@@ -67,7 +67,7 @@ gs_tick :: proc() {
 			continue
 		}
 
-		dir := la.normalize(tgt - u.transform[3].xyz) * 0.01
+		dir := la.normalize(tgt - u.transform[3].xyz) * dt
 		u.transform *= la.matrix4_translate(dir)
 	}
 
