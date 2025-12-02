@@ -120,7 +120,7 @@ net_handle_packet :: proc(packet : ^enet.Packet) {
 	case cm.HelloCommand:
 	case cm.KeyframeCommand:
 		fmt.println("[CLIENT]: Recieved keyframe.")
-		gs_load_keyframe(c.unit_data)
 	case cm.MoveCommand:
 	}
 }
+

@@ -13,9 +13,14 @@ dt_tick : time.Tick
 client_init :: proc() {
 	rl.InitWindow(c.int(WIDTH), c.int(HEIGHT), "Hellope!")
 	rl.SetTargetFPS(60)
+
+	common.common_init()
+	common.sim_init()
+
 	renderer_init(WIDTH, HEIGHT)
-	gs_init()
-	net_init()
+	client_render_init()
+	//gs_init()
+	//net_init()
 
 	common.subscribe("render_texture_present", common.NIL_USERDATA, window_present)
 
@@ -31,16 +36,20 @@ client_tick :: proc() {
 	dt := f32(time.duration_seconds(time.tick_since(dt_tick)))
 	dt_tick = time.tick_now()
 
-	net_tick()
-	gs_tick(dt)
+	//net_tick()
+	//gs_tick(dt)
+	common.sim_tick(dt)
+	client_render_loop()
 
 	draw()
 }
 
 client_shutdown :: proc() {
 	rl.CloseWindow()
-	net_shutdown()
-	gs_deinit()
+	//net_shutdown()
+	//gs_deinit()
+	client_render_deinit()
+	common.sim_shutdown()
 	renderer_deinit()
 }
 

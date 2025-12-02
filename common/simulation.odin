@@ -32,7 +32,7 @@ sim_tick_units :: proc(dt : f32) {
 		}
 
 		dir := la.normalize(tgt - u.transform[3].xyz) * dt
-		u.transform += la.matrix4_translate(dir)
+		u.transform *= la.matrix4_translate(dir)
 	}
 }
 
