@@ -4,6 +4,13 @@ package main
 
 import "core:fmt"
 
+DebugViews :: enum {
+	PhysicsWorld,
+}
+
+// Which debug views are active right now
+debug_views : bit_set[DebugViews] = {.PhysicsWorld}
+
 game_init :: proc() {
 	subscribe("key_event", NIL_USERDATA, game_key_input)
 	subscribe("mouse_event", NIL_USERDATA, game_mouse_input)

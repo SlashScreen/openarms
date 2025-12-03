@@ -26,7 +26,7 @@ sim_tick :: proc(dt : f32) {
 }
 
 sim_tick_world :: proc() {
-	update_partition_grid()
+	physics_world_tick()
 }
 
 sim_tick_units :: proc(dt : f32) {
@@ -41,7 +41,7 @@ sim_tick_units :: proc(dt : f32) {
 
 		dir := la.normalize(tgt - u.transform[3].xyz) * dt
 		u.transform *= la.matrix4_translate(dir)
-		u.moving = false
+		u.moving = true
 	}
 }
 

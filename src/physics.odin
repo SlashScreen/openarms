@@ -14,6 +14,24 @@ PhysicsShape :: union {
 // Axis aligned bounding box
 BoundingBox :: rl.BoundingBox
 
+bounding_box_center :: proc(box : BoundingBox) -> Vec3 {
+	return (box.max + box.min) * 0.5
+}
+
+bounding_box_extents :: proc(box : BoundingBox) -> Vec3 {
+	return (box.max - box.min) * 0.5
+}
+
+bounding_box_from_extents :: proc(pos, extents : Vec3) -> BoundingBox {
+	return BoundingBox{pos - extents, pos + extents}
+}
+
+set_bounding_box_center :: proc(box : ^BoundingBox, new_center : Vec3) {
+	extents := bounding_box_extents(box^)
+	box.min = new_center - extents
+	box.max = new_center + extents
+}
+
 Sphere :: struct {
 	position : Vec3,
 	radius :   f32,

@@ -36,12 +36,19 @@ BatchEntry :: struct {
 
 RenderCommand3D :: union {
 	DrawMesh,
+	DrawWireCube,
 }
 
 DrawMesh :: struct {
 	mesh :      ResourceID,
 	material :  ResourceID,
 	transform : Transform,
+}
+
+DrawWireCube :: struct {
+	position : Vec3,
+	extents :  Vec3,
+	color :    Color,
 }
 
 cameras_3d : [dynamic]rl.Camera3D
@@ -228,6 +235,8 @@ draw_3d :: proc() {
 					append(&entry.positions, (rl.Matrix)(com.transform))
 					batch_map[b_key] = entry
 				}
+			case DrawWireCube:
+				rl.DrawCubeWiresV(com.position, com.extents, com.color)
 			case:
 				fmt.println("Unknown command ", typeid_of(type_of(com)))
 			}
