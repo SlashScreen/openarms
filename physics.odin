@@ -1,4 +1,4 @@
-package common
+package main
 
 import la "core:math/linalg"
 import rl "vendor:raylib"

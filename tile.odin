@@ -1,5 +1,6 @@
-package common
+package main
 
 Tile :: struct {
 	height : f32,
 }
+

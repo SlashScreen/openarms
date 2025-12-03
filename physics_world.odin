@@ -1,8 +1,8 @@
-package common
+package main
 
-import sm "../slot_map"
 import la "core:math/linalg"
 import "core:slice"
+import sm "slot_map"
 
 GRID_SIZE :: 16
 

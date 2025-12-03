@@ -1,11 +1,11 @@
-package client
+package main
 
-import cm "../common"
+
 import "core:fmt"
 
 game_init :: proc() {
-	cm.subscribe("key_event", cm.NIL_USERDATA, game_key_input)
-	cm.subscribe("mouse_event", cm.NIL_USERDATA, game_mouse_input)
+	subscribe("key_event", NIL_USERDATA, game_key_input)
+	subscribe("mouse_event", NIL_USERDATA, game_mouse_input)
 }
 
 game_key_input :: proc(_ : ^int, event : ^KeyEvent) {

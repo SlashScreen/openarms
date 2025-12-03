@@ -1,4 +1,4 @@
-package common
+package main
 
 import c "core:c"
 import rl "vendor:raylib"
@@ -25,3 +25,4 @@ game_map_from_image :: proc(img : rl.Image) -> GameMap {
 game_map_destroy :: proc(gm : ^GameMap) {
 	delete(gm.tiles)
 }
+

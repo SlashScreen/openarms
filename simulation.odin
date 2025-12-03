@@ -1,10 +1,8 @@
-package common
+package main
 
-import sm "../slot_map"
 import la "core:math/linalg"
 import "core:time"
-
-TARGET_DISTANCE :: 0.1
+import sm "slot_map"
 
 units : sm.DynamicSlotMap(Unit, UnitID)
 

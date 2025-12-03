@@ -1,6 +1,6 @@
-package client
+package main
 
-import cm "../common"
+
 import rl "vendor:raylib"
 
 @(rodata)
@@ -303,7 +303,7 @@ poll_input :: proc() {
 			key := rl_to_key[rl_key]
 			if key != .Invalid {
 				event := KeyEvent{.Pressed, key}
-				cm.broadcast("key_event", &event)
+				broadcast("key_event", &event)
 			}
 		}
 
@@ -311,7 +311,7 @@ poll_input :: proc() {
 			key := rl_to_key[rl_key]
 			if key != .Invalid {
 				event := KeyEvent{.Released, key}
-				cm.broadcast("key_event", &event)
+				broadcast("key_event", &event)
 			}
 		}
 
@@ -319,7 +319,7 @@ poll_input :: proc() {
 			key := rl_to_key[rl_key]
 			if key != .Invalid {
 				event := KeyEvent{.Repeat, key}
-				cm.broadcast("key_event", &event)
+				broadcast("key_event", &event)
 			}
 		}
 
@@ -327,7 +327,7 @@ poll_input :: proc() {
 			key := rl_to_key[rl_key]
 			if key != .Invalid {
 				event := KeyEvent{.Down, key}
-				cm.broadcast("key_event", &event)
+				broadcast("key_event", &event)
 			}
 		}
 	}
@@ -340,7 +340,7 @@ poll_input :: proc() {
 				[2]int{int(rl.GetMouseX()), int(rl.GetMouseY())},
 				rl.GetMouseDelta(),
 			}
-			cm.broadcast("mouse_event", &event)
+			broadcast("mouse_event", &event)
 		}
 
 		if rl.IsMouseButtonPressed(rl_mouse) {
@@ -350,7 +350,7 @@ poll_input :: proc() {
 				[2]int{int(rl.GetMouseX()), int(rl.GetMouseY())},
 				rl.GetMouseDelta(),
 			}
-			cm.broadcast("mouse_event", &event)
+			broadcast("mouse_event", &event)
 		}
 
 		if rl.IsMouseButtonReleased(rl_mouse) {
@@ -360,7 +360,7 @@ poll_input :: proc() {
 				[2]int{int(rl.GetMouseX()), int(rl.GetMouseY())},
 				rl.GetMouseDelta(),
 			}
-			cm.broadcast("mouse_event", &event)
+			broadcast("mouse_event", &event)
 		}
 	}
 }

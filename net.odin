@@ -1,16 +1,12 @@
-package client
+package main
 
-PORT :: 1975
-
-import cm "../common"
 import "core:fmt"
 import "core:slice"
 import "core:strings"
 import "core:thread"
 import enet "vendor:ENet"
 
-LOCAL_HOST :: cm.LOCALHOST
-TIMEOUT :: cm.TIMEOUT
+LOCAL_HOST :: LOCALHOST
 CONNECT_TRIES :: 5
 
 address : enet.Address
@@ -109,18 +105,18 @@ net_shutdown :: proc() {
 
 net_handle_packet :: proc(packet : ^enet.Packet) {
 	data := slice.bytes_from_ptr(packet.data, int(packet.dataLength))
-	command, err := cm.deserialize_command_packet(data)
+	command, err := deserialize_command_packet(data)
 	if err != nil {
 		fmt.eprintfln("[CLIENT] Unable to deserialize packet: %v", err)
 		return
 	}
 	switch c in command {
-	case cm.CreateUnitCommand:
-	case cm.DestroyUnitCommand:
-	case cm.HelloCommand:
-	case cm.KeyframeCommand:
+	case CreateUnitCommand:
+	case DestroyUnitCommand:
+	case HelloCommand:
+	case KeyframeCommand:
 		fmt.println("[CLIENT]: Recieved keyframe.")
-	case cm.MoveCommand:
+	case MoveCommand:
 	}
 }
 

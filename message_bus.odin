@@ -1,4 +1,4 @@
-package common
+package main
 
 Subscriber :: struct {
 	userdata : rawptr,
@@ -49,3 +49,4 @@ broadcast :: proc(event : string, data : ^$E) {
 		}
 	}
 }
+

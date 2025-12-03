@@ -1,6 +1,5 @@
-package client
+package main
 
-import "../common"
 import c "core:c"
 import "core:time"
 import rl "vendor:raylib"
@@ -14,8 +13,8 @@ client_init :: proc() {
 	rl.InitWindow(c.int(WIDTH), c.int(HEIGHT), "Hellope!")
 	rl.SetTargetFPS(60)
 
-	common.common_init()
-	common.sim_init()
+	common_init()
+	sim_init()
 
 	renderer_init(WIDTH, HEIGHT)
 	client_render_init()
@@ -23,14 +22,14 @@ client_init :: proc() {
 	//gs_init()
 	//net_init()
 
-	common.subscribe("render_texture_present", common.NIL_USERDATA, window_present)
+	subscribe("render_texture_present", NIL_USERDATA, window_present)
 
 	dt_tick = time.tick_now()
 }
 
 client_tick :: proc() {
 	if rl.WindowShouldClose() {
-		common.broadcast("shutdown", common.NIL_MESSAGE)
+		broadcast("shutdown", NIL_MESSAGE)
 		return
 	}
 
@@ -40,7 +39,7 @@ client_tick :: proc() {
 	//net_tick()
 	//gs_tick(dt)
 	poll_input()
-	common.sim_tick(dt)
+	sim_tick(dt)
 	client_render_loop()
 
 	draw()
@@ -51,7 +50,7 @@ client_shutdown :: proc() {
 	//net_shutdown()
 	//gs_deinit()
 	client_render_deinit()
-	common.sim_shutdown()
+	sim_shutdown()
 	renderer_deinit()
 }
 

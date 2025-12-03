@@ -1,6 +1,6 @@
-package common
+package main
 
-import sm "../slot_map"
+import sm "slot_map"
 
 UnitID :: distinct sm.Key(uint, 32, 32)
 

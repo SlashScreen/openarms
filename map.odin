@@ -1,3 +1,4 @@
-package common
+package main
 
 Map :: struct {}
+

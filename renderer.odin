@@ -1,13 +1,13 @@
-package client
+package main
 
-import cm "../common"
-import sm "../slot_map"
+
 import c "core:c"
 import queue "core:container/queue"
 import "core:fmt"
 import "core:math"
 import la "core:math/linalg"
 import "core:mem/virtual"
+import sm "slot_map"
 import rl "vendor:raylib"
 
 Color :: rl.Color
@@ -42,7 +42,7 @@ RenderCommand3D :: union {
 DrawMesh :: struct {
 	mesh :      ResourceID,
 	material :  ResourceID,
-	transform : cm.Transform,
+	transform : Transform,
 }
 
 cameras_3d : [dynamic]rl.Camera3D
@@ -67,9 +67,9 @@ renderer_init :: proc(w, h : uint) {
 	append(
 		&cameras_3d,
 		rl.Camera3D {
-			cm.Vec3{10.0, 10.0, 10.0},
-			cm.Vec3{0.0, 0.0, 0.0},
-			cm.Vec3{0.0, 1.0, 0.0},
+			Vec3{10.0, 10.0, 10.0},
+			Vec3{0.0, 0.0, 0.0},
+			Vec3{0.0, 1.0, 0.0},
 			45.0,
 			.PERSPECTIVE,
 		},
@@ -77,7 +77,7 @@ renderer_init :: proc(w, h : uint) {
 	main_camera = 0
 
 	batch_map = make(map[BatchKey]BatchEntry)
-	cm.subscribe("enqueue_3D", cm.NIL_USERDATA, renderer_enqueue_3D)
+	subscribe("enqueue_3D", NIL_USERDATA, renderer_enqueue_3D)
 
 	load_builtin_resources()
 }
@@ -118,7 +118,7 @@ load_builtin_resources :: proc() {
 	missing_texture = tex_key
 }
 
-create_cube_mesh :: proc(extents : cm.Vec3) -> (ResourceID, bool) #optional_ok {
+create_cube_mesh :: proc(extents : Vec3) -> (ResourceID, bool) #optional_ok {
 	mesh := rl.GenMeshCube(extents.x, extents.y, extents.z)
 	res : Resource = mesh
 	return sm.dynamic_slot_map_insert_set(&resources, res)
@@ -205,7 +205,7 @@ draw :: proc() {
 	}
 	rl.EndTextureMode()
 
-	cm.broadcast("render_texture_present", &render_texture)
+	broadcast("render_texture_present", &render_texture)
 }
 
 draw_3d :: proc() {

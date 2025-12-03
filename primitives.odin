@@ -1,4 +1,4 @@
-package common
+package main
 
 import "core:encoding/cbor"
 import "core:fmt"
@@ -60,3 +60,4 @@ deserialize_command_packet :: proc(buff : []u8) -> (NetCommand, cbor.Unmarshal_E
 	err := cbor.unmarshal_from_bytes(buff, &packet)
 	return packet, err
 }
+
