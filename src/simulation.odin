@@ -1,7 +1,9 @@
 package main
 
+// The simulation for the game, handling unit behavior and the game state.
+// Perhaps the most important part of the engine.
+
 import la "core:math/linalg"
-import "core:time"
 import sm "slot_map"
 
 units : sm.DynamicSlotMap(Unit, UnitID)

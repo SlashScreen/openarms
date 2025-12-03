@@ -1,5 +1,6 @@
 package main
 
+// Separae from the renderer, reads from the game state and dispatches render calls.
 
 import "core:fmt"
 import sm "slot_map"
@@ -11,8 +12,6 @@ RuntimeArchetype :: struct {
 }
 
 archetypes : [dynamic]RuntimeArchetype
-//render_loop_running := true
-//render_loop : ^thread.Thread
 
 client_render_init :: proc() {
 	archetypes = make([dynamic]RuntimeArchetype)
@@ -21,15 +20,10 @@ client_render_init :: proc() {
 	material := create_material_default()
 	if !set_material_albedo(material, missing_texture) do fmt.eprintln("Failed to set albedo")
 	append(&archetypes, RuntimeArchetype{"test", mesh, material})
-
-	//render_loop = thread.create_and_start(client_render_loop)
 }
 
 client_render_deinit :: proc() {
 	delete(archetypes)
-
-	//render_loop_running = false
-	//thread.destroy(render_loop)
 }
 
 client_render_loop :: proc() {

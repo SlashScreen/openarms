@@ -13,7 +13,7 @@ client_init :: proc() {
 	rl.InitWindow(c.int(WIDTH), c.int(HEIGHT), "Hellope!")
 	rl.SetTargetFPS(60)
 
-	common_init()
+	message_bus_create()
 	sim_init()
 
 	renderer_init(WIDTH, HEIGHT)
@@ -47,8 +47,7 @@ client_tick :: proc() {
 
 client_shutdown :: proc() {
 	rl.CloseWindow()
-	//net_shutdown()
-	//gs_deinit()
+	message_bus_destroy()
 	client_render_deinit()
 	sim_shutdown()
 	renderer_deinit()

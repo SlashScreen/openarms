@@ -1,4 +1,0 @@
-package main
-
-Map :: struct {}
-

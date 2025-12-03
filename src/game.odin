@@ -1,5 +1,6 @@
 package main
 
+// Ad-hoc game code.
 
 import "core:fmt"
 

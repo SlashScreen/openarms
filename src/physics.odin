@@ -1,5 +1,8 @@
 package main
 
+// Defines physics shapes and concepts and a lot of utility functions.
+// A bit of a misnomer, as no rigid body or other kinds of simulations happen.
+
 import la "core:math/linalg"
 import rl "vendor:raylib"
 

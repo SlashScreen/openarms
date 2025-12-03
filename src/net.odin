@@ -1,5 +1,8 @@
 package main
 
+// Handles network connectivity between hosts and clients.
+// TODO: Rework to use for host as well as client.
+
 import "core:fmt"
 import "core:slice"
 import "core:strings"

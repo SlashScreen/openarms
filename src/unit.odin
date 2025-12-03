@@ -1,5 +1,8 @@
 package main
 
+// Is unit file. Is unit. Are you jokester?
+// Contains no logic.
+
 import sm "slot_map"
 
 UnitID :: distinct sm.Key(uint, 32, 32)

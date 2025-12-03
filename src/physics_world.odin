@@ -1,10 +1,14 @@
 package main
 
+// Handles the living state of the game world: unit colliders and queries about them.
+// Uses a grid spacial partition scheme.
+
 import la "core:math/linalg"
 import "core:slice"
 import sm "slot_map"
 
 GRID_SIZE :: 16
+MAX_CAST_RESULTS :: 32
 
 physics_bodies : map[UnitID]PhysicsShape
 grid : map[Vec2i][dynamic]UnitID
@@ -72,5 +76,9 @@ physics_partition :: proc(id : UnitID) {
 		append(&list, id)
 		grid[u_cell] = list
 	}
+}
+
+query_ray :: proc(ray : Ray) -> Maybe(UnitID) {
+	return nil // TODO
 }
 

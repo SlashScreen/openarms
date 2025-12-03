@@ -1,5 +1,6 @@
 package main
 
+// ENtry point.
 
 running := true
 
@@ -12,18 +13,14 @@ main :: proc() {
 }
 
 headless_main :: proc() {
-	common_init()
 
 	subscribe("shutdown", NIL_USERDATA, close)
 
 	for running {
 	}
-
-	common_shutdown()
 }
 
 default_main :: proc() {
-	common_init()
 	client_init()
 
 	subscribe("shutdown", NIL_USERDATA, close)
@@ -33,7 +30,6 @@ default_main :: proc() {
 	}
 
 	client_shutdown()
-	common_shutdown()
 }
 
 close :: proc(_ : ^int, _ : ^int) {

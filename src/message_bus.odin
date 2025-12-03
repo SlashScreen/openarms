@@ -1,5 +1,8 @@
 package main
 
+// The backbone of the engine. Handes routing messages that you can subscribe to or broadcast.
+// TODO: Some kind of queue and data copy system so that it can work from threads.
+
 Subscriber :: struct {
 	userdata : rawptr,
 	callback : proc(self : rawptr, event : rawptr),

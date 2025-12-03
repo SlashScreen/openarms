@@ -1,7 +1,8 @@
 package main
 
+// Grab-bag of defined types.
+
 import "core:encoding/cbor"
-import "core:fmt"
 import la "core:math/linalg"
 
 Vec2i :: [2]int

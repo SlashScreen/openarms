@@ -1,12 +1,11 @@
 package main
 
+// The renderer. Handles render queue, drawing to a render texture, and renderer asset management.
+// Does not present to screen.
 
 import c "core:c"
 import queue "core:container/queue"
 import "core:fmt"
-import "core:math"
-import la "core:math/linalg"
-import "core:mem/virtual"
 import sm "slot_map"
 import rl "vendor:raylib"
 

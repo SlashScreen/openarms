@@ -1,5 +1,6 @@
 package main
 
+// Input manager. Broadcasts input events.
 
 import rl "vendor:raylib"
 
