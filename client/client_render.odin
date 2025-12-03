@@ -3,7 +3,6 @@ package client
 import cm "../common"
 import sm "../slot_map"
 import "core:fmt"
-import "core:thread"
 
 TARGET_DISTANCE :: 0.1
 

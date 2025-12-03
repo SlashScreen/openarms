@@ -258,3 +258,19 @@ draw_3d :: proc() {
 	rl.EndMode3D()
 }
 
+// Utils
+
+get_screen_dimensions :: proc() -> [2]int {
+	return [2]int{int(rl.GetScreenWidth()), int(rl.GetScreenWidth())}
+}
+
+get_main_camera :: proc() -> ^rl.Camera3D {
+	return &cameras_3d[main_camera]
+}
+
+get_camera_forward :: rl.GetCameraForward
+
+get_screen_to_world_ray :: rl.GetScreenToWorldRay
+
+get_world_to_screen :: rl.GetWorldToScreen
+
