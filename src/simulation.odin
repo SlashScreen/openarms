@@ -32,7 +32,7 @@ sim_tick_world :: proc() {
 sim_tick_units :: proc(dt : f32) {
 	for i in 0 ..< units.size {
 		u := sm.dynamic_slot_map_get_ptr(&units, units.keys[i])
-		tgt := [3]f32{f32(u.target.x), 0.0, f32(u.target.y)}
+		tgt := Vec3{f32(u.target.x), 0.0, f32(u.target.y)}
 
 		if la.distance(tgt, u.transform[3].xyz) <= TARGET_DISTANCE {
 			u.moving = false

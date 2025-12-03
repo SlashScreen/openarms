@@ -118,5 +118,17 @@ physics_world_debug_view :: proc() {
 			broadcast("enqueue_3D", &command)
 		}
 	}
+
+	for cell, _ in grid {
+		cell_center :=
+			la.array_cast((cell * GRID_SIZE), f32) +
+			(la.scalar_f32_swizzle2(GRID_SIZE, .x, .x) / 2.0)
+		command : RenderCommand3D = DrawWireCube {
+			Vec3{cell_center.x, 0.0, cell_center.y},
+			Vec3{f32(GRID_SIZE), 64, f32(GRID_SIZE)},
+			Color{0, 255, 0, 255},
+		}
+		broadcast("enqueue_3D", &command)
+	}
 }
 
