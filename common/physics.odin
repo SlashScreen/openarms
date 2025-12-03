@@ -3,6 +3,11 @@ package common
 import la "core:math/linalg"
 import rl "vendor:raylib"
 
+PhysicsShape :: union {
+	BoundingBox,
+	Sphere,
+}
+
 // Axis aligned bounding box
 BoundingBox :: rl.BoundingBox
 

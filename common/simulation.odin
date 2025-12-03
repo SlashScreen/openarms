@@ -10,8 +10,14 @@ units : sm.DynamicSlotMap(Unit, UnitID)
 
 sim_init :: proc() {
 	units = sm.dynamic_slot_map_make(Unit, UnitID)
+	physics_world_init()
 
-	_ = sm.dynamic_slot_map_insert_set(&units, Unit{0, 0, la.identity(Transform), [2]int{0, 6}})
+	insert_unit(Unit{0, 0, la.identity(Transform), [2]int{0, 6}, false})
+}
+
+insert_unit :: proc(u : Unit) {
+	id := sm.dynamic_slot_map_insert_set(&units, u)
+	physics_insert_unit(id)
 }
 
 sim_tick :: proc(dt : f32) {
@@ -20,6 +26,7 @@ sim_tick :: proc(dt : f32) {
 }
 
 sim_tick_world :: proc() {
+	update_partition_grid()
 }
 
 sim_tick_units :: proc(dt : f32) {
@@ -28,16 +35,19 @@ sim_tick_units :: proc(dt : f32) {
 		tgt := [3]f32{f32(u.target.x), 0.0, f32(u.target.y)}
 
 		if la.distance(tgt, u.transform[3].xyz) <= TARGET_DISTANCE {
+			u.moving = false
 			continue
 		}
 
 		dir := la.normalize(tgt - u.transform[3].xyz) * dt
 		u.transform *= la.matrix4_translate(dir)
+		u.moving = false
 	}
 }
 
 sim_shutdown :: proc() {
 	sm.dynamic_slot_map_delete(&units)
+	physics_world_deinit()
 }
 
 sim_gather_keyframe_for_all :: proc() -> []KeyframeData {

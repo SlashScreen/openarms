@@ -9,4 +9,6 @@ Unit :: struct {
 	archetype : u32,
 	transform : Transform,
 	target :    Vec2i,
+	moving :    bool,
 }
+
