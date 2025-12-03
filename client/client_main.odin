@@ -19,6 +19,7 @@ client_init :: proc() {
 
 	renderer_init(WIDTH, HEIGHT)
 	client_render_init()
+	game_init()
 	//gs_init()
 	//net_init()
 
@@ -38,6 +39,7 @@ client_tick :: proc() {
 
 	//net_tick()
 	//gs_tick(dt)
+	poll_input()
 	common.sim_tick(dt)
 	client_render_loop()
 
