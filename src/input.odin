@@ -283,7 +283,7 @@ MouseEvent :: struct {
 		Down,
 	},
 	button :       MouseButton,
-	position :     [2]int,
+	position :     [2]f32,
 	delta :        [2]f32,
 }
 
@@ -338,7 +338,7 @@ poll_input :: proc() {
 			event := MouseEvent {
 				.Down,
 				rl_to_mouse[rl_mouse],
-				[2]int{int(rl.GetMouseX()), int(rl.GetMouseY())},
+				rl.GetMousePosition(),
 				rl.GetMouseDelta(),
 			}
 			broadcast("mouse_event", &event)
@@ -348,7 +348,7 @@ poll_input :: proc() {
 			event := MouseEvent {
 				.Pressed,
 				rl_to_mouse[rl_mouse],
-				[2]int{int(rl.GetMouseX()), int(rl.GetMouseY())},
+				rl.GetMousePosition(),
 				rl.GetMouseDelta(),
 			}
 			broadcast("mouse_event", &event)
@@ -358,7 +358,7 @@ poll_input :: proc() {
 			event := MouseEvent {
 				.Released,
 				rl_to_mouse[rl_mouse],
-				[2]int{int(rl.GetMouseX()), int(rl.GetMouseY())},
+				rl.GetMousePosition(),
 				rl.GetMouseDelta(),
 			}
 			broadcast("mouse_event", &event)

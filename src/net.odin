@@ -9,7 +9,6 @@ import "core:strings"
 import "core:thread"
 import enet "vendor:ENet"
 
-LOCAL_HOST :: LOCALHOST
 CONNECT_TRIES :: 5
 
 address : enet.Address
@@ -45,7 +44,7 @@ net_tick :: proc() {
 net_connect_server :: proc() {
 	event : enet.Event
 
-	enet.address_set_host(&address, cstring(LOCAL_HOST))
+	enet.address_set_host(&address, cstring(LOCALHOST))
 	address.port = PORT
 
 	for i in 0 ..< CONNECT_TRIES {

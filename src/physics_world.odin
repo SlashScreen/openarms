@@ -2,6 +2,7 @@ package main
 
 // Handles the living state of the game world: unit colliders and queries about them.
 // Uses a grid spacial partition scheme.
+// TODO: Allow units to be in more than one cell to avoid the Doom blockmap bug
 
 import la "core:math/linalg"
 import "core:slice"
@@ -9,6 +10,7 @@ import sm "slot_map"
 
 GRID_SIZE :: 16
 MAX_CAST_RESULTS :: 32
+GROUND_PLANE :: Plane{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 1.0, 0.0}}
 
 physics_bodies : map[UnitID]PhysicsShape
 grid : map[Vec2i][dynamic]UnitID
@@ -100,8 +102,37 @@ physics_partition :: proc(id : UnitID) {
 	}
 }
 
-query_ray :: proc(ray : Ray) -> Maybe(UnitID) {
-	return nil // TODO
+query_ray :: proc(ray : Ray, max_dist : f32) -> Maybe(UnitID) {
+	START :: 0
+	END :: 1
+
+	projection := [2]Vec2i {
+		into_cell_coords(ray.position),
+		into_cell_coords((ray.position + ray.direction * max_dist)),
+	} // Projection to 2d plane
+
+	// Use bresenham's on the projected line
+	dx := projection[END].x - projection[START].x
+	dy := projection[END].y - projection[START].y
+	slope := dy / dx
+	for x in projection[START].x ..= projection[END].x {
+		y := slope * (x - projection[START].x) + projection[START].y
+		cell := Vec2i{x, y}
+		// Check each body in each cell against the ray
+		if list, ok := grid[cell]; ok {
+			for u_id in list {
+				body := physics_bodies[u_id]
+				switch b in body {
+				case BoundingBox:
+					if ray_box_intersect(ray, b) != nil do return u_id
+				case Sphere:
+					if ray_sphere_intersect(ray, b) != nil do return u_id
+				}
+			}
+		}
+	}
+
+	return nil
 }
 
 physics_world_debug_view :: proc() {
@@ -125,10 +156,23 @@ physics_world_debug_view :: proc() {
 			(la.scalar_f32_swizzle2(GRID_SIZE, .x, .x) / 2.0)
 		command : RenderCommand3D = DrawWireCube {
 			Vec3{cell_center.x, 0.0, cell_center.y},
-			Vec3{f32(GRID_SIZE), 64, f32(GRID_SIZE)},
+			Vec3{f32(GRID_SIZE), 64.0, f32(GRID_SIZE)},
 			Color{0, 255, 0, 255},
 		}
 		broadcast("enqueue_3D", &command)
 	}
+}
+
+into_cell_coords :: proc {
+	vec2_into_cell_coords,
+	vec3_into_cell_coords,
+}
+
+vec2_into_cell_coords :: proc(vec : Vec2) -> Vec2i {
+	return la.array_cast(la.floor(vec / f32(GRID_SIZE)), int)
+}
+
+vec3_into_cell_coords :: proc(vec : Vec3) -> Vec2i {
+	return vec2_into_cell_coords(vec.xy)
 }
 

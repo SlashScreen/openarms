@@ -155,3 +155,17 @@ box_inside_frustum :: proc(box : BoundingBox, frustum : Frustum) -> BoxFrustumTe
 	return .Inside
 }
 
+ray_plane_intersect :: proc(ray : Ray, plane : Plane) -> Maybe(HitInfo) {
+	denom := la.dot(plane.normal, ray.direction)
+
+	if denom > la.F32_EPSILON || denom < la.F32_EPSILON {
+		hit_distance := la.dot(plane.position - ray.position, plane.normal) / denom
+		if hit_distance >= 0.0 {
+			hit_pos := ray.position + ray.direction * hit_distance
+			return HitInfo{true, hit_distance, hit_pos, plane.normal}
+		}
+	}
+
+	return nil
+}
+

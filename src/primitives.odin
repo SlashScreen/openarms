@@ -6,6 +6,7 @@ import "core:encoding/cbor"
 import la "core:math/linalg"
 
 Vec2i :: [2]int
+Vec2 :: [2]f32
 Vec3 :: [3]f32
 Transform :: matrix[4, 4]f32
 
