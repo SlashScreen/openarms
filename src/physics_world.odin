@@ -1,5 +1,6 @@
 package main
 
+import "core:fmt"
 // Handles the living state of the game world: unit colliders and queries about them.
 // Uses a grid spacial partition scheme.
 // TODO: Allow units to be in more than one cell to avoid the Doom blockmap bug
@@ -115,11 +116,22 @@ query_ray :: proc(ray : Ray, max_dist : f32) -> Maybe(UnitID) {
 	dx := projection[END].x - projection[START].x
 	dy := projection[END].y - projection[START].y
 	slope := dy / dx
-	for x in projection[START].x ..= projection[END].x {
+
+	x1 := projection[START].x
+	x2 := projection[END].x
+	is_negative := x1 > x2
+	// This monstrosity runs in reverse if it's negative
+	for x := x1;
+	    (is_negative && x >= x2) || (!is_negative && x <= x2);
+	    x += -1 if is_negative else 1 {
+
 		y := slope * (x - projection[START].x) + projection[START].y
 		cell := Vec2i{x, y}
+		fmt.printfln("Cell on path cell %v", cell)
 		// Check each body in each cell against the ray
 		if list, ok := grid[cell]; ok {
+			fmt.printfln("Checking cell %v", cell)
+
 			for u_id in list {
 				body := physics_bodies[u_id]
 				switch b in body {
