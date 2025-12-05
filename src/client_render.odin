@@ -20,10 +20,13 @@ client_render_init :: proc() {
 	material := create_material_default()
 	if !set_material_albedo(material, missing_texture) do fmt.eprintln("Failed to set albedo")
 	append(&archetypes, RuntimeArchetype{"test", mesh, material})
+
+	terrain_init()
 }
 
 client_render_deinit :: proc() {
 	delete(archetypes)
+	terrain_deinit()
 }
 
 client_render_loop :: proc() {
@@ -36,5 +39,7 @@ client_render_loop :: proc() {
 		}
 		broadcast("enqueue_3D", &command)
 	}
+
+	terrain_draw()
 }
 

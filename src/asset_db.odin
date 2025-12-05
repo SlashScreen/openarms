@@ -21,13 +21,15 @@ asset_db_init :: proc() {
 }
 
 asset_db_deinit :: proc() {
-	for i in 0 ..< asset_db.size do asset_db_destroy_asset(asset_db.keys[i])
+	for i in 0 ..< asset_db.size do asset_destroy(asset_db.keys[i])
 	sm.dynamic_slot_map_delete(&asset_db)
 }
 
-unwrap_asset_handle :: proc(id : AssetID) -> (^Asset, bool) {
+unwrap_asset_handle :: proc(id : AssetID) -> (^Asset, bool) #optional_ok {
 	return sm.dynamic_slot_map_get_ptr(&asset_db, id)
 }
+
+// Assets
 
 asset_db_load_image :: proc {
 	asset_db_load_image_from_filepath,
@@ -45,6 +47,7 @@ asset_db_load_image_from_filepath :: proc(path : string) -> (AssetID, bool) #opt
 		return id, true
 	}
 
+	fmt.eprintln("Failed to find image")
 	return AssetID{}, false
 }
 
@@ -64,7 +67,7 @@ asset_db_load_image_from_memory :: proc(
 	return id, true
 }
 
-asset_db_destroy_asset :: proc(id : AssetID) {
+asset_destroy :: proc(id : AssetID) {
 	asset, ok := sm.dynamic_slot_map_get_ptr(&asset_db, id)
 	if !ok do return
 
@@ -72,5 +75,7 @@ asset_db_destroy_asset :: proc(id : AssetID) {
 	case Image:
 		rl.UnloadImage(a)
 	}
+
+	sm.dynamic_slot_map_remove(&asset_db, id)
 }
 

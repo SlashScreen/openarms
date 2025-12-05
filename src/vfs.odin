@@ -1,5 +1,6 @@
 package main
 
+import "core:fmt"
 import "core:os"
 import "core:os/os2"
 import "core:slice"
@@ -10,7 +11,7 @@ DEFAULT_MOD_CAPACITY :: 8
 mounted_paths : [dynamic]string
 
 vfs_init :: proc() {
-	mounted_paths = make([dynamic]string, DEFAULT_MOD_CAPACITY)
+	mounted_paths = make([dynamic]string)
 	vfs_mount(BUILTIN_RESOURCES)
 }
 
@@ -35,8 +36,9 @@ vfs_find :: proc(path : string) -> (string, bool) #optional_ok {
 	for root in mounted_paths {
 		elems := [?]string{root, path}
 		f, err := os2.join_path(elems[:], context.allocator)
-		defer delete(f)
 		if err != nil do return "", false
+		defer delete(f)
+		fmt.printfln("Trying %s", f)
 
 		if os2.is_file(f) do return f, true
 	}

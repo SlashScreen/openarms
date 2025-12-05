@@ -92,6 +92,8 @@ renderer_deinit :: proc() {
 	rl.UnloadTexture(render_texture.texture)
 	delete(cameras_3d)
 
+	for i := resources.size; i > 0; i -= 1 do resource_destroy(resources.keys[i])
+
 	sm.dynamic_slot_map_delete(&resources)
 
 	for _, v in batch_map {
@@ -108,11 +110,33 @@ renderer_enqueue_3D :: proc(_ : ^int, command : ^RenderCommand3D) {
 	}
 }
 
+unwrap_resource_handle :: proc(id : ResourceID) -> (^Resource, bool) #optional_ok {
+	return sm.dynamic_slot_map_get_ptr(&resources, id)
+}
+
+resource_destroy :: proc(id : ResourceID) {
+	res, ok := sm.dynamic_slot_map_get_ptr(&resources, id)
+	if !ok do return
+
+	switch r in res {
+	case Texture:
+		rl.UnloadTexture(r)
+	case Mesh:
+		rl.UnloadMesh(r)
+	case Material:
+		rl.UnloadMaterial(r)
+	case Model:
+		rl.UnloadModel(r)
+	}
+
+	sm.dynamic_slot_map_remove(&resources, id)
+}
+
 // Resources
 
 load_builtin_resources :: proc() {
 	image := asset_db_load_image(".png", MISSING_TEXTURE_DATA)
-	defer asset_db_destroy_asset(image)
+	defer asset_destroy(image)
 
 	tex, ok := create_texture_from_image(image)
 	assert(ok)
@@ -147,13 +171,16 @@ create_cube_mesh :: proc(extents : Vec3) -> (ResourceID, bool) #optional_ok {
 }
 
 create_heightmap_mesh :: proc(
-	heightmap : rl.Image,
+	heightmap : AssetID,
 	bounds : Vec3,
 ) -> (
 	ResourceID,
 	bool,
 ) #optional_ok {
-	mesh := rl.GenMeshHeightmap(heightmap, bounds)
+	hmap_image, ok := unwrap_asset_handle(heightmap).(Image)
+	if !ok do return ResourceID{}, false
+
+	mesh := rl.GenMeshHeightmap(hmap_image, bounds)
 	res : Resource = mesh
 	return sm.dynamic_slot_map_insert_set(&resources, res)
 }
