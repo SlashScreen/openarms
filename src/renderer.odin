@@ -111,17 +111,33 @@ renderer_enqueue_3D :: proc(_ : ^int, command : ^RenderCommand3D) {
 // Resources
 
 load_builtin_resources :: proc() {
-	image := rl.LoadImageFromMemory(
-		cstring(".png"),
-		raw_data(MISSING_TEXTURE_DATA),
-		c.int(len(MISSING_TEXTURE_DATA)),
-	)
-	defer rl.UnloadImage(image)
+	image := asset_db_load_image(".png", MISSING_TEXTURE_DATA)
+	defer asset_db_destroy_asset(image)
 
-	tex := rl.LoadTextureFromImage(image)
-	tex_key, ok := sm.dynamic_slot_map_insert_set(&resources, tex)
+	tex, ok := create_texture_from_image(image)
 	assert(ok)
-	missing_texture = tex_key
+	missing_texture = tex
+}
+
+create_texture_from_image :: proc(asset_id : AssetID) -> (ResourceID, bool) #optional_ok {
+	handle, ok := unwrap_asset_handle(asset_id)
+	if !ok {
+		fmt.eprintfln("tried to use an invalid asset to create a texture: %v", asset_id)
+		return ResourceID{}, false
+	}
+	#partial switch asset in handle {
+	case Image:
+		tex := rl.LoadTextureFromImage(asset)
+		tex_key, tok := sm.dynamic_slot_map_insert_set(&resources, tex)
+		if !tok {
+			fmt.eprintln("out of memory inserting texture from image")
+			return ResourceID{}, false
+		}
+		return tex_key, true
+	case:
+		fmt.eprintfln("tried to use a non-image asset to create a texture: %v", asset_id)
+		return ResourceID{}, false
+	}
 }
 
 create_cube_mesh :: proc(extents : Vec3) -> (ResourceID, bool) #optional_ok {
@@ -130,20 +146,32 @@ create_cube_mesh :: proc(extents : Vec3) -> (ResourceID, bool) #optional_ok {
 	return sm.dynamic_slot_map_insert_set(&resources, res)
 }
 
-create_heightmap_mesh :: proc(heightmap : rl.Image, bounds : Vec3) -> ResourceID {
+create_heightmap_mesh :: proc(
+	heightmap : rl.Image,
+	bounds : Vec3,
+) -> (
+	ResourceID,
+	bool,
+) #optional_ok {
 	mesh := rl.GenMeshHeightmap(heightmap, bounds)
 	res : Resource = mesh
 	return sm.dynamic_slot_map_insert_set(&resources, res)
 }
 
-create_material_default :: proc() -> ResourceID {
+create_material_default :: proc() -> (ResourceID, bool) #optional_ok {
 	mat := rl.LoadMaterialDefault()
 	res : Resource = mat
 	return sm.dynamic_slot_map_insert_set(&resources, res)
 }
 
 // Consumes mesh
-create_model_from_mesh :: proc(mesh : ResourceID) -> (ResourceID, bool) #optional_ok {
+create_model_from_mesh :: proc(
+	mesh : ResourceID,
+	consumes_mesh : bool = true,
+) -> (
+	ResourceID,
+	bool,
+) #optional_ok {
 	res, ok_a := sm.dynamic_slot_map_get_ptr(&resources, mesh)
 	if !ok_a {
 		fmt.eprintln("Cannot create a model from an invalid ID")
@@ -155,7 +183,7 @@ create_model_from_mesh :: proc(mesh : ResourceID) -> (ResourceID, bool) #optiona
 		return ResourceID{}, false
 	}
 
-	sm.dynamic_slot_map_remove(&resources, mesh)
+	if consumes_mesh do sm.dynamic_slot_map_remove(&resources, mesh)
 
 	mdl := rl.LoadModelFromMesh(mesh_data)
 	resource : Resource

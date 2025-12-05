@@ -138,7 +138,7 @@ query_ray :: proc(ray : Ray, max_dist : f32) -> Maybe(UnitID) {
 				case BoundingBox:
 					if _, ok := ray_box_intersect(ray, b); !ok do return u_id
 				case Sphere:
-					if _, ok := ray_box_intersect(ray, b); !ok do return u_id
+					if _, ok := ray_sphere_intersect(ray, b); !ok do return u_id
 				}
 			}
 		}

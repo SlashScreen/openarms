@@ -13,6 +13,9 @@ client_init :: proc() {
 	rl.InitWindow(c.int(WIDTH), c.int(HEIGHT), "Hellope!")
 	rl.SetTargetFPS(60)
 
+	vfs_init()
+	asset_db_init()
+
 	message_bus_create()
 	sim_init()
 
@@ -51,6 +54,9 @@ client_shutdown :: proc() {
 	client_render_deinit()
 	sim_shutdown()
 	renderer_deinit()
+
+	asset_db_deinit()
+	vfs_deinit()
 }
 
 window_present :: proc(_ : ^int, tex : ^rl.RenderTexture2D) {

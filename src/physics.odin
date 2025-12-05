@@ -64,7 +64,7 @@ ray_sphere_intersect :: proc(ray : Ray, sphere : Sphere) -> (HitInfo, bool) #opt
 	if res.hit {
 		return res, true
 	} else {
-		return HitInfo, false
+		return HitInfo{}, false
 	}
 }
 
