@@ -59,21 +59,21 @@ Frustum :: struct {
 
 HitInfo :: rl.RayCollision
 
-ray_sphere_intersect :: proc(ray : Ray, sphere : Sphere) -> Maybe(HitInfo) {
+ray_sphere_intersect :: proc(ray : Ray, sphere : Sphere) -> (HitInfo, bool) #optional_ok {
 	res := rl.GetRayCollisionSphere(ray, sphere.position, sphere.radius)
 	if res.hit {
-		return res
+		return res, true
 	} else {
-		return nil
+		return HitInfo, false
 	}
 }
 
-ray_box_intersect :: proc(ray : Ray, box : BoundingBox) -> Maybe(HitInfo) {
+ray_box_intersect :: proc(ray : Ray, box : BoundingBox) -> (HitInfo, bool) #optional_ok {
 	res := rl.GetRayCollisionBox(ray, box)
 	if res.hit {
-		return res
+		return res, true
 	} else {
-		return nil
+		return HitInfo{}, false
 	}
 }
 
@@ -155,17 +155,17 @@ box_inside_frustum :: proc(box : BoundingBox, frustum : Frustum) -> BoxFrustumTe
 	return .Inside
 }
 
-ray_plane_intersect :: proc(ray : Ray, plane : Plane) -> Maybe(HitInfo) {
+ray_plane_intersect :: proc(ray : Ray, plane : Plane) -> (HitInfo, bool) #optional_ok {
 	denom := la.dot(plane.normal, ray.direction)
 
 	if denom > la.F32_EPSILON || denom < la.F32_EPSILON {
 		hit_distance := la.dot(plane.position - ray.position, plane.normal) / denom
 		if hit_distance >= 0.0 {
 			hit_pos := ray.position + ray.direction * hit_distance
-			return HitInfo{true, hit_distance, hit_pos, plane.normal}
+			return HitInfo{true, hit_distance, hit_pos, plane.normal}, true
 		}
 	}
 
-	return nil
+	return HitInfo{}, false
 }
 

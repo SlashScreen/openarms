@@ -136,9 +136,9 @@ query_ray :: proc(ray : Ray, max_dist : f32) -> Maybe(UnitID) {
 				body := physics_bodies[u_id]
 				switch b in body {
 				case BoundingBox:
-					if ray_box_intersect(ray, b) != nil do return u_id
+					if _, ok := ray_box_intersect(ray, b); !ok do return u_id
 				case Sphere:
-					if ray_sphere_intersect(ray, b) != nil do return u_id
+					if _, ok := ray_box_intersect(ray, b); !ok do return u_id
 				}
 			}
 		}

@@ -31,16 +31,16 @@ vfs_unmount :: proc(path : string) {
 	}
 }
 
-vfs_find :: proc(path : string) -> Maybe(string) {
+vfs_find :: proc(path : string) -> (string, bool) #optional_ok {
 	for root in mounted_paths {
 		elems := [?]string{root, path}
 		f, err := os2.join_path(elems[:], context.allocator)
 		defer delete(f)
-		if err != nil do return nil
+		if err != nil do return "", false
 
-		if os2.is_file(f) do return f
+		if os2.is_file(f) do return f, true
 	}
-	return nil
+	return "", false
 }
 
 vfs_list_dir :: proc(path : string) -> [dynamic]string {
