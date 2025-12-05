@@ -130,6 +130,12 @@ create_cube_mesh :: proc(extents : Vec3) -> (ResourceID, bool) #optional_ok {
 	return sm.dynamic_slot_map_insert_set(&resources, res)
 }
 
+create_heightmap_mesh :: proc(heightmap : rl.Image, bounds : Vec3) -> ResourceID {
+	mesh := rl.GenMeshHeightmap(heightmap, bounds)
+	res : Resource = mesh
+	return sm.dynamic_slot_map_insert_set(&resources, res)
+}
+
 create_material_default :: proc() -> ResourceID {
 	mat := rl.LoadMaterialDefault()
 	res : Resource = mat

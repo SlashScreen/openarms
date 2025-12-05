@@ -119,7 +119,7 @@ query_ray :: proc(ray : Ray, max_dist : f32) -> Maybe(UnitID) {
 
 	x1 := projection[START].x
 	x2 := projection[END].x
-	is_negative := x1 > x2
+	is_negative := x1 > x2 // negative means that the end point is in QI or QIV on a coordinate grid, so it runs backwards. Directionality matters here
 	// This monstrosity runs in reverse if it's negative
 	for x := x1;
 	    (is_negative && x >= x2) || (!is_negative && x <= x2);
