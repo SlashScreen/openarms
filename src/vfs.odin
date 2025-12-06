@@ -4,6 +4,7 @@ import "core:fmt"
 import "core:os"
 import "core:os/os2"
 import "core:slice"
+import "core:strings"
 BUILTIN_RESOURCES :: "client_resources"
 DEFAULT_MOD_CAPACITY :: 8
 
@@ -35,12 +36,12 @@ vfs_unmount :: proc(path : string) {
 vfs_find :: proc(path : string) -> (string, bool) #optional_ok {
 	for root in mounted_paths {
 		elems := [?]string{root, path}
-		f, err := os2.join_path(elems[:], context.allocator)
-		if err != nil do return "", false
+		f, ferr := strings.join(elems[:], "/")
+		if ferr != nil do return "", false
 		defer delete(f)
 		fmt.printfln("Trying %s", f)
 
-		if os2.is_file(f) do return f, true
+		if os2.exists(f) do return f, true
 	}
 	return "", false
 }
@@ -50,7 +51,8 @@ vfs_list_dir :: proc(path : string) -> [dynamic]string {
 
 	for root in mounted_paths {
 		elems := [?]string{root, path}
-		f, ferr := os2.join_path(elems[:], context.allocator)
+		// TODO: Use OS or whatever
+		f, ferr := strings.join(elems[:], "/")
 		defer delete(f)
 		if ferr != nil do continue
 
@@ -58,12 +60,12 @@ vfs_list_dir :: proc(path : string) -> [dynamic]string {
 		defer os2.file_info_slice_delete(file_dirs, context.allocator)
 		if derr != nil do continue
 
-		for file in file_dirs {
-			append(&list, file.fullpath)
-		}
+		for file in file_dirs do append(&list, file.fullpath)
 	}
 
-	_ = slice.unique(list[:])
+	slice.sort(list[:])
+	deduped := slice.unique(list[:])
+	resize(&list, len(deduped))
 
 	return list
 }

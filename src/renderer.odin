@@ -60,7 +60,7 @@ batch_map : map[BatchKey]BatchEntry
 
 // Builtins
 
-MISSING_TEXTURE_DATA :: #load("client_resources/missing_texture.png", []u8)
+MISSING_TEXTURE_FP :: "missing_texture.png"
 missing_texture : ResourceID
 INSTANCING_WORKS :: false
 
@@ -135,7 +135,7 @@ resource_destroy :: proc(id : ResourceID) {
 // Resources
 
 load_builtin_resources :: proc() {
-	image := asset_db_load_image(".png", MISSING_TEXTURE_DATA)
+	image := asset_db_load_image(MISSING_TEXTURE_FP)
 	defer asset_destroy(image)
 
 	tex, ok := create_texture_from_image(image)
