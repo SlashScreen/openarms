@@ -10,6 +10,7 @@ HEIGHT :: 450
 dt_tick : time.Tick
 
 client_init :: proc() {
+	rl.SetTraceLogCallback(rl_log_callback)
 	rl.InitWindow(c.int(WIDTH), c.int(HEIGHT), "Hellope!")
 	rl.SetTargetFPS(60)
 

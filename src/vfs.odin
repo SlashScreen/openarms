@@ -1,10 +1,9 @@
 package main
 
-import "core:fmt"
-import "core:os"
 import "core:os/os2"
 import "core:slice"
 import "core:strings"
+
 BUILTIN_RESOURCES :: "client_resources"
 DEFAULT_MOD_CAPACITY :: 8
 
@@ -39,7 +38,6 @@ vfs_find :: proc(path : string) -> (string, bool) #optional_ok {
 		f, ferr := strings.join(elems[:], "/")
 		if ferr != nil do return "", false
 		defer delete(f)
-		fmt.printfln("Trying %s", f)
 
 		if os2.exists(f) do return f, true
 	}
