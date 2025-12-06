@@ -36,6 +36,7 @@ client_render_loop :: proc() {
 			archetypes[v.archetype].mesh,
 			archetypes[v.archetype].material,
 			v.transform,
+			true,
 		}
 		broadcast("enqueue_3D", &command)
 	}

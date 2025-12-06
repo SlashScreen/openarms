@@ -10,6 +10,7 @@ TEST_HEIGHTMAP :: "test_heightmap.png"
 terrain_mesh : ResourceID
 terrain_tex : ResourceID
 terrain_mat : ResourceID
+terrain_model : ResourceID
 
 terrain_init :: proc() {
 	load_terrain(TEST_HEIGHTMAP, 2.0)
@@ -39,19 +40,22 @@ load_terrain :: proc(fp : string, max_height : f32) {
 
 	terrain_mesh = terr
 
-	terrain_tex, tex_ok := create_texture_from_image(hmap)
+	tex_ok : bool
+	terrain_tex, tex_ok = create_texture_from_image(hmap)
 	if !tex_ok {
 		fmt.eprintln("failed to create terrain texture")
 		return
 	}
 
-	terrain_mat, mat_ok := create_material_default()
+	mat_ok : bool
+	terrain_mat, mat_ok = create_material_default()
 	if !mat_ok {
 		fmt.eprintln("failed to load material")
 		return
 	}
 
 	set_material_albedo(terrain_mat, terrain_tex)
+	fmt.println("Loaded terrain")
 }
 
 unload_terrain :: proc() {
@@ -61,7 +65,12 @@ unload_terrain :: proc() {
 }
 
 terrain_draw :: proc() {
-	command : RenderCommand3D = DrawMesh{terrain_mesh, terrain_mat, la.MATRIX4F32_IDENTITY}
+	command : RenderCommand3D = DrawMesh {
+		terrain_mesh,
+		terrain_mat,
+		la.identity_matrix(Transform),
+		false,
+	}
 	broadcast("enqueue_3D", &command)
 }
 

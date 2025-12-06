@@ -40,9 +40,10 @@ RenderCommand3D :: union {
 }
 
 DrawMesh :: struct {
-	mesh :      ResourceID,
-	material :  ResourceID,
-	transform : Transform,
+	mesh :           ResourceID,
+	material :       ResourceID,
+	transform :      Transform,
+	use_instancing : bool,
 }
 
 DrawWireCube :: struct {
@@ -285,16 +286,30 @@ draw_3d :: proc() {
 		    command, ok = queue.pop_front_safe(&render_queue_3D) {
 			switch com in command {
 			case DrawMesh:
-				// This does rudimentary batching
-				b_key := BatchKey{com.mesh, com.material}
+				if com.use_instancing {
+					// This does rudimentary batching
+					b_key := BatchKey{com.mesh, com.material}
 
-				if entry, ok := &batch_map[b_key]; ok {
-					append(&entry.positions, (rl.Matrix)(com.transform))
+					if entry, ok := &batch_map[b_key]; ok {
+						append(&entry.positions, (rl.Matrix)(com.transform))
+					} else {
+						entry := BatchEntry{com.mesh, com.material, make([dynamic]rl.Matrix)}
+
+						append(&entry.positions, (rl.Matrix)(com.transform))
+						batch_map[b_key] = entry
+					}
 				} else {
-					entry := BatchEntry{com.mesh, com.material, make([dynamic]rl.Matrix)}
-
-					append(&entry.positions, (rl.Matrix)(com.transform))
-					batch_map[b_key] = entry
+					mesh, msh_ok := sm.dynamic_slot_map_get_ptr(&resources, com.mesh)
+					if !msh_ok {
+						fmt.eprintfln("Unable to fetch mesh with id %v", com.mesh)
+						continue
+					}
+					material, mat_ok := sm.dynamic_slot_map_get_ptr(&resources, com.material)
+					if !mat_ok {
+						fmt.eprintfln("Unable to fetch material with id %v", com.material)
+						continue
+					}
+					rl.DrawMesh(mesh^.(Mesh), material^.(Material), (rl.Matrix)(com.transform))
 				}
 			case DrawWireCube:
 				rl.DrawCubeWiresV(com.position, com.extents, com.color)
