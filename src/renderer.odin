@@ -5,7 +5,6 @@ package main
 
 import c "core:c"
 import queue "core:container/queue"
-import "core:fmt"
 import sm "slot_map"
 import rl "vendor:raylib"
 
@@ -107,7 +106,7 @@ renderer_deinit :: proc() {
 
 renderer_enqueue_3D :: proc(_ : ^int, command : ^RenderCommand3D) {
 	if ok, err := queue.enqueue(&render_queue_3D, command^); !ok {
-		fmt.eprintfln("[RENDERER] enqueue error: %q", err)
+		log_err("[RENDERER] enqueue error: %q", err)
 	}
 }
 
@@ -147,7 +146,7 @@ load_builtin_resources :: proc() {
 create_texture_from_image :: proc(asset_id : AssetID) -> (ResourceID, bool) #optional_ok {
 	handle, ok := unwrap_asset_handle(asset_id)
 	if !ok {
-		fmt.eprintfln("tried to use an invalid asset to create a texture: %v", asset_id)
+		log_err("tried to use an invalid asset to create a texture: %v", asset_id)
 		return ResourceID{}, false
 	}
 	#partial switch asset in handle {
@@ -155,12 +154,12 @@ create_texture_from_image :: proc(asset_id : AssetID) -> (ResourceID, bool) #opt
 		tex := rl.LoadTextureFromImage(asset)
 		tex_key, tok := sm.dynamic_slot_map_insert_set(&resources, tex)
 		if !tok {
-			fmt.eprintln("out of memory inserting texture from image")
+			log_err("out of memory inserting texture from image")
 			return ResourceID{}, false
 		}
 		return tex_key, true
 	case:
-		fmt.eprintfln("tried to use a non-image asset to create a texture: %v", asset_id)
+		log_err("tried to use a non-image asset to create a texture: %v", asset_id)
 		return ResourceID{}, false
 	}
 }
@@ -202,12 +201,12 @@ create_model_from_mesh :: proc(
 ) #optional_ok {
 	res, ok_a := sm.dynamic_slot_map_get_ptr(&resources, mesh)
 	if !ok_a {
-		fmt.eprintln("Cannot create a model from an invalid ID")
+		log_err("Cannot create a model from an invalid ID")
 		return ResourceID{}, false
 	}
 	mesh_data, ok_b := res.(Mesh)
 	if !ok_b {
-		fmt.eprintln("Cannot create a model from a non-mesh resources")
+		log_err("Cannot create a model from a non-mesh resources")
 		return ResourceID{}, false
 	}
 
@@ -224,30 +223,27 @@ create_model_from_mesh :: proc(
 set_material_albedo :: proc(material, texture : ResourceID) -> bool {
 	res, r_ok := sm.dynamic_slot_map_get_ptr(&resources, material)
 	if !r_ok {
-		fmt.eprintfln("Unknown asset with ID %v", material)
+		log_err("Unknown asset with ID %v", material)
 		return false
 	}
 	mat, m_ok := (&res.(Material))
 	if !m_ok {
-		fmt.eprintfln("Asset with ID %v not a material", material)
+		log_err("Asset with ID %v not a material", material)
 		return false
 	}
 
 	if tex_res, tr_ok := sm.dynamic_slot_map_get(&resources, texture); tr_ok {
 		tex, t_ok := tex_res.(Texture)
 		if t_ok {
-			fmt.eprintfln("Setting texture to ID. %v", texture)
+			log("Setting texture to ID. %v", texture)
 			rl.SetMaterialTexture(mat, .ALBEDO, tex)
 		} else {
-			fmt.eprintfln(
-				"Asset with ID %v not a texture, replacing with missing texture",
-				texture,
-			)
+			log_warn("Asset with ID %v not a texture, replacing with missing texture", texture)
 			tex = sm.dynamic_slot_map_get(&resources, missing_texture).(Texture)
 			rl.SetMaterialTexture(mat, .ALBEDO, tex)
 		}
 	} else {
-		fmt.eprintfln("Unknown asset with ID %v, replacing with missing texture", texture)
+		log_warn("Unknown asset with ID %v, replacing with missing texture", texture)
 		tex := sm.dynamic_slot_map_get(&resources, missing_texture).(Texture)
 		rl.SetMaterialTexture(mat, .ALBEDO, tex)
 	}
@@ -301,12 +297,12 @@ draw_3d :: proc() {
 				} else {
 					mesh, msh_ok := sm.dynamic_slot_map_get_ptr(&resources, com.mesh)
 					if !msh_ok {
-						fmt.eprintfln("Unable to fetch mesh with id %v", com.mesh)
+						log_err("Unable to fetch mesh with id %v", com.mesh)
 						continue
 					}
 					material, mat_ok := sm.dynamic_slot_map_get_ptr(&resources, com.material)
 					if !mat_ok {
-						fmt.eprintfln("Unable to fetch material with id %v", com.material)
+						log_err("Unable to fetch material with id %v", com.material)
 						continue
 					}
 					rl.DrawMesh(mesh^.(Mesh), material^.(Material), (rl.Matrix)(com.transform))
@@ -314,7 +310,10 @@ draw_3d :: proc() {
 			case DrawWireCube:
 				rl.DrawCubeWiresV(com.position, com.extents, com.color)
 			case:
-				fmt.println("Unknown command ", typeid_of(type_of(com)))
+				log_warn(
+					"Unknown command %s. Are you constructing the command properly?",
+					typeid_of(type_of(com)),
+				)
 			}
 		}
 

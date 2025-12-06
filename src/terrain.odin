@@ -23,7 +23,7 @@ terrain_deinit :: proc() {
 load_terrain :: proc(fp : string, max_height : f32) {
 	hmap, ok := asset_db_load_image(fp)
 	if !ok {
-		fmt.eprintln("failed to load image")
+		log_err("failed to load image")
 		return
 	}
 	defer asset_destroy(hmap)
@@ -34,7 +34,7 @@ load_terrain :: proc(fp : string, max_height : f32) {
 		Vec3{f32(hmap_img.width), max_height, f32(hmap_img.height)},
 	)
 	if !tok {
-		fmt.eprintln("failed to create mesh")
+		log_err("failed to create mesh")
 		return
 	}
 
@@ -43,19 +43,19 @@ load_terrain :: proc(fp : string, max_height : f32) {
 	tex_ok : bool
 	terrain_tex, tex_ok = create_texture_from_image(hmap)
 	if !tex_ok {
-		fmt.eprintln("failed to create terrain texture")
+		log_err("failed to create terrain texture")
 		return
 	}
 
 	mat_ok : bool
 	terrain_mat, mat_ok = create_material_default()
 	if !mat_ok {
-		fmt.eprintln("failed to load material")
+		log_err("failed to load material")
 		return
 	}
 
 	set_material_albedo(terrain_mat, terrain_tex)
-	fmt.println("Loaded terrain")
+	log("Loaded terrain")
 }
 
 unload_terrain :: proc() {
