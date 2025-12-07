@@ -524,3 +524,5 @@ key_2_axis :: proc(x : struct {
 	return Vec2{x_axis, y_axis}
 }
 
+get_scroll_movement :: rl.GetMouseWheelMove
+

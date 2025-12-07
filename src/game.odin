@@ -1,9 +1,13 @@
 package main
 
-import "vendor:raylib"
 // Ad-hoc game code.
 
 import "core:fmt"
+import "vendor:raylib"
+
+CAM_MIN_DIST : f32 : 10.0
+CAM_MAX_DIST : f32 : 60.0
+INVERTED_SCROLL :: false
 
 DebugViews :: enum {
 	PhysicsWorld,
@@ -13,9 +17,8 @@ DebugViews :: enum {
 debug_views : bit_set[DebugViews] = {.PhysicsWorld}
 
 camera_movement_speed : f32 = 8.0
-
-@(private = "file")
-camera_movement_vector : Vec2
+camera_root_position : Vec3
+cam_dist := CAM_MIN_DIST
 
 game_init :: proc() {
 	subscribe("key_event", NIL_USERDATA, game_key_input)
@@ -34,7 +37,8 @@ game_key_input :: proc(_ : ^int, event : ^KeyEvent) {
 
 game_mouse_input :: proc(_ : ^int, event : ^MouseEvent) {
 	if event.mouse_action == .Pressed {
-		if event.button == .Left {
+		#partial switch event.button {
+		case .Left:
 			cam := get_main_camera()
 			forward := get_camera_forward(cam)
 			fmt.printfln("Clicked. %v", forward)
@@ -48,12 +52,15 @@ game_mouse_input :: proc(_ : ^int, event : ^MouseEvent) {
 }
 
 game_systems_tick :: proc(dt : f32) {
-	camera_movement_vector = key_2_axis({.A, .D}, {.S, .W})
-	move_camera(get_main_camera(), camera_movement_vector * camera_movement_speed * dt)
-}
+	mov := key_2_axis({.A, .D}, {.W, .S})
+	mov_3D := Vec3{mov.x, 0.0, mov.y} * camera_movement_speed * dt
+	cam := get_main_camera()
+	cam_dist += get_scroll_movement() if INVERTED_SCROLL else -get_scroll_movement()
+	cam_dist = clamp(cam_dist, CAM_MIN_DIST, CAM_MAX_DIST)
 
-move_camera :: proc(cam : ^raylib.Camera3D, movement : Vec2) {
-	cam.position.x += movement.x
-	cam.position.z += movement.y
+	//raylib.UpdateCameraPro(cam, mov_3D, Vec3{0.0, 0.0, 1.0}, 45.0)
+	camera_root_position += mov_3D
+	cam.position = camera_root_position + (-Vec3{0.0, -1.0, 1.0} * cam_dist)
+	cam.target = camera_root_position
 }
 
