@@ -34,7 +34,7 @@ Options :: enum {
 }
 
 options_settings := [Options]OptionTypes {
-	.InvertedCameraScroll = true,
+	.InvertedCameraScroll = false,
 }
 
 get_options_setting :: proc(

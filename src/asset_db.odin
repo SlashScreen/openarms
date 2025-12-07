@@ -79,3 +79,9 @@ asset_destroy :: proc(id : AssetID) {
 	sm.dynamic_slot_map_remove(&asset_db, id)
 }
 
+// Asset operations
+
+image_get_pixel :: proc(img : Image, point : Vec2i) -> Color {
+	return rl.GetImageColor(img, c.int(point.x), c.int(point.y))
+}
+

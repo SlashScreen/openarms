@@ -10,7 +10,6 @@ CAM_MIN_DIST : f32 : 10.0
 CAM_MAX_DIST : f32 : 60.0
 CAM_MAX_DIST_MOVEMENT_MODIFIER : f32 : 5.0 // Speed boost for zoomed out movement
 CAM_SPRINT_MODIFIER : f32 : 3.0
-INVERTED_SCROLL :: false
 
 DebugViews :: enum {
 	PhysicsWorld,
