@@ -254,6 +254,7 @@ key_to_rl := #sparse[Key]rl.KeyboardKey {
 	.KP_Menu      = .KP_ENTER,
 }
 
+@(private = "file")
 @(rodata)
 rl_to_mouse := [rl.MouseButton]MouseButton {
 	.LEFT    = .Left,
@@ -263,6 +264,18 @@ rl_to_mouse := [rl.MouseButton]MouseButton {
 	.EXTRA   = .Extra,
 	.FORWARD = .Forward,
 	.BACK    = .Back,
+}
+
+@(private = "file")
+@(rodata)
+mouse_to_rl := [MouseButton]rl.MouseButton {
+	.Left    = .LEFT,
+	.Right   = .RIGHT,
+	.Middle  = .MIDDLE,
+	.Side    = .SIDE,
+	.Extra   = .EXTRA,
+	.Forward = .FORWARD,
+	.Back    = .BACK,
 }
 
 Key :: enum {
@@ -506,6 +519,10 @@ is_key_down :: proc(key : Key) -> bool {
 	return rl.IsKeyDown(key_to_rl[key])
 }
 
+is_key_pressed :: proc(key : Key) -> bool {
+	return rl.IsKeyPressed(key_to_rl[key])
+}
+
 key_2_axis :: proc(x : struct {
 		pos : Key,
 		neg : Key,
@@ -526,5 +543,11 @@ key_2_axis :: proc(x : struct {
 
 get_scroll_movement :: rl.GetMouseWheelMove
 
+get_scroll_vector :: rl.GetMouseWheelMoveV
+
 get_mouse_position :: rl.GetMousePosition
+
+is_mouse_down :: proc(button : MouseButton) -> bool {
+	return rl.IsMouseButtonDown(mouse_to_rl[button])
+}
 

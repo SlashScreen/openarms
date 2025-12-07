@@ -38,7 +38,6 @@ vfs_find :: proc(path : string) -> (string, bool) #optional_ok {
 		elems := [?]string{root, path}
 		f, ferr := strings.join(elems[:], "/")
 		if ferr != nil do return "", false
-		defer delete(f)
 
 		if os2.exists(f) do return f, true
 	}

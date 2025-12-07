@@ -4,9 +4,6 @@ import c "core:c"
 import "core:time"
 import rl "vendor:raylib"
 
-WIDTH :: 800
-HEIGHT :: 450
-
 dt_tick : time.Tick
 
 client_init :: proc() {
@@ -23,6 +20,7 @@ client_init :: proc() {
 	renderer_init(WIDTH, HEIGHT)
 	client_render_init()
 	game_init()
+	hud_init()
 	//gs_init()
 	//net_init()
 
@@ -52,6 +50,7 @@ client_tick :: proc() {
 
 client_shutdown :: proc() {
 	rl.CloseWindow()
+	hud_deinit()
 	message_bus_destroy()
 	client_render_deinit()
 	sim_shutdown()
@@ -71,7 +70,7 @@ window_present :: proc(_ : ^int, tex : ^rl.RenderTexture2D) {
 			rl.Vector2{0.0, 0.0},
 			rl.WHITE,
 		)
-		rl.DrawText("hello", 150, 200, 20, rl.GRAY)
+		hud_draw(rl.GetFrameTime())
 	}
 	rl.EndDrawing()
 }

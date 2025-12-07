@@ -13,6 +13,7 @@ CAM_SPRINT_MODIFIER : f32 : 3.0
 
 DebugViews :: enum {
 	PhysicsWorld,
+	UI,
 }
 
 // Which debug views are active right now
