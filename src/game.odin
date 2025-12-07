@@ -10,6 +10,7 @@ CAM_MIN_DIST : f32 : 10.0
 CAM_MAX_DIST : f32 : 60.0
 CAM_MAX_DIST_MOVEMENT_MODIFIER : f32 : 5.0 // Speed boost for zoomed out movement
 CAM_SPRINT_MODIFIER : f32 : 3.0
+CAM_ZOOM_SPEED :: 3.0
 
 DebugViews :: enum {
 	PhysicsWorld,
@@ -59,7 +60,8 @@ game_systems_tick :: proc(dt : f32) {
 	)
 	cam := get_main_camera()
 	cam_dist +=
-		get_scroll_movement() if get_options_setting(.InvertedCameraScroll, bool) else -get_scroll_movement()
+		(get_scroll_movement() if get_options_setting(.InvertedCameraScroll, bool) else -get_scroll_movement()) *
+		CAM_ZOOM_SPEED
 	cam_dist = clamp(cam_dist, CAM_MIN_DIST, CAM_MAX_DIST)
 
 	cam_fac : f32 = math.remap(cam_dist, CAM_MIN_DIST, CAM_MAX_DIST, 0.0, 1.0)

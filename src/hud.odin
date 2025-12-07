@@ -59,22 +59,24 @@ create_layout :: proc() -> clay.ClayArray(clay.RenderCommand) {
 
 	{
 		if clay.UI(clay.ID("OuterContainer"))(
-		{
-			layout = {
-				layoutDirection = .TopToBottom,
-				sizing = {clay.SizingPercent(0.2), clay.SizingGrow()},
-			},
-			backgroundColor = COLOR_TEAL,
-		},
+			e_decl(clay.Color{}, {clay.SizingGrow(), clay.SizingGrow()}, .TopToBottom),
 		) {
-			clay.Text(
-				"Hello",
-				&{
-					fontId = FONT_DEFAULT,
-					fontSize = 64,
-					textColor = clay.Color{255, 255, 255, 255},
-				},
-			)
+			if clay.UI(clay.ID("Pad"))(
+				e_decl(clay.Color{}, {clay.SizingGrow(), clay.SizingPercent(0.8)}),
+			) {}
+
+			if clay.UI(clay.ID("BottomBar"))(
+				e_decl(COLOR_TEAL, {clay.SizingGrow(), clay.SizingPercent(0.2)}),
+			) {
+				clay.Text(
+					"Hello",
+					&{
+						fontId = FONT_DEFAULT,
+						fontSize = 48,
+						textColor = clay.Color{255, 255, 255, 255},
+					},
+				)
+			}
 		}
 	}
 
@@ -103,5 +105,14 @@ load_font :: proc(fontId : u16, fontSize : u16, path : string) {
 		},
 	)
 	rl.SetTextureFilter(clay.raylib_fonts[fontId].font.texture, rl.TextureFilter.TRILINEAR)
+}
+
+@(private = "file")
+e_decl :: proc(
+	bg_color : clay.Color,
+	sizing : clay.Sizing,
+	layout_dir : clay.LayoutDirection = .LeftToRight,
+) -> clay.ElementDeclaration {
+	return {layout = {layoutDirection = layout_dir, sizing = sizing}, backgroundColor = bg_color}
 }
 
