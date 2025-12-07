@@ -1,5 +1,6 @@
 package main
 
+import "base:intrinsics"
 // Options and input bindings
 
 import "core:fmt"
@@ -24,15 +25,22 @@ get_input_binding :: proc(action : KeyActions) -> Key {
 	return input_map[action]
 }
 
+OptionTypes :: union {
+	bool,
+}
+
 Options :: enum {
 	InvertedCameraScroll,
 }
 
-options_settings := [Options]any {
+options_settings := [Options]OptionTypes {
 	.InvertedCameraScroll = true,
 }
 
-get_options_setting :: proc(option : Options, $T : typeid) -> T {
+get_options_setting :: proc(
+	option : Options,
+	$T : typeid,
+) -> T where intrinsics.type_is_variant_of(OptionTypes, T) {
 	if value, ok := options_settings[option].(T); ok {
 		return value
 	} else {
