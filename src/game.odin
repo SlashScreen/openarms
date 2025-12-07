@@ -1,5 +1,6 @@
 package main
 
+import "core:math"
 // Ad-hoc game code.
 
 import "core:fmt"
@@ -7,6 +8,8 @@ import "vendor:raylib"
 
 CAM_MIN_DIST : f32 : 10.0
 CAM_MAX_DIST : f32 : 60.0
+CAM_MAX_DIST_MOVEMENT_MODIFIER : f32 : 5.0 // Speed boost for zoomed out movement
+CAM_SPRINT_MODIFIER : f32 : 3.0
 INVERTED_SCROLL :: false
 
 DebugViews :: enum {
@@ -53,12 +56,19 @@ game_mouse_input :: proc(_ : ^int, event : ^MouseEvent) {
 
 game_systems_tick :: proc(dt : f32) {
 	mov := key_2_axis({.A, .D}, {.W, .S})
-	mov_3D := Vec3{mov.x, 0.0, mov.y} * camera_movement_speed * dt
 	cam := get_main_camera()
 	cam_dist += get_scroll_movement() if INVERTED_SCROLL else -get_scroll_movement()
 	cam_dist = clamp(cam_dist, CAM_MIN_DIST, CAM_MAX_DIST)
 
-	//raylib.UpdateCameraPro(cam, mov_3D, Vec3{0.0, 0.0, 1.0}, 45.0)
+	cam_fac : f32 = (cam_dist - CAM_MIN_DIST) / (CAM_MAX_DIST - CAM_MIN_DIST)
+
+
+	mov_3D :=
+		Vec3{mov.x, 0.0, mov.y} *
+		(camera_movement_speed * math.lerp(f32(1.0), CAM_MAX_DIST_MOVEMENT_MODIFIER, cam_fac)) *
+		(CAM_SPRINT_MODIFIER if is_key_down(.L_Shift) else f32(1.0)) *
+		dt
+
 	camera_root_position += mov_3D
 	cam.position = camera_root_position + (-Vec3{0.0, -1.0, 1.0} * cam_dist)
 	cam.target = camera_root_position
