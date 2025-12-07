@@ -45,7 +45,7 @@ game_mouse_input :: proc(_ : ^int, event : ^MouseEvent) {
 			ray := get_screen_to_world_ray(event.position, cam^)
 			res, ok := query_ray(ray, 1000.0)
 			if ok {
-				fmt.printfln("Hit unit %v", res)
+				log("Hit unit %v", res)
 			}
 		}
 	}

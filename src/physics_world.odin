@@ -133,6 +133,7 @@ physics_partition :: proc(id : UnitID) {
 }
 
 query_ray :: proc(ray : Ray, max_dist : f32) -> (UnitID, bool) {
+	log("Querying ray.")
 	START :: 0
 	END :: 1
 
@@ -144,7 +145,7 @@ query_ray :: proc(ray : Ray, max_dist : f32) -> (UnitID, bool) {
 	// Use bresenham's on the projected line
 	dx := projection[END].x - projection[START].x
 	dy := projection[END].y - projection[START].y
-	slope := dy / dx
+	slope := 0 if dx == 0 else dy / dx
 
 	x1 := projection[START].x
 	x2 := projection[END].x
