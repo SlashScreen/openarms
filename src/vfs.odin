@@ -8,6 +8,7 @@ BUILTIN_RESOURCES :: "client_resources"
 DEFAULT_MOD_CAPACITY :: 8
 
 // Mounted mods, sorted by priority
+@(private = "file")
 mounted_paths : [dynamic]string
 
 vfs_init :: proc() {

@@ -44,6 +44,7 @@ client_tick :: proc() {
 	//gs_tick(dt)
 	poll_input()
 	sim_tick(dt)
+	game_systems_tick(dt)
 	client_render_loop()
 
 	draw()

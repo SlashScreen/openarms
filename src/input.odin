@@ -4,6 +4,7 @@ package main
 
 import rl "vendor:raylib"
 
+@(private = "file")
 @(rodata)
 rl_to_key := #sparse[rl.KeyboardKey]Key {
 	.KEY_NULL      = .Invalid,
@@ -61,7 +62,7 @@ rl_to_key := #sparse[rl.KeyboardKey]Key {
 	// Function keys
 	.SPACE         = .Space, // Key: Space
 	.ESCAPE        = .Pause, // Key: Esc (no direct mapping, using Pause as placeholder)
-	.ENTER         = .KP_Enter, // Key: Enter (using keypad enter, adjust if needed)
+	.ENTER         = .Enter, // Key: Enter (using keypad enter, adjust if needed)
 	.TAB           = .Tab, // Key: Tab
 	.BACKSPACE     = .Backspace, // Key: Backspace
 	.INSERT        = .Insert, // Key: Ins
@@ -118,6 +119,139 @@ rl_to_key := #sparse[rl.KeyboardKey]Key {
 	.KP_ADD        = .KP_Plus, // Key: Keypad +
 	.KP_ENTER      = .KP_Enter, // Key: Keypad Enter
 	.KP_EQUAL      = .KP_Equals, // Key: Keypad =
+}
+
+@(private = "file")
+@(rodata)
+key_to_rl := #sparse[Key]rl.KeyboardKey {
+	.Invalid      = .KEY_NULL,
+	.L_AngBracket = .KEY_NULL,
+	.R_AngBracket = .KEY_NULL,
+	.L_Paren      = .KEY_NULL,
+	.R_Paren      = .KEY_NULL,
+	.L_Brace      = .KEY_NULL,
+	.R_Brace      = .KEY_NULL,
+	.Question     = .KEY_NULL,
+	.Pipe         = .KEY_NULL,
+	.Underscore   = .KEY_NULL,
+	.Plus         = .KEY_NULL,
+	.Colon        = .KEY_NULL,
+	.Quotes       = .KEY_NULL,
+	.Tilde        = .KEY_NULL,
+	.Exclamation  = .KEY_NULL,
+	.At           = .KEY_NULL,
+	.Pound        = .KEY_NULL,
+	.Dollar       = .KEY_NULL,
+	.Percent      = .KEY_NULL,
+	.Carat        = .KEY_NULL,
+	.Ampersand    = .KEY_NULL,
+	.Asterisk     = .KEY_NULL,
+	// Next
+	.Back         = .BACK,
+	.Menu         = .MENU,
+	.Apostrophe   = .APOSTROPHE,
+	.Comma        = .COMMA,
+	.Dash         = .MINUS,
+	.Dot          = .PERIOD,
+	.F_Slash      = .SLASH,
+	.N0           = .ZERO,
+	.N1           = .ONE,
+	.N2           = .TWO,
+	.N3           = .THREE,
+	.N4           = .FOUR,
+	.N5           = .FIVE,
+	.N6           = .SIX,
+	.N7           = .SEVEN,
+	.N8           = .EIGHT,
+	.N9           = .NINE,
+	.Semicolon    = .SEMICOLON,
+	.Equals       = .EQUAL,
+	.A            = .A,
+	.B            = .B,
+	.C            = .C,
+	.D            = .D,
+	.E            = .E,
+	.F            = .F,
+	.G            = .G,
+	.H            = .H,
+	.I            = .I,
+	.J            = .J,
+	.K            = .K,
+	.L            = .L,
+	.M            = .M,
+	.N            = .N,
+	.O            = .O,
+	.P            = .P,
+	.Q            = .Q,
+	.R            = .R,
+	.S            = .S,
+	.T            = .T,
+	.U            = .U,
+	.V            = .V,
+	.W            = .W,
+	.X            = .X,
+	.Y            = .Y,
+	.Z            = .Z,
+	.L_Bracket    = .LEFT_BRACKET,
+	.B_Slash      = .BACKSLASH,
+	.R_Bracket    = .RIGHT_BRACKET,
+	.Grave        = .GRAVE,
+	.Space        = .SPACE,
+	.Pause        = .ESCAPE, // Note: ambiguous, adjust if needed
+	.Enter        = .ENTER,
+	.Tab          = .TAB,
+	.Backspace    = .BACKSPACE,
+	.Insert       = .INSERT,
+	.Delete       = .DELETE,
+	.Right        = .RIGHT,
+	.Left         = .LEFT,
+	.Down         = .DOWN,
+	.Up           = .UP,
+	.PgUp         = .PAGE_UP,
+	.PgDown       = .PAGE_DOWN,
+	.Home         = .HOME,
+	.End          = .END,
+	.CapsLock     = .CAPS_LOCK,
+	.ScrollLock   = .SCROLL_LOCK,
+	.NumLock      = .NUM_LOCK,
+	.PrintScreen  = .PRINT_SCREEN,
+	.F1           = .F1,
+	.F2           = .F2,
+	.F3           = .F3,
+	.F4           = .F4,
+	.F5           = .F5,
+	.F6           = .F6,
+	.F7           = .F7,
+	.F8           = .F8,
+	.F9           = .F9,
+	.F10          = .F10,
+	.F11          = .F11,
+	.F12          = .F12,
+	.L_Shift      = .LEFT_SHIFT,
+	.L_Ctrl       = .LEFT_CONTROL,
+	.L_Alt        = .LEFT_ALT,
+	.Super        = .LEFT_SUPER,
+	.R_Shift      = .RIGHT_SHIFT,
+	.R_Ctrl       = .RIGHT_CONTROL,
+	.R_Alt        = .RIGHT_ALT,
+	.KP0          = .KP_0,
+	.KP1          = .KP_1,
+	.KP2          = .KP_2,
+	.KP3          = .KP_3,
+	.KP4          = .KP_4,
+	.KP5          = .KP_5,
+	.KP6          = .KP_6,
+	.KP7          = .KP_7,
+	.KP8          = .KP_8,
+	.KP9          = .KP_9,
+	.KP_Dot       = .KP_DECIMAL,
+	.KP_Slash     = .KP_DIVIDE,
+	.KP_Asterisk  = .KP_MULTIPLY,
+	.KP_Dash      = .KP_SUBTRACT,
+	.KP_Plus      = .KP_ADD,
+	.KP_Enter     = .KP_ENTER,
+	.KP_Equals    = .KP_EQUAL,
+	.KP_Menu      = .KP_ENTER,
 }
 
 @(rodata)
@@ -190,6 +324,7 @@ Key :: enum {
 	KP_Dot,
 	KP_Equals,
 	KP_Dash,
+	KP_Menu,
 	// Symbols
 	Dot,
 	Comma,
@@ -251,6 +386,7 @@ Key :: enum {
 	Left,
 	Right,
 	Backspace,
+	Enter,
 	Tab,
 	NumLock,
 	ScrollLock,
@@ -364,5 +500,27 @@ poll_input :: proc() {
 			broadcast("mouse_event", &event)
 		}
 	}
+}
+
+is_key_down :: proc(key : Key) -> bool {
+	return rl.IsKeyDown(key_to_rl[key])
+}
+
+key_2_axis :: proc(x : struct {
+		pos : Key,
+		neg : Key,
+	}, y : struct {
+		pos : Key,
+		neg : Key,
+	}) -> Vec2 {
+	x_axis : f32 = 0.0
+	x_axis -= 1.0 if is_key_down(x.neg) else 0.0
+	x_axis += 1.0 if is_key_down(x.pos) else 0.0
+
+	y_axis : f32 = 0.0
+	y_axis -= 1.0 if is_key_down(y.neg) else 0.0
+	y_axis += 1.0 if is_key_down(y.pos) else 0.0
+
+	return Vec2{x_axis, y_axis}
 }
 

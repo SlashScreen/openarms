@@ -2,7 +2,6 @@ package main
 
 // Separae from the renderer, reads from the game state and dispatches render calls.
 
-import "core:fmt"
 import sm "slot_map"
 
 RuntimeArchetype :: struct {

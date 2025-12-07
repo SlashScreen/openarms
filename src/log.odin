@@ -9,7 +9,7 @@ import "core:fmt"
 import "core:terminal/ansi"
 import rl "vendor:raylib"
 
-@(private)
+@(private = "file")
 FORCE_LOG :: !#config(SUPRESS_LOG, false)
 
 log :: proc(format : string, args : ..any) {

@@ -7,9 +7,13 @@ import la "core:math/linalg"
 
 TEST_HEIGHTMAP :: "test_heightmap.png"
 
+@(private = "file")
 terrain_mesh : ResourceID
+@(private = "file")
 terrain_tex : ResourceID
+@(private = "file")
 terrain_mat : ResourceID
+@(private = "file")
 terrain_model : ResourceID
 
 terrain_init :: proc() {

@@ -51,11 +51,15 @@ DrawWireCube :: struct {
 	color :    Color,
 }
 
+@(private = "file")
 cameras_3d : [dynamic]rl.Camera3D
+@(private = "file")
 main_camera : uint
+@(private = "file")
 render_queue_3D : queue.Queue(RenderCommand3D)
 resources : sm.DynamicSlotMap(Resource, ResourceID)
 render_texture : rl.RenderTexture2D
+@(private = "file")
 batch_map : map[BatchKey]BatchEntry
 
 // Builtins
@@ -273,8 +277,6 @@ draw :: proc() {
 }
 
 draw_3d :: proc() {
-	rl.UpdateCamera(&cameras_3d[main_camera], .ORBITAL)
-
 	rl.BeginMode3D(cameras_3d[main_camera])
 	{
 		for command, ok := queue.pop_front_safe(&render_queue_3D);
