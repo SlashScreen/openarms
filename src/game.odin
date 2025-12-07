@@ -55,7 +55,10 @@ game_mouse_input :: proc(_ : ^int, event : ^MouseEvent) {
 }
 
 game_systems_tick :: proc(dt : f32) {
-	mov := key_2_axis({.A, .D}, {.W, .S})
+	mov := key_2_axis(
+		{get_input_binding(.CameraLeft), get_input_binding(.CameraRight)},
+		{get_input_binding(.CameraForward), get_input_binding(.CameraBackward)},
+	)
 	cam := get_main_camera()
 	cam_dist += get_scroll_movement() if INVERTED_SCROLL else -get_scroll_movement()
 	cam_dist = clamp(cam_dist, CAM_MIN_DIST, CAM_MAX_DIST)
@@ -66,7 +69,7 @@ game_systems_tick :: proc(dt : f32) {
 	mov_3D :=
 		Vec3{mov.x, 0.0, mov.y} *
 		(camera_movement_speed * math.lerp(f32(1.0), CAM_MAX_DIST_MOVEMENT_MODIFIER, cam_fac)) *
-		(CAM_SPRINT_MODIFIER if is_key_down(.L_Shift) else f32(1.0)) *
+		(CAM_SPRINT_MODIFIER if is_key_down(get_input_binding(.CameraSprint)) else f32(1.0)) *
 		dt
 
 	camera_root_position += mov_3D
