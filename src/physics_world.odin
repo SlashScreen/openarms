@@ -31,7 +31,7 @@ physics_world_deinit :: proc() {
 
 physics_insert_unit :: proc(id : UnitID) {
 	unit := sm.dynamic_slot_map_get_ptr(&units, id)
-	physics_bodies[id] = bounding_box_from_extents(unit.transform[3].xyz, Vec3{1.0, 5.0, 1.0}) // Weird size for debugging
+	physics_bodies[id] = bounding_box_from_extents(unit.transform[3].xyz, Vec3{1.0, 1.0, 1.0}) // Weird size for debugging
 	physics_partition(id)
 }
 
@@ -133,7 +133,6 @@ physics_partition :: proc(id : UnitID) {
 }
 
 query_ray :: proc(ray : Ray, max_dist : f32) -> (UnitID, bool) {
-	log("Querying ray.")
 	START :: 0
 	END :: 1
 
@@ -210,7 +209,7 @@ physics_world_debug_view :: proc() {
 		case BoundingBox:
 			command : RenderCommand3D = DrawWireCube {
 				bounding_box_center(b),
-				bounding_box_extents(b),
+				bounding_box_extents(b) * 2.0,
 				Color{255, 0, 0, 255},
 			}
 			broadcast("enqueue_3D", &command)
