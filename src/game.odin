@@ -42,12 +42,10 @@ game_mouse_input :: proc(_ : ^int, event : ^MouseEvent) {
 		#partial switch event.button {
 		case .Left:
 			cam := get_main_camera()
-			forward := get_camera_forward(cam)
-			fmt.printfln("Clicked. %v", forward)
 			ray := get_screen_to_world_ray(event.position, cam^)
-			res := query_ray(ray, 1000)
-			if res != nil {
-				fmt.printfln("Hit unit %v", res.(UnitID))
+			res, ok := query_ray(ray, 1000.0)
+			if ok {
+				fmt.printfln("Hit unit %v", res)
 			}
 		}
 	}
@@ -73,5 +71,14 @@ game_systems_tick :: proc(dt : f32) {
 	camera_root_position += mov_3D
 	cam.position = camera_root_position + (-Vec3{0.0, -1.0, 1.0} * cam_dist)
 	cam.target = camera_root_position
+
+	// Debug mouse ray
+	ray := get_screen_to_world_ray(get_mouse_position(), cam^)
+	command : RenderCommand3D = DrawLine3D {
+		ray.position,
+		ray.position + (ray.direction * 1000.0),
+		Color{0, 0, 255, 255},
+	}
+	broadcast("enqueue_3D", &command)
 }
 

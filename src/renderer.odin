@@ -36,6 +36,7 @@ BatchEntry :: struct {
 RenderCommand3D :: union {
 	DrawMesh,
 	DrawWireCube,
+	DrawLine3D,
 }
 
 DrawMesh :: struct {
@@ -49,6 +50,12 @@ DrawWireCube :: struct {
 	position : Vec3,
 	extents :  Vec3,
 	color :    Color,
+}
+
+DrawLine3D :: struct {
+	start : Vec3,
+	end :   Vec3,
+	color : Color,
 }
 
 @(private = "file")
@@ -311,6 +318,9 @@ draw_3d :: proc() {
 				}
 			case DrawWireCube:
 				rl.DrawCubeWiresV(com.position, com.extents, com.color)
+			case DrawLine3D:
+				rl.DrawLine3D(com.start, com.end, com.color)
+			//log("Drawing line %v", com)
 			case:
 				log_warn(
 					"Unknown command %s. Are you constructing the command properly?",

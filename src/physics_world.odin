@@ -1,9 +1,9 @@
 package main
 
 import "core:fmt"
+import "vendor:raylib"
 // Handles the living state of the game world: unit colliders and queries about them.
 // Uses a grid spacial partition scheme.
-// TODO: Allow units to be in more than one cell to avoid the Doom blockmap bug
 
 import la "core:math/linalg"
 import "core:slice"
@@ -30,9 +30,9 @@ physics_world_deinit :: proc() {
 }
 
 physics_insert_unit :: proc(id : UnitID) {
-	physics_partition(id)
 	unit := sm.dynamic_slot_map_get_ptr(&units, id)
 	physics_bodies[id] = bounding_box_from_extents(unit.transform[3].xyz, Vec3{1.0, 5.0, 1.0}) // Weird size for debugging
+	physics_partition(id)
 }
 
 physics_remove_unit :: proc(id : UnitID) {
@@ -92,18 +92,47 @@ update_body_positions :: proc() {
 }
 
 physics_partition :: proc(id : UnitID) {
-	unit := sm.dynamic_slot_map_get_ptr(&units, id)
-	u_cell := la.array_cast(la.floor(unit.transform[3].xy / f32(GRID_SIZE)), int)
-	if list, ok := grid[u_cell]; ok {
-		append(&list, id)
-	} else {
-		list := make([dynamic]UnitID)
-		append(&list, id)
-		grid[u_cell] = list
+	body := physics_bodies[id]
+	rect : raylib.Rectangle
+	switch b in body {
+	case BoundingBox:
+		size := (b.max - b.min).xy
+		rect.x = b.min.x
+		rect.y = b.min.z
+		rect.width = size.x
+		rect.height = size.y
+	case Sphere:
+		rect.x = b.position.x - b.radius
+		rect.y = b.position.y - b.radius
+		rect.width = b.radius * 2.0
+		rect.height = b.radius * 2.0
+	}
+
+	// Won't work for units over GRID_SIZE foorprint but that's like 16 so it should be fine
+
+	points := [4]Vec2 {
+		Vec2{rect.x, rect.y},
+		Vec2{rect.x + rect.width, rect.y},
+		Vec2{rect.x + rect.width, rect.y + rect.height},
+		Vec2{rect.x, rect.y + rect.height},
+	}
+
+	for point in points {
+		u_cell := la.array_cast(la.floor(point / f32(GRID_SIZE)), int)
+		if list, ok := grid[u_cell]; ok {
+			append(&list, id)
+			new_length := len(slice.unique(list[:]))
+			resize(&list, new_length)
+			// I love Performance
+		} else {
+			list := make([dynamic]UnitID)
+			append(&list, id)
+			grid[u_cell] = list
+		}
 	}
 }
 
-query_ray :: proc(ray : Ray, max_dist : f32) -> Maybe(UnitID) {
+query_ray :: proc(ray : Ray, max_dist : f32) -> (UnitID, bool) {
 	START :: 0
 	END :: 1
 
@@ -119,6 +148,25 @@ query_ray :: proc(ray : Ray, max_dist : f32) -> Maybe(UnitID) {
 
 	x1 := projection[START].x
 	x2 := projection[END].x
+
+	if projection[START] == projection[END] {
+		log("Ray is in one cell")
+		if list, ok := grid[projection[START]]; ok {
+			log("Checking cell %v", projection[START])
+
+			for u_id in list {
+				body := physics_bodies[u_id]
+				switch b in body {
+				case BoundingBox:
+					if _, ok := ray_box_intersect(ray, b); !ok do return u_id, true
+				case Sphere:
+					if _, ok := ray_sphere_intersect(ray, b); !ok do return u_id, true
+				}
+			}
+		}
+		return UnitID{}, false
+	}
+
 	is_negative := x1 > x2 // negative means that the end point is in QI or QIV on a coordinate grid, so it runs backwards. Directionality matters here
 	// This monstrosity runs in reverse if it's negative
 	for x := x1;
@@ -127,24 +175,30 @@ query_ray :: proc(ray : Ray, max_dist : f32) -> Maybe(UnitID) {
 
 		y := slope * (x - projection[START].x) + projection[START].y
 		cell := Vec2i{x, y}
-		fmt.printfln("Cell on path cell %v", cell)
+		log("Cell on path cell %v", cell)
 		// Check each body in each cell against the ray
 		if list, ok := grid[cell]; ok {
-			fmt.printfln("Checking cell %v", cell)
+			log("Checking cell %v", cell)
 
 			for u_id in list {
 				body := physics_bodies[u_id]
 				switch b in body {
 				case BoundingBox:
-					if _, ok := ray_box_intersect(ray, b); !ok do return u_id
+					if _, ok := ray_box_intersect(ray, b); ok {
+						log("Collided with the box")
+						return u_id, true
+					}
 				case Sphere:
-					if _, ok := ray_sphere_intersect(ray, b); !ok do return u_id
+					if _, ok := ray_sphere_intersect(ray, b); ok {
+						log("Collided with sphere")
+						return u_id, true
+					}
 				}
 			}
 		}
 	}
 
-	return nil
+	return UnitID{}, false
 }
 
 physics_world_debug_view :: proc() {

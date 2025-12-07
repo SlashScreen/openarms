@@ -125,8 +125,9 @@ sample_height :: proc(point : Vec2) -> f16 {
 	right_height := heights[coords_to_index(Vec2i{x + 1, y})]
 	up_height := heights[coords_to_index(Vec2i{x, y + 1})]
 
-	x_interp := math.lerp(origin_height, right_height, x_rem) if x_rem != 0.0 else origin_height
-	y_interp := math.lerp(origin_height, up_height, y_rem) if y_rem != 0 else origin_height
+	x_interp :=
+		math.lerp(origin_height, right_height, f16(x_rem)) if x_rem != 0.0 else origin_height
+	y_interp := math.lerp(origin_height, up_height, f16(y_rem)) if y_rem != 0.0 else origin_height
 	height_interp := (x_interp + y_interp) / f16(2.0)
 
 	height_cache[point] = height_interp

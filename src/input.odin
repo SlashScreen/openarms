@@ -526,3 +526,5 @@ key_2_axis :: proc(x : struct {
 
 get_scroll_movement :: rl.GetMouseWheelMove
 
+get_mouse_position :: rl.GetMousePosition
+
