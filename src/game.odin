@@ -60,12 +60,11 @@ game_systems_tick :: proc(dt : f32) {
 		{get_input_binding(.CameraForward), get_input_binding(.CameraBackward)},
 	)
 	cam := get_main_camera()
-	cam_dist += get_scroll_movement() if INVERTED_SCROLL else -get_scroll_movement()
+	cam_dist +=
+		get_scroll_movement() if get_options_setting(.InvertedCameraScroll, bool) else -get_scroll_movement()
 	cam_dist = clamp(cam_dist, CAM_MIN_DIST, CAM_MAX_DIST)
 
-	cam_fac : f32 = (cam_dist - CAM_MIN_DIST) / (CAM_MAX_DIST - CAM_MIN_DIST)
-
-
+	cam_fac : f32 = math.remap(cam_dist, CAM_MIN_DIST, CAM_MAX_DIST, 0.0, 1.0)
 	mov_3D :=
 		Vec3{mov.x, 0.0, mov.y} *
 		(camera_movement_speed * math.lerp(f32(1.0), CAM_MAX_DIST_MOVEMENT_MODIFIER, cam_fac)) *
