@@ -101,10 +101,10 @@ load_font :: proc(fontId : u16, fontSize : u16, path : string) {
 				nil,
 				0,
 			),
-			fontId = cast(u16)fontId,
+			fontId = fontId,
 		},
 	)
-	rl.SetTextureFilter(clay.raylib_fonts[fontId].font.texture, rl.TextureFilter.TRILINEAR)
+	rl.SetTextureFilter(clay.raylib_fonts[fontId].font.texture, rl.TextureFilter.BILINEAR)
 }
 
 @(private = "file")

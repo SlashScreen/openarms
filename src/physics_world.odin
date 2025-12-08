@@ -1,6 +1,7 @@
 package main
 
 import "core:fmt"
+import "core:math"
 import "vendor:raylib"
 // Handles the living state of the game world: unit colliders and queries about them.
 // Uses a grid spacial partition scheme.
@@ -133,71 +134,87 @@ physics_partition :: proc(id : UnitID) {
 }
 
 query_ray :: proc(ray : Ray, max_dist : f32) -> (UnitID, bool) {
+	log("Query begin")
 	START :: 0
 	END :: 1
+
+	debug_render_command : RenderCommand3D = DrawLine3D {
+		Vec3{ray.position.x, 0.0, ray.position.z},
+		{
+			(ray.position + ray.direction * max_dist).x,
+			0.0,
+			(ray.position + ray.direction * max_dist).z,
+		},
+		Color{0, 0, 255, 255},
+	}
+	broadcast("enqueue_3D", &debug_render_command)
 
 	projection := [2]Vec2i {
 		into_cell_coords(ray.position),
 		into_cell_coords((ray.position + ray.direction * max_dist)),
 	} // Projection to 2d plane
 
-	// Use bresenham's on the projected line
-	dx := projection[END].x - projection[START].x
-	dy := projection[END].y - projection[START].y
-	slope := 0 if dx == 0 else dy / dx
+	dx := abs(projection[END].x - projection[START].x)
+	dy := abs(projection[END].y - projection[START].y)
+	sx := 1 if projection[END].x > projection[START].x else -1
+	sy := 1 if projection[END].y > projection[START].y else -1
 
-	x1 := projection[START].x
-	x2 := projection[END].x
+	point := projection[START]
 
-	if projection[START] == projection[END] {
-		log("Ray is in one cell")
-		if list, ok := grid[projection[START]]; ok {
-			log("Checking cell %v", projection[START])
+	if dx > dy {
+		err := dx / 2
+		for {
 
-			for u_id in list {
-				body := physics_bodies[u_id]
-				switch b in body {
-				case BoundingBox:
-					if _, ok := ray_box_intersect(ray, b); !ok do return u_id, true
-				case Sphere:
-					if _, ok := ray_sphere_intersect(ray, b); !ok do return u_id, true
-				}
+			if id, ok := check_ray_cell(point, ray); ok do return id, true
+			if point == projection[END] do break
+
+			point.x += sx
+			err -= dy
+			if err < 0 {
+				point.y += sy
+				err += dx
 			}
 		}
-		return UnitID{}, false
-	}
+	} else {
+		err := dy / 2
+		for {
 
-	is_negative := x1 > x2 // negative means that the end point is in QI or QIV on a coordinate grid, so it runs backwards. Directionality matters here
-	// This monstrosity runs in reverse if it's negative
-	for x := x1;
-	    (is_negative && x >= x2) || (!is_negative && x <= x2);
-	    x += -1 if is_negative else 1 {
+			if id, ok := check_ray_cell(point, ray); ok do return id, true
+			if point == projection[END] do break
 
-		y := slope * (x - projection[START].x) + projection[START].y
-		cell := Vec2i{x, y}
-		log("Cell on path cell %v", cell)
-		// Check each body in each cell against the ray
-		if list, ok := grid[cell]; ok {
-			log("Checking cell %v", cell)
-
-			for u_id in list {
-				body := physics_bodies[u_id]
-				switch b in body {
-				case BoundingBox:
-					if _, ok := ray_box_intersect(ray, b); ok {
-						log("Collided with the box")
-						return u_id, true
-					}
-				case Sphere:
-					if _, ok := ray_sphere_intersect(ray, b); ok {
-						log("Collided with sphere")
-						return u_id, true
-					}
-				}
+			point.y += sy
+			err -= dx
+			if err < 0 {
+				point.x += sx
+				err += dy
 			}
 		}
 	}
 
+	return UnitID{}, false
+}
+
+check_ray_cell :: proc(cell : Vec2i, ray : Ray) -> (UnitID, bool) {
+	if list, ok := grid[cell]; ok {
+		log("Checking cell %v", cell)
+
+		for u_id in list {
+			log("there is a body: %v", u_id)
+			body := physics_bodies[u_id]
+			switch b in body {
+			case BoundingBox:
+				if _, ok := ray_box_intersect(ray, b); ok {
+					log("Collided with the box")
+					return u_id, true
+				}
+			case Sphere:
+				if _, ok := ray_sphere_intersect(ray, b); ok {
+					log("Collided with sphere")
+					return u_id, true
+				}
+			}
+		}
+	}
 	return UnitID{}, false
 }
 
@@ -226,6 +243,12 @@ physics_world_debug_view :: proc() {
 			Color{0, 255, 0, 255},
 		}
 		broadcast("enqueue_3D", &command)
+
+		/* text_command : RenderCommand3D = DrawText3D {
+			fmt.aprintf("(%d,%d)", cell.x, cell.y),
+			Vec3{cell_center.x, 0.0, cell_center.y},
+		}
+		broadcast("enqueue_3D", &text_command)*/
 	}
 }
 

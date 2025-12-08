@@ -1,5 +1,6 @@
 package main
 
+import "core:strings"
 // The renderer. Handles render queue, drawing to a render texture, and renderer asset management.
 // Does not present to screen.
 
@@ -37,6 +38,7 @@ RenderCommand3D :: union {
 	DrawMesh,
 	DrawWireCube,
 	DrawLine3D,
+	DrawText3D,
 }
 
 DrawMesh :: struct {
@@ -56,6 +58,11 @@ DrawLine3D :: struct {
 	start : Vec3,
 	end :   Vec3,
 	color : Color,
+}
+
+DrawText3D :: struct {
+	text :     string,
+	position : Vec3,
 }
 
 @(private = "file")
@@ -320,7 +327,17 @@ draw_3d :: proc() {
 				rl.DrawCubeWiresV(com.position, com.extents, com.color)
 			case DrawLine3D:
 				rl.DrawLine3D(com.start, com.end, com.color)
-			//log("Drawing line %v", com)
+			case DrawText3D:
+				cam := get_main_camera()
+				screen_point := get_world_to_screen(com.position, cam^)
+				rl.DrawText(
+					strings.unsafe_string_to_cstring(com.text),
+					c.int(screen_point.x),
+					c.int(screen_point.y),
+					30,
+					rl.BLACK,
+				)
+				delete(com.text)
 			case:
 				log_warn(
 					"Unknown command %s. Are you constructing the command properly?",
