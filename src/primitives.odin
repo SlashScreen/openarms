@@ -10,8 +10,12 @@ Vec2 :: [2]f32
 Vec3 :: [3]f32
 Transform :: matrix[4, 4]f32
 
-m4_get_translation :: proc(mat : Transform) -> la.Vector3f32 {
-	return mat[3].xyz
+transform_position :: proc(t : Transform) -> Vec3 {
+	return t[3].xyz
+}
+
+transform_set_position :: proc(t : ^Transform, position : Vec3) {
+	t[3] = [4]f32{position.x, position.y, position.z, 0.0}
 }
 
 MoveCommand :: struct {

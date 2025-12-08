@@ -49,6 +49,9 @@ sim_tick_units :: proc(dt : f32) {
 
 		dir := la.normalize(tgt - u.transform[3].xyz) * dt
 		u.transform *= la.matrix4_translate(dir)
+		height := f32(sample_terrain_height(u.transform[3].xz))
+		//log("%f", height)
+		u.transform[1, 3] = height
 		u.moving = true
 	}
 }

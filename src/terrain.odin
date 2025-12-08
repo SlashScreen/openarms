@@ -108,7 +108,7 @@ point_within_terrain_area :: proc(point : Vec3) -> bool {
 	return point.x >= 0.0 && point.x <= bounds.x && point.z >= 0.0 && point.z <= bounds.z
 }
 
-sample_height :: proc(point : Vec2) -> f16 {
+sample_terrain_height :: proc(point : Vec2) -> f16 {
 	// check cache
 	if cached, ok := height_cache[point]; ok do return cached
 
