@@ -12,8 +12,19 @@ import rl "vendor:raylib"
 @(private = "file")
 FORCE_LOG :: !#config(SUPRESS_LOG, false)
 
+LogLevels :: enum {
+	Info,
+	Debug,
+	Warning,
+	Error,
+}
+
+log_level : bit_set[LogLevels] = {.Info, .Debug, .Warning, .Error}
+
 log :: proc(format : string, args : ..any) {
 	when ODIN_DEBUG || FORCE_LOG {
+		if !(.Info in log_level) do return
+
 		str := fmt.aprintf(format, ..args)
 		defer delete(str)
 
@@ -21,8 +32,21 @@ log :: proc(format : string, args : ..any) {
 	}
 }
 
+log_debug :: proc(format : string, args : ..any) {
+	when ODIN_DEBUG || FORCE_LOG {
+		if !(.Debug in log_level) do return
+
+		str := fmt.aprintf(format, ..args)
+		defer delete(str)
+
+		fmt.eprintln("[DEBUG]:", str)
+	}
+}
+
 log_warn :: proc(format : string, args : ..any) {
 	when ODIN_DEBUG || FORCE_LOG {
+		if !(.Warning in log_level) do return
+
 		str := fmt.aprintf(format, ..args)
 		defer delete(str)
 
@@ -41,6 +65,8 @@ log_warn :: proc(format : string, args : ..any) {
 
 log_err :: proc(format : string, args : ..any) {
 	when ODIN_DEBUG || FORCE_LOG {
+		if !(.Error in log_level) do return
+
 		str := fmt.aprintf(format, ..args)
 		defer delete(str)
 

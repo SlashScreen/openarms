@@ -15,9 +15,3 @@ Unit :: struct {
 	moving :    bool,
 }
 
-Archetype : struct {
-	name :       string,
-	model_path : string,
-	footprint :  [3]f32,
-}
-

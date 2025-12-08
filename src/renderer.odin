@@ -112,7 +112,10 @@ renderer_deinit :: proc() {
 	rl.UnloadTexture(render_texture.texture)
 	delete(cameras_3d)
 
-	for i := resources.size; i > 0; i -= 1 do resource_destroy(resources.keys[i])
+	for i in 0 ..< resources.size {
+		log("Destroying resource %v", resources.keys[i])
+		resource_destroy(resources.keys[i])
+	}
 
 	sm.dynamic_slot_map_delete(&resources)
 
@@ -136,7 +139,10 @@ unwrap_resource_handle :: proc(id : ResourceID) -> (^Resource, bool) #optional_o
 
 resource_destroy :: proc(id : ResourceID) {
 	res, ok := sm.dynamic_slot_map_get_ptr(&resources, id)
-	if !ok do return
+	if !ok {
+		log("Trying to destroy invalid resoruce %v", id)
+		return
+	}
 
 	switch r in res {
 	case Texture:

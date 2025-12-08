@@ -19,6 +19,8 @@ client_init :: proc() {
 
 	renderer_init(WIDTH, HEIGHT)
 	client_render_init()
+	archetypes_init()
+
 	game_init()
 	hud_init()
 	//gs_init()
@@ -53,9 +55,10 @@ client_shutdown :: proc() {
 	hud_deinit()
 	message_bus_destroy()
 	client_render_deinit()
+	archetypes_deinit()
 	sim_shutdown()
-	renderer_deinit()
 
+	renderer_deinit()
 	asset_db_deinit()
 	vfs_deinit()
 }

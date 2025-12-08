@@ -4,27 +4,12 @@ package main
 
 import sm "slot_map"
 
-RuntimeArchetype :: struct {
-	name :     string,
-	mesh :     ResourceID,
-	material : ResourceID,
-}
-
-archetypes : [dynamic]RuntimeArchetype
 
 client_render_init :: proc() {
-	archetypes = make([dynamic]RuntimeArchetype)
-
-	mesh, _ := create_cube_mesh(Vec3{1.5, 1.5, 1.5})
-	material := create_material_default()
-	if !set_material_albedo(material, missing_texture) do log_err("Failed to set albedo")
-	append(&archetypes, RuntimeArchetype{"test", mesh, material})
-
 	terrain_init()
 }
 
 client_render_deinit :: proc() {
-	delete(archetypes)
 	terrain_deinit()
 }
 
