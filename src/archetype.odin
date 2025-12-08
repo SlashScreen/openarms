@@ -6,6 +6,7 @@ Archetype :: struct {
 	footprint :  Vec3,
 	mesh :       ResourceID,
 	material :   ResourceID,
+	walk_speed : f32,
 }
 
 archetypes : [dynamic]Archetype
@@ -21,7 +22,7 @@ load_archetype :: proc(name : string, path : string, footprint : Vec3) {
 	material := create_material_default()
 	if !set_material_albedo(material, missing_texture) do log_err("Failed to set albedo")
 
-	archetype := Archetype{name, path, footprint, mesh, material}
+	archetype := Archetype{name, path, footprint, mesh, material, 5.0}
 
 	append(&archetypes, archetype)
 }

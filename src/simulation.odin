@@ -47,7 +47,7 @@ sim_tick_units :: proc(dt : f32) {
 			continue
 		}
 
-		dir := la.normalize(tgt - u.transform[3].xyz) * dt
+		dir := la.normalize(tgt - u.transform[3].xyz) * dt * archetypes[u.archetype].walk_speed
 		u.transform *= la.matrix4_translate(dir)
 		height := f32(sample_terrain_height(u.transform[3].xz))
 		//log("%f", height)
