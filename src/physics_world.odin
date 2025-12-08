@@ -63,10 +63,6 @@ update_partition_grid :: proc() {
 		#reverse for id, index in v {
 			unit := sm.dynamic_slot_map_get_ptr(&units, id)
 			if !unit.moving do continue
-
-			u_cell := la.array_cast(la.floor(unit.transform[3].xy / f32(GRID_SIZE)), int)
-			if u_cell == k do continue
-
 			if !slice.contains(to_update[:], id) do append(&to_update, id)
 
 			unordered_remove(&v, index)
@@ -120,21 +116,22 @@ physics_partition :: proc(id : UnitID) {
 
 	for point in points {
 		u_cell := la.array_cast(la.floor(point / f32(GRID_SIZE)), int)
-		if list, ok := grid[u_cell]; ok {
-			append(&list, id)
+		if _, list, _, _ := map_entry(&grid, u_cell); list != nil {
+			append(list, id)
 			new_length := len(slice.unique(list[:]))
-			resize(&list, new_length)
+			resize(list, new_length)
+			//log("modifying ID list: %v", list)
 			// I love Performance
 		} else {
 			list := make([dynamic]UnitID)
 			append(&list, id)
 			grid[u_cell] = list
+			//log("adding ID list: %v", list)
 		}
 	}
 }
 
 query_ray :: proc(ray : Ray, max_dist : f32) -> (UnitID, bool) {
-	log("Query begin")
 	START :: 0
 	END :: 1
 
