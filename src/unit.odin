@@ -11,7 +11,7 @@ Unit :: struct {
 	team :      u8,
 	archetype : u32,
 	transform : Transform,
-	target :    Vec2i,
+	target :    Vec2,
 	moving :    bool,
 }
 

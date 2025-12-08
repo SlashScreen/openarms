@@ -37,7 +37,7 @@ client_render_loop :: proc() {
 			v.transform,
 			true,
 		}
-		broadcast("enqueue_3D", &command)
+		broadcast(ENQUEUE_3D_COMMAND, &command)
 	}
 
 	terrain_draw()

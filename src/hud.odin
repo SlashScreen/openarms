@@ -14,6 +14,12 @@ COLOR_TEAL :: clay.Color{111, 173, 162, 255}
 @(private = "file")
 clay_memory : [^]u8
 
+basic_text_style : clay.TextElementConfig = {
+	fontId    = FONT_DEFAULT,
+	fontSize  = 48,
+	textColor = clay.Color{255, 255, 255, 255},
+}
+
 error_handler :: proc "c" (errorData : clay.ErrorData) {
 	context = runtime.default_context()
 	err_text := strings.string_from_ptr(errorData.errorText.chars, int(errorData.errorText.length))
@@ -65,17 +71,15 @@ create_layout :: proc() -> clay.ClayArray(clay.RenderCommand) {
 				e_decl(clay.Color{}, {clay.SizingGrow(), clay.SizingPercent(0.8)}),
 			) {}
 
+			// Bottom Bar
 			if clay.UI(clay.ID("BottomBar"))(
 				e_decl(COLOR_TEAL, {clay.SizingGrow(), clay.SizingPercent(0.2)}),
 			) {
-				clay.Text(
-					"Hello",
-					&{
-						fontId = FONT_DEFAULT,
-						fontSize = 48,
-						textColor = clay.Color{255, 255, 255, 255},
-					},
-				)
+				clay.Text("Hello", &basic_text_style)
+
+				if unit_id, ok := selected_unit.(UnitID); ok {
+					clay.Text("selected a unit", &basic_text_style)
+				}
 			}
 		}
 	}

@@ -51,6 +51,8 @@ load_terrain :: proc(fp : string, max_height : f32) {
 	}
 
 	terrain_mesh = terr
+	mesh_asset := unwrap_resource_handle(terrain_mesh).(Mesh)
+	add_terrain_mesh({mesh_asset, la.MATRIX4F32_IDENTITY})
 
 	tex_ok : bool
 	terrain_tex, tex_ok = create_texture_from_image(hmap)
@@ -89,6 +91,7 @@ unload_terrain :: proc() {
 	resource_destroy(terrain_tex)
 	delete(heights)
 	delete(height_cache)
+	//remove_terrain_mesh() // Will this be an issue?
 }
 
 terrain_draw :: proc() {

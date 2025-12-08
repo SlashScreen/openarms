@@ -169,3 +169,21 @@ ray_plane_intersect :: proc(ray : Ray, plane : Plane) -> (HitInfo, bool) #option
 	return HitInfo{}, false
 }
 
+PhysicsMesh :: struct {
+	mesh :      rl.Mesh,
+	transform : Transform,
+}
+
+ray_mesh_intersect :: proc(ray : Ray, mesh : PhysicsMesh) -> (HitInfo, bool) {
+	res := rl.GetRayCollisionMesh(ray, mesh.mesh, (rl.Matrix)(mesh.transform))
+	if res.hit {
+		return res, true
+	} else {
+		return HitInfo{}, false
+	}
+}
+
+set_physics_mesh_transform :: proc(mesh : ^PhysicsMesh, transform : Transform) {
+	mesh.transform = transform
+}
+

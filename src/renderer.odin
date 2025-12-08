@@ -9,6 +9,8 @@ import queue "core:container/queue"
 import sm "slot_map"
 import rl "vendor:raylib"
 
+ENQUEUE_3D_COMMAND :: "enqueue_3D"
+
 Color :: rl.Color
 
 Resource :: union {
@@ -101,7 +103,7 @@ renderer_init :: proc(w, h : uint) {
 	main_camera = 0
 
 	batch_map = make(map[BatchKey]BatchEntry)
-	subscribe("enqueue_3D", NIL_USERDATA, renderer_enqueue_3D)
+	subscribe(ENQUEUE_3D_COMMAND, NIL_USERDATA, renderer_enqueue_3D)
 
 	load_builtin_resources()
 }

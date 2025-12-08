@@ -24,6 +24,8 @@ camera_movement_speed : f32 = 8.0
 camera_root_position : Vec3
 cam_dist := CAM_MIN_DIST
 
+selected_unit : Maybe(UnitID)
+
 game_init :: proc() {
 	subscribe("key_event", NIL_USERDATA, game_key_input)
 	subscribe("mouse_event", NIL_USERDATA, game_mouse_input)
@@ -48,6 +50,22 @@ game_mouse_input :: proc(_ : ^int, event : ^MouseEvent) {
 			res, ok := query_ray(ray, 1000.0)
 			if ok {
 				log("Hit unit %v", res)
+				selected_unit = res
+				broadcast("selected_union", &selected_unit)
+			} else {
+				selected_unit = nil
+				broadcast("deselected_union", NIL_MESSAGE)
+			}
+		case .Right:
+			cam := get_main_camera()
+			ray := get_screen_to_world_ray(event.position, cam^)
+			res, ok := query_ray_terrain(ray)
+			if ok {
+				log("Hit terrain: %v", res.point)
+				if id, ok := selected_unit.(UnitID); ok {
+					info := UnitSetTargetInfo{id, res.point.xz}
+					broadcast(SET_UNIT_TARGET_COMMAND, &info)
+				}
 			}
 		}
 	}

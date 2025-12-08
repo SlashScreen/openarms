@@ -16,6 +16,7 @@ GROUND_PLANE :: Plane{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 1.0, 0.0}}
 
 physics_bodies : map[UnitID]PhysicsShape
 grid : map[Vec2i][dynamic]UnitID
+terrain_mesh : PhysicsMesh
 
 physics_world_init :: proc() {
 	grid = make(map[Vec2i][dynamic]UnitID)
@@ -215,6 +216,19 @@ check_ray_cell :: proc(cell : Vec2i, ray : Ray) -> (UnitID, bool) {
 	return UnitID{}, false
 }
 
+add_terrain_mesh :: proc(mesh : PhysicsMesh) {
+	terrain_mesh = mesh
+}
+
+remove_terrain_mesh :: proc() {
+	raylib.UnloadMesh(terrain_mesh.mesh)
+	terrain_mesh = {}
+}
+
+query_ray_terrain :: proc(ray : Ray) -> (HitInfo, bool) {
+	return ray_mesh_intersect(ray, terrain_mesh)
+}
+
 physics_world_debug_view :: proc() {
 	for id, body in physics_bodies {
 		unit := sm.dynamic_slot_map_get_ptr(&units, id)
@@ -226,7 +240,7 @@ physics_world_debug_view :: proc() {
 				bounding_box_extents(b) * 2.0,
 				Color{255, 0, 0, 255},
 			}
-			broadcast("enqueue_3D", &command)
+			broadcast(ENQUEUE_3D_COMMAND, &command)
 		}
 	}
 
@@ -239,7 +253,7 @@ physics_world_debug_view :: proc() {
 			Vec3{f32(GRID_SIZE), 64.0, f32(GRID_SIZE)},
 			Color{0, 255, 0, 255},
 		}
-		broadcast("enqueue_3D", &command)
+		broadcast(ENQUEUE_3D_COMMAND, &command)
 
 		/* text_command : RenderCommand3D = DrawText3D {
 			fmt.aprintf("(%d,%d)", cell.x, cell.y),

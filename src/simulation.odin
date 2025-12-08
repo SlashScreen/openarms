@@ -6,13 +6,21 @@ package main
 import la "core:math/linalg"
 import sm "slot_map"
 
+SET_UNIT_TARGET_COMMAND :: "set_unit_target"
+
+UnitSetTargetInfo :: struct {
+	uid :    UnitID,
+	target : Vec2,
+}
+
 units : sm.DynamicSlotMap(Unit, UnitID)
 
 sim_init :: proc() {
 	units = sm.dynamic_slot_map_make(Unit, UnitID)
 	physics_world_init()
 
-	insert_unit(Unit{0, 0, la.identity(Transform), [2]int{0, 6}, false})
+	insert_unit(Unit{0, 0, la.identity(Transform), Vec2{0.0, 6.0}, false})
+	subscribe(SET_UNIT_TARGET_COMMAND, NIL_USERDATA, sim_set_unit_target)
 }
 
 insert_unit :: proc(u : Unit) {
@@ -32,7 +40,7 @@ sim_tick_world :: proc() {
 sim_tick_units :: proc(dt : f32) {
 	for i in 0 ..< units.size {
 		u := sm.dynamic_slot_map_get_ptr(&units, units.keys[i])
-		tgt := Vec3{f32(u.target.x), 0.0, f32(u.target.y)}
+		tgt := Vec3{u.target.x, 0.0, u.target.y}
 
 		if la.distance(tgt, u.transform[3].xyz) <= TARGET_DISTANCE {
 			u.moving = false
@@ -61,10 +69,15 @@ sim_gather_keyframe_for_all :: proc() -> []KeyframeData {
 	return res
 }
 
-sim_set_units_target :: proc(uids : []UnitID, target : Vec2i) {
+sim_set_units_target :: proc(uids : []UnitID, target : Vec2) {
 	for uid in uids {
 		unit := sm.dynamic_slot_map_get_ptr(&units, uid)
 		unit.target = target
 	}
+}
+
+sim_set_unit_target :: proc(_ : ^int, packet : ^UnitSetTargetInfo) {
+	unit := sm.dynamic_slot_map_get_ptr(&units, packet.uid)
+	unit.target = packet.target
 }
 
