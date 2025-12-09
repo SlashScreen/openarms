@@ -17,8 +17,7 @@ terrain_mat : ResourceID
 terrain_model : ResourceID
 @(private = "file")
 bounds : Vec3
-@(private = "file")
-size : Vec2i
+terrain_size : Vec2i
 @(private = "file")
 heights : []f16
 @(private = "file")
@@ -42,7 +41,7 @@ load_terrain :: proc(fp : string, max_height : f32) {
 
 	hmap_img := unwrap_asset_handle(hmap).(Image)
 	bounds = Vec3{f32(hmap_img.width), max_height, f32(hmap_img.height)}
-	size = Vec2i{int(hmap_img.width), int(hmap_img.height)}
+	terrain_size = Vec2i{int(hmap_img.width), int(hmap_img.height)}
 
 	terr, tok := create_heightmap_mesh(hmap, bounds)
 	if !tok {
@@ -70,9 +69,9 @@ load_terrain :: proc(fp : string, max_height : f32) {
 
 	set_material_albedo(terrain_mat, terrain_tex)
 
-	heights = make([]f16, size.x * size.y)
-	for x in 0 ..< size.x {
-		for y in 0 ..< size.y {
+	heights = make([]f16, terrain_size.x * terrain_size.y)
+	for x in 0 ..< terrain_size.x {
+		for y in 0 ..< terrain_size.y {
 			pt := Vec2i{x, y}
 			idx := coords_to_index(pt)
 			color := image_get_pixel(hmap_img, pt)
@@ -120,9 +119,9 @@ sample_terrain_height :: proc(point : Vec2) -> f16 {
 	// if a whole number, just grab it
 	if x_rem == 0.0 && y_rem == 0.0 do return heights[coords_to_index(Vec2i{x, y})]
 	// edge case 1:
-	if x < 0 || x >= size.x || y < 0 || y >= size.y do return 0.0
+	if x < 0 || x >= terrain_size.x || y < 0 || y >= terrain_size.y do return 0.0
 	// literal edge case 2:
-	if x == 0 || x == size.x - 1 || y == 0 || y == size.y - 1 do return heights[coords_to_index(Vec2i{x, y})]
+	if x == 0 || x == terrain_size.x - 1 || y == 0 || y == terrain_size.y - 1 do return heights[coords_to_index(Vec2i{x, y})]
 
 	origin_height := heights[coords_to_index(Vec2i{x, y})]
 	right_height := heights[coords_to_index(Vec2i{x + 1, y})]
@@ -140,11 +139,11 @@ sample_terrain_height :: proc(point : Vec2) -> f16 {
 
 @(private = "file")
 coords_to_index :: proc(point : Vec2i) -> int {
-	return (point.y * size.x) + point.x
+	return (point.y * terrain_size.x) + point.x
 }
 
 @(private = "file")
 index_to_coords :: proc(idx : int) -> Vec2i {
-	return Vec2i{idx % size.x, idx / size.x}
+	return Vec2i{idx % terrain_size.x, idx / terrain_size.x}
 }
 
