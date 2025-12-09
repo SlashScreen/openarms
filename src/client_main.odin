@@ -23,6 +23,7 @@ client_init :: proc() {
 
 	game_init()
 	hud_init()
+	api_init()
 	//gs_init()
 	//net_init()
 
@@ -52,6 +53,7 @@ client_tick :: proc() {
 
 client_shutdown :: proc() {
 	rl.CloseWindow()
+	api_deinit()
 	hud_deinit()
 	message_bus_destroy()
 	client_render_deinit()
