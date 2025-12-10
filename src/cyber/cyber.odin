@@ -1,6 +1,7 @@
 package libcyber
 
 import "core:c"
+import "core:strings"
 
 when ODIN_OS == .Windows {
 	foreign import cyber "windows/cyber.lib"
@@ -39,49 +40,51 @@ Sym :: struct {}
 
 NULLID :: max(u32)
 
-ResultCode :: i32
+ResultCode :: enum i32 {
+	Success,
+	Await,
+	ErrorCompile,
+	ErrorPanic,
+	ErrorUnknown,
+}
 
-SUCCESS :: 0
-ERROR_COMPILE :: 2
-ERROR_PANIC :: 3
-ERROR_UNKNOWN :: 4
-AWAIT :: 1
-TYPE_VOID :: 1
-TYPE_BOOL :: 2
-TYPE_I8 :: 3
-TYPE_I16 :: 4
-TYPE_I32 :: 5
-TYPE_NULL :: 0
-TYPE_I64 :: 6
-TYPE_R8 :: 8
-TYPE_R16 :: 9
-TYPE_R32 :: 10
-TYPE_R64 :: 11
-TYPE_F32 :: 12
-TYPE_F64 :: 13
-TYPE_ERROR :: 14
-TYPE_SYMBOL :: 15
-TYPE_OBJECT :: 16
-TYPE_ANY :: 17
-TYPE_TYPE :: 18
-TYPE_THREAD :: 19
-TYPE_CODE :: 20
-TYPE_FUNC_SIG :: 21
-TYPE_PARTIAL_STRUCT_LAYOUT :: 22
-TYPE_STR :: 23
-TYPE_STR_BUFFER :: 24
-TYPE_STR_LIT :: 25
-TYPE_NEVER :: 26
-TYPE_INFER :: 27
-TYPE_DEPENDENT :: 28
-TYPE_TCC_STATE :: 29
-TYPE_RANGE :: 30
-TYPE_TABLE :: 31
-TYPE_NO_COPY :: 32
-TYPE_INT_LIT :: 7
-TYPE_MUT_STR :: 33
+TypeId :: enum i32 {
+	Null,
+	Void,
+	Bool,
+	I8,
+	I16,
+	I32,
+	I64,
+	IntLit,
+	R8,
+	R16,
+	R32,
+	R64,
+	F32,
+	F64,
+	Error,
+	Symbol,
+	Object,
+	Any,
+	Type,
+	Thread,
+	Code,
+	FuncSig,
+	PartialStructLayout,
+	Str,
+	StrBuffer,
+	StrLit,
+	Never,
+	Infer,
+	Dependent,
+	TccState,
+	Range,
+	Table,
+	NoCopy,
+	MutStr,
+}
 
-TypeId :: u32
 Type :: struct {}
 
 TypeValue :: struct {
@@ -550,5 +553,11 @@ foreign cyber {
 	// Expects an array type `[]T` as `array_t` which can be obtained from `clExpandTypeTemplate` or `clResolveType`.
 	array_empty_new :: proc(vm : ^VM, array_t : ^Type) -> Value ---
 	map_empty_new :: proc(t : ^Thread, map_t : ^Type) -> Value ---
+}
+
+// Utils
+
+alias_string_to_cyber_bytes :: proc(str : string) -> Bytes {
+	return {strings.unsafe_string_to_cstring(str), len(str)}
 }
 
