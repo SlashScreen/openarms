@@ -4,13 +4,38 @@ import "core:math"
 import "core:math/linalg"
 
 @(private = "file")
-KERNEL :: matrix[3, 3]f16{
+KERNEL_SOBEL_L :: matrix[3, 3]f16{
+	1.0, 0.0, -1.0,
+	2.0, 0.0, -2.0,
+	1.0, 0.0, -1.0,
+}
+@(private = "file")
+KERNEL_SOBEL_T :: matrix[3, 3]f16{
+	1.0, 2.0, 1.0,
+	0.0, 0.0, 0.0,
+	-1.0, -2.0, -1.0,
+}
+@(private = "file")
+KERNEL_SOBEL_R :: matrix[3, 3]f16{
+	-1.0, 0.0, 1.0,
+	-2.0, 0.0, 2.0,
+	-1.0, 0.0, 1.0,
+}
+@(private = "file")
+KERNEL_SOBEL_B :: matrix[3, 3]f16{
+	1.0, 2.0, 1.0,
+	0.0, 0.0, 0.0,
+	-1.0, -2.0, -1.0,
+}
+@(private = "file")
+KERNEL_OUTLINE :: matrix[3, 3]f16{
 	-1.0, -1.0, -1.0,
 	-1.0, 8.0, -1.0,
 	-1.0, -1.0, -1.0,
 }
+
 @(private = "file")
-SLOPE_THRESHOLD :: 0.04
+SLOPE_THRESHOLD :: 2.0
 @(private = "file")
 NEIGHBORS :: [?]Vec2i{{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {0, 0}, {1, 0}, {-1, -1}, {0, -1}, {1, -1}}
 
@@ -36,7 +61,7 @@ navigation_draw :: proc() {
 @(private = "file")
 average_kernel :: proc(vals : matrix[3, 3]f16) -> f16 {
 	flat := linalg.matrix_flatten(vals)
-	return math.sum(flat[:]) / 9.0
+	return math.sum(flat[:])
 }
 
 @(private = "file")
@@ -58,9 +83,14 @@ generate_static_obstacles :: proc() {
 		for y in 0 ..< terrain_size.y {
 			coords := Vec2i{x, y}
 			map_kernel := kernel_from_heightmap(coords)
-			avg := average_kernel(map_kernel * KERNEL) // I think it's in this order?
+			avg := max(
+				average_kernel(linalg.hadamard_product(map_kernel, KERNEL_SOBEL_L)),
+				average_kernel(linalg.hadamard_product(map_kernel, KERNEL_SOBEL_R)),
+				average_kernel(linalg.hadamard_product(map_kernel, KERNEL_SOBEL_T)),
+				average_kernel(linalg.hadamard_product(map_kernel, KERNEL_SOBEL_B)),
+			) // I think it's in this order?
 			//log_debug("%f", avg)
-			sparse_map_set(&static_obstacles, coords, abs(avg) >= SLOPE_THRESHOLD)
+			sparse_map_set(&static_obstacles, coords, avg >= SLOPE_THRESHOLD)
 		}
 	}
 }
@@ -94,10 +124,8 @@ setup_static_obstacles_debug :: proc() {
 	img := &(unwrap_asset_handle(debug_img_static_obstacles).(Image))
 
 	for k, v in static_obstacles.values {
-		log_debug("static obstacles set to %v", v)
 		if v do image_set_pixel(img, k, Color{255, 255, 0, 255})
 	}
-
 	tex := create_texture_from_image(debug_img_static_obstacles)
 	debug_mat_static_obstacles = create_material_default()
 	set_material_albedo(debug_mat_static_obstacles, tex)
