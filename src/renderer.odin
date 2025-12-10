@@ -13,6 +13,13 @@ ENQUEUE_3D_COMMAND :: "enqueue_3D"
 
 Color :: rl.Color
 
+C_CLEAR :: Color{}
+C_WHITE :: rl.WHITE
+C_BLACK :: rl.BLACK
+C_RED :: rl.RED
+C_GREEN :: rl.GREEN
+C_BLUE :: rl.BLUE
+
 Resource :: union {
 	Mesh,
 	Model,

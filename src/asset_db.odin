@@ -1,7 +1,6 @@
 package main
 
 import "core:c"
-import "core:fmt"
 import "core:strings"
 import sm "slot_map"
 import rl "vendor:raylib"
@@ -41,13 +40,13 @@ asset_db_load_image_from_filepath :: proc(path : string) -> (AssetID, bool) #opt
 		img := rl.LoadImage(strings.unsafe_string_to_cstring(fp))
 		id, iok := sm.dynamic_slot_map_insert_set(&asset_db, img)
 		if !iok {
-			fmt.eprintfln("problem loading image from %s into database. likely out of memory", fp)
+			log_err("problem loading image from %s into database. likely out of memory", fp)
 			return AssetID{}, false
 		}
 		return id, true
 	}
 
-	fmt.eprintln("Failed to find image")
+	log_err("Failed to find image")
 	return AssetID{}, false
 }
 
@@ -61,10 +60,19 @@ asset_db_load_image_from_memory :: proc(
 	img := rl.LoadImageFromMemory(cstring(".png"), raw_data(data), c.int(len(data)))
 	id, iok := sm.dynamic_slot_map_insert_set(&asset_db, img)
 	if !iok {
-		fmt.eprintln("problem loading image from memory into database. likely out of memory")
+		log_err("problem loading image from memory into database. likely out of memory")
 		return AssetID{}, false
 	}
 	return id, true
+}
+
+asset_db_new_image :: proc(w, h : i32, color : Color) -> (AssetID, bool) #optional_ok {
+	img := rl.GenImageColor(w, h, color)
+	id, ok := sm.dynamic_slot_map_insert_set(&asset_db, img)
+	if ok do return id, true
+
+	log_err("Could not create new image")
+	return AssetID{}, false
 }
 
 asset_destroy :: proc(id : AssetID) {
@@ -83,5 +91,9 @@ asset_destroy :: proc(id : AssetID) {
 
 image_get_pixel :: proc(img : Image, point : Vec2i) -> Color {
 	return rl.GetImageColor(img, c.int(point.x), c.int(point.y))
+}
+
+image_set_pixel :: proc(img : ^Image, point : Vec2i, color : Color) {
+	rl.ImageDrawPixel(img, i32(point.x), i32(point.y), color)
 }
 

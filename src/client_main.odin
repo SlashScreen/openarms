@@ -22,6 +22,7 @@ client_init :: proc() {
 	archetypes_init()
 
 	game_init()
+	navigation_init()
 	hud_init()
 	//gs_init()
 	//net_init()
@@ -46,6 +47,7 @@ client_tick :: proc() {
 	sim_tick(dt)
 	game_systems_tick(dt)
 	client_render_loop()
+	navigation_draw()
 
 	draw()
 }
@@ -53,6 +55,7 @@ client_tick :: proc() {
 client_shutdown :: proc() {
 	rl.CloseWindow()
 	hud_deinit()
+	navigation_deinit()
 	message_bus_destroy()
 	client_render_deinit()
 	archetypes_deinit()

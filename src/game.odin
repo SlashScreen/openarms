@@ -15,10 +15,11 @@ CAM_ZOOM_SPEED :: 3.0
 DebugViews :: enum {
 	PhysicsWorld,
 	UI,
+	StaticObstacles,
 }
 
 // Which debug views are active right now
-debug_views : bit_set[DebugViews] = {.PhysicsWorld}
+debug_views : bit_set[DebugViews] = {.PhysicsWorld, .StaticObstacles}
 
 camera_movement_speed : f32 = 8.0
 camera_root_position : Vec3

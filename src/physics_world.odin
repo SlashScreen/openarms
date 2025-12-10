@@ -16,7 +16,7 @@ GROUND_PLANE :: Plane{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 1.0, 0.0}}
 
 physics_bodies : map[UnitID]PhysicsShape
 grid : map[Vec2i][dynamic]UnitID
-terrain_mesh : PhysicsMesh
+terrain_physics_mesh : PhysicsMesh
 
 physics_world_init :: proc() {
 	grid = make(map[Vec2i][dynamic]UnitID)
@@ -217,16 +217,16 @@ check_ray_cell :: proc(cell : Vec2i, ray : Ray) -> (UnitID, bool) {
 }
 
 add_terrain_mesh :: proc(mesh : PhysicsMesh) {
-	terrain_mesh = mesh
+	terrain_physics_mesh = mesh
 }
 
 remove_terrain_mesh :: proc() {
-	raylib.UnloadMesh(terrain_mesh.mesh)
+	raylib.UnloadMesh(terrain_physics_mesh.mesh)
 	terrain_mesh = {}
 }
 
 query_ray_terrain :: proc(ray : Ray) -> (HitInfo, bool) {
-	return ray_mesh_intersect(ray, terrain_mesh)
+	return ray_mesh_intersect(ray, terrain_physics_mesh)
 }
 
 physics_world_debug_view :: proc() {

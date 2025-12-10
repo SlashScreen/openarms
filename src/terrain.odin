@@ -7,14 +7,11 @@ import la "core:math/linalg"
 
 TEST_HEIGHTMAP :: "test_heightmap.png"
 
-@(private = "file")
 terrain_mesh : ResourceID
 @(private = "file")
 terrain_tex : ResourceID
 @(private = "file")
 terrain_mat : ResourceID
-@(private = "file")
-terrain_model : ResourceID
 @(private = "file")
 bounds : Vec3
 terrain_size : Vec2i
@@ -116,12 +113,15 @@ sample_terrain_height :: proc(point : Vec2) -> f16 {
 	y := int(math.floor(point.y))
 	y_rem := la.fract(point.y)
 
-	// if a whole number, just grab it
-	if x_rem == 0.0 && y_rem == 0.0 do return heights[coords_to_index(Vec2i{x, y})]
 	// edge case 1:
 	if x < 0 || x >= terrain_size.x || y < 0 || y >= terrain_size.y do return 0.0
 	// literal edge case 2:
 	if x == 0 || x == terrain_size.x - 1 || y == 0 || y == terrain_size.y - 1 do return heights[coords_to_index(Vec2i{x, y})]
+
+	// if a whole number, just grab it
+	if x_rem == 0.0 && y_rem == 0.0 {
+		return heights[coords_to_index(Vec2i{x, y})]
+	}
 
 	origin_height := heights[coords_to_index(Vec2i{x, y})]
 	right_height := heights[coords_to_index(Vec2i{x + 1, y})]
