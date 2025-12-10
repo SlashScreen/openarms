@@ -22,7 +22,7 @@ sparse_map_get :: proc(
 }
 
 sparse_map_set :: proc(sm : ^SparseMap($T), coords : Vec2i, value : T) {
-	if value != sm.default_value do sm.values[coords] = value
+	if value != sm.default_value {sm.values[coords] = value} else {}
 }
 
 sparse_map_init :: proc($T : typeid, default_value : T) -> SparseMap(T) {

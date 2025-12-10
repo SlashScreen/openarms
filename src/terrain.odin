@@ -84,10 +84,21 @@ load_terrain :: proc(fp : string, max_height : f32) {
 			pt := Vec2i{x, y}
 			idx := coords_to_index(pt)
 
-			height := sample_terrain_height_vec2i(pt)
-			u := sample_terrain_height_vec2i(pt + Vec2i{1, 0})
-			v := sample_terrain_height_vec2i(pt + Vec2i{0, 1})
-			normals[idx] = la.normalize(la.Vector3f16{u, 1.0, v})
+			origin := la.normalize(la.Vector3f16{0.0, sample_terrain_height_vec2i(pt), 0.0})
+			u := la.normalize(
+				la.Vector3f16{1.0, sample_terrain_height_vec2i(pt + Vec2i{1, 0}), 0.0} - origin,
+			)
+			v := la.normalize(
+				la.Vector3f16{0.0, sample_terrain_height_vec2i(pt + Vec2i{0, 1}), 1.0} - origin,
+			)
+
+			normal := -la.cross(u, v)
+
+			if la.is_nan_single(normal.x) {
+				normal = la.Vector3f16{0.0, 1.0, 0.0}
+			}
+			//log_debug("normal %v", normal)
+			normals[idx] = la.normalize(normal)
 		}
 	}
 
@@ -118,11 +129,12 @@ point_within_terrain_area :: proc(point : Vec3) -> bool {
 }
 
 sample_terrain_height :: proc {
-	sample_terrain_height_vec2,
 	sample_terrain_height_vec2i,
+	sample_terrain_height_vec2,
 }
 
 sample_terrain_height_vec2i :: proc(point : Vec2i) -> f16 {
+	if point.x < 0 || point.x >= terrain_size.x || point.y < 0 || point.y >= terrain_size.y do return 0.0
 	return heights[coords_to_index(point)]
 }
 
@@ -152,6 +164,22 @@ sample_terrain_height_vec2 :: proc(point : Vec2) -> f16 {
 	height_interp := (x_interp + y_interp) / f16(2.0)
 
 	return height_interp
+}
+
+sample_terrain_normals :: proc {
+	sample_terrain_normals_vec2i,
+	sample_terrain_normals_vec2,
+}
+
+sample_terrain_normals_vec2i :: proc(coords : Vec2i) -> la.Vector3f16 {
+	if coords.x < 0 || coords.x >= terrain_size.x || coords.y < 0 || coords.y >= terrain_size.y do return la.Vector3f16{0.0, 1.0, 0.0}
+
+	return normals[coords_to_index(coords)]
+}
+
+sample_terrain_normals_vec2 :: proc(coords : Vec2) -> la.Vector3f16 {
+	// TODO: Interpolate?
+	return sample_terrain_normals_vec2i(Vec2i{int(coords.x), int(coords.y)})
 }
 
 @(private = "file")
