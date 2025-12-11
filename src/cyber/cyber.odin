@@ -1,6 +1,9 @@
 package libcyber
 
+import "base:intrinsics"
+import "base:runtime"
 import "core:c"
+import "core:reflect"
 import "core:strings"
 
 when ODIN_OS == .Windows {
@@ -557,7 +560,20 @@ foreign cyber {
 
 // Utils
 
-alias_string_to_cyber_bytes :: proc(str : string) -> Bytes {
+alias_string_to_bytes :: proc(str : string) -> Bytes {
 	return {strings.unsafe_string_to_cstring(str), len(str)}
+}
+
+compare_string_to_bytes :: proc(str : string, bytes : Bytes) -> bool {
+	return strings.unsafe_string_to_cstring(str) == bytes.ptr
+}
+
+bind_func :: proc(fn : $T) -> BindFunc where intrinsics.type_is_proc(T) {
+	if type_info_of(T).variant.(reflect.Type_Info_Procedure).convention != .CDecl do panic("Bound proc must be c proc")
+	return {ptr = rawptr(fn), kind = .VM}
+}
+
+bind_global :: proc(ptr : rawptr) -> BindGlobal {
+	return {ptr}
 }
 
