@@ -93,14 +93,5 @@ game_systems_tick :: proc(dt : f32) {
 	camera_root_position += mov_3D
 	cam.position = camera_root_position + (-Vec3{0.0, -1.0, 1.0} * cam_dist)
 	cam.target = camera_root_position
-
-	// Debug mouse ray
-	ray := get_screen_to_world_ray(get_mouse_position(), cam^)
-	command : RenderCommand3D = DrawLine3D {
-		ray.position,
-		ray.position + (ray.direction * 1000.0),
-		Color{0, 0, 255, 255},
-	}
-	broadcast("enqueue_3D", &command)
 }
 

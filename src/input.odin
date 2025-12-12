@@ -424,7 +424,7 @@ MouseButton :: enum {
 	Forward,
 	Back,
 }
-
+// TODO: Make union
 MouseEvent :: struct {
 	mouse_action : enum {
 		Pressed,
