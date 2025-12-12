@@ -5,6 +5,7 @@ import "core:time"
 import rl "vendor:raylib"
 
 dt_tick : time.Tick
+success := false
 
 client_init :: proc() {
 	rl.SetTraceLogCallback(rl_log_callback)
@@ -14,7 +15,13 @@ client_init :: proc() {
 	vfs_init()
 	mount_mods()
 	entry_point, ok := get_game_entry_point()
-	if ok do log("Entry point at: %s", entry_point)
+	if !ok {
+		error_screen_init()
+		return
+	}
+
+	log("Entry point at: %s", entry_point)
+	success = true
 	asset_db_init()
 
 	message_bus_create()
@@ -45,6 +52,10 @@ client_tick :: proc() {
 	dt := f32(time.duration_seconds(time.tick_since(dt_tick)))
 	dt_tick = time.tick_now()
 
+	if !success {
+		error_screen_draw(dt)
+		return
+	}
 	//net_tick()
 	//gs_tick(dt)
 	poll_input()
@@ -58,17 +69,22 @@ client_tick :: proc() {
 
 client_shutdown :: proc() {
 	rl.CloseWindow()
-	api_deinit()
-	hud_deinit()
-	navigation_deinit()
-	message_bus_destroy()
-	client_render_deinit()
-	archetypes_deinit()
-	sim_shutdown()
+	if success {
+		api_deinit()
+		hud_deinit()
+		navigation_deinit()
+		message_bus_destroy()
+		client_render_deinit()
+		archetypes_deinit()
+		sim_shutdown()
 
-	renderer_deinit()
-	asset_db_deinit()
-	vfs_deinit()
+		renderer_deinit()
+		asset_db_deinit()
+		vfs_deinit()
+	} else {
+		error_screen_deinit()
+		vfs_deinit()
+	}
 }
 
 window_present :: proc(_ : ^int, tex : ^rl.RenderTexture2D) {
