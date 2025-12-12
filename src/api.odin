@@ -46,13 +46,11 @@ api_init :: proc() {
 	cyber.vm_set_eprinter(vm, cyber_print_err_fn)
 	cyber.vm_set_loader(vm, cyber_load_module)
 
-	api_ui_init()
+	//api_ui_init()
 
 	code := `
-use ui
 
 print('hello world')
-ui.test_api()
 `
 	clstr := cyber.Bytes{strings.unsafe_string_to_cstring(code), len(code)}
 	res : cyber.EvalResult

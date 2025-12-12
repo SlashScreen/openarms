@@ -24,10 +24,11 @@ VM :: struct {}
 Thread :: struct {}
 Heap :: struct {}
 Value :: u64
-Ret :: u8
 
-RET_OK :: 0
-RET_INTERRUPT :: 1
+Ret :: enum u8 {
+	Ok,
+	Interrupt,
+}
 
 ValueSlice :: struct {
 	ptr : ^Value,
@@ -568,12 +569,19 @@ compare_string_to_bytes :: proc(str : string, bytes : Bytes) -> bool {
 	return strings.unsafe_string_to_cstring(str) == bytes.ptr
 }
 
-bind_func :: proc(fn : $T) -> BindFunc where intrinsics.type_is_proc(T) {
-	if type_info_of(T).variant.(reflect.Type_Info_Procedure).convention != .CDecl do panic("Bound proc must be c proc")
+bind_func :: proc(fn : proc "c" (_ : ^Thread) -> Ret) -> BindFunc {
 	return {ptr = rawptr(fn), kind = .VM}
 }
 
 bind_global :: proc(ptr : rawptr) -> BindGlobal {
 	return {ptr}
+}
+
+get_ret :: proc "contextless" (t : ^Thread, $T : typeid) -> ^T {
+	return (^T)(thread_ret(t, size_of(T)))
+}
+
+get :: proc "contextless" (t : ^Thread, $T : typeid) -> ^T {
+	return (^T)(thread_ptr(t))
 }
 
