@@ -12,6 +12,9 @@ client_init :: proc() {
 	rl.SetTargetFPS(60)
 
 	vfs_init()
+	mount_mods()
+	entry_point, ok := get_game_entry_point()
+	if ok do log("Entry point at: %s", entry_point)
 	asset_db_init()
 
 	message_bus_create()

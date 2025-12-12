@@ -38,7 +38,6 @@ vfs_find :: proc(path : string) -> (string, bool) #optional_ok {
 		elems := [?]string{root, path}
 		f, ferr := strings.join(elems[:], "/")
 		if ferr != nil do return "", false
-
 		if os2.exists(f) do return f, true
 	}
 	return "", false
@@ -66,5 +65,11 @@ vfs_list_dir :: proc(path : string) -> [dynamic]string {
 	resize(&list, len(deduped))
 
 	return list
+}
+
+vfs_read_file :: proc(path : string) -> (string, bool) {
+	data, err := os2.read_entire_file_from_path(path, context.allocator)
+	if err != nil do return "", false
+	return string(data), true
 }
 
