@@ -45,10 +45,145 @@ const sqrt1_2 = 0.707106781186547524400844362104849039
 const sqrt2 = 1.414213562373095048801688724209698079
 
 --| Returns the absolute value of x.
-#[bind] fn abs(x f32) -> f32
---| Returns the arccosine of x.
-#[bind] dn acos(x f32) -> f32
+#[bind] fn abs(a float) -> float
 
+--| Returns the arccosine (in radians) of x.
+#[bind] fn acos(a float) -> float
+
+--| Returns the hyperbolic arccosine of x.
+#[bind] fn acosh(a float) -> float
+
+--| Returns the arcsine (in radians) of x.
+#[bind] fn asin(a float) -> float
+
+--| Returns the hyperbolic arcsine of x.
+#[bind] fn asinh(a float) -> float
+
+--| Returns the arctangent (in radians) of x.
+#[bind] fn atan(a float) -> float
+
+--| Returns the arctangent (in radians) of the quotient of its arguments (y/x).
+#[bind] fn atan2(y float, x float) -> float
+
+--| Returns the hyperbolic arctangent of x.
+#[bind] fn atanh(a float) -> float
+
+--| Returns the cube root of x.
+#[bind] fn cbrt(a float) -> float
+
+--| Returns the smallest integer greater than or equal to x.
+#[bind] fn ceil(a float) -> float
+
+--| Returns the number of leading zero bits in the 32-bit integer representation of x.
+#[bind] fn clz32(a float) -> float
+
+--| Returns a value with the magnitude of `mag` and the sign of `sign`.
+#[bind] fn copysign(mag float, sign float) -> float
+
+--| Returns the cosine of x (x is in radians).
+#[bind] fn cos(x float) -> float
+
+--| Generic cosine overload for compatible numeric types.
+#[bind] fn cos(x %T) -> T
+
+--| Returns the hyperbolic cosine of x.
+#[bind] fn cosh(a float) -> float
+
+--| Converts degrees to radians. Accepts and returns f32.
+#[bind] fn degToRad(deg f32) -> f32
+
+--| Returns e raised to the power of x (e^x).
+#[bind] fn exp(a float) -> float
+
+--| Returns exp(x) - 1 with increased precision for small x.
+#[bind] fn expm1(a float) -> float
+
+--| Returns the largest integer less than or equal to x.
+#[bind] fn floor(a float) -> float
+
+--| Returns the fractional part of x.
+#[bind] fn frac(a float) -> float
+
+--| Returns sqrt(a*a + b*b) — the square root of the sum of squares of its arguments.
+#[bind] fn hypot(a float, b float) -> float
+
+--| Returns true if a is infinite.
+#[bind] fn isInf(a float) -> bool
+
+--| Returns true if the float has no fractional part (is an integer value).
+#[bind] fn isInt(a float) -> bool
+
+--| Returns true if x is not a number (NaN).
+#[bind] fn isNaN(a float) -> bool
+
+--| Linear interpolation between `low` and `high` by parameter `t` (0..1).
+#[bind] fn lerp(low, high, t f32) -> f32
+
+--| Returns the natural logarithm (base e) of x.
+#[bind] fn ln(a float) -> float
+
+--| Returns the logarithm of `y` with base `x`.
+#[bind] fn log(x float, y float) -> float
+
+--| Returns the base-10 logarithm of x.
+#[bind] fn log10(a float) -> float
+
+--| Returns the natural logarithm of 1 + x with increased precision for small x.
+#[bind] fn log1p(a float) -> float
+
+--| Returns the base-2 logarithm of x.
+#[bind] fn log2(a float) -> float
+
+--| Returns the larger of two values (generic).
+#[bind] fn max(a %T, b T) -> T
+
+--| Returns the larger of two f64 values.
+#[bind] fn max_f64(a float, b float) -> float
+
+--| Returns the smaller of two values (generic).
+#[bind] fn min(a %T, b T) -> T
+
+--| Returns the smaller of two f64 values.
+#[bind] fn min_f64(a float, b float) -> float
+
+--| Performs 32-bit integer multiplication semantics on the float inputs (integer overflow allowed).
+#[bind] fn mul32(a float, b float) -> float
+
+--| Returns x raised to the power y (x^y).
+#[bind] fn pow(a float, b float) -> float
+
+--| Returns a pseudo-random number between 0 (inclusive) and 1 (exclusive).
+#[bind] fn random() -> float
+
+--| Remap `value` from the input range [low1, high1] to the output range [low2, high2].
 #[bind] fn remap(value, low1, high1, low2, high2 f32) -> f32
 
-#[bind] fn lerp(low, high, t f32) -> f32
+--| Returns the value of x rounded to the nearest integer.
+#[bind] fn round(a float) -> float
+
+--| Returns the sign of x: positive, negative or zero.
+#[bind] fn sign(a float) -> float
+
+--| Returns the sine of x (x is in radians).
+#[bind] fn sin(x float) -> float
+
+--| Generic sine overload for compatible numeric types.
+#[bind] fn sin(x %T) -> T
+
+--| Returns the hyperbolic sine of x.
+#[bind] fn sinh(a float) -> float
+
+--| Returns the positive square root of x.
+#[bind] fn sqrt(a float) -> float
+
+--| Returns the tangent of x (x is in radians).
+#[bind] fn tan(x float) -> float
+
+--| Generic tangent overload for compatible numeric types.
+#[bind] fn tan(x %T) -> T
+
+--| Returns the hyperbolic tangent of x.
+#[bind] fn tanh(a float) -> float
+
+--| Returns the integer portion of x, removing any fractional digits.
+#[bind] fn trunc(a float) -> float

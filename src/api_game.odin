@@ -25,10 +25,13 @@ cy_get_delta :: proc(t : ^cy.Thread) -> cy.Ret {
 }
 
 cy_update_simulation :: proc(t : ^cy.Thread) -> cy.Ret {
+	dt := cy.thread_f32(t)
+	client_tick_subsystems(dt)
 	return .Ok
 }
 
-cy_draw :: proc(t : ^cy.Thread) -> cy.Ret {
+cy_draw :: proc(_ : ^cy.Thread) -> cy.Ret {
+	client_draw_subsystems()
 	return .Ok
 }
 
@@ -38,7 +41,13 @@ cy_should_be_running :: proc(t : ^cy.Thread) -> cy.Ret {
 	return .Ok
 }
 
-cy_shutdown :: proc(t : ^cy.Thread) -> cy.Ret {
+cy_shutdown :: proc(_ : ^cy.Thread) -> cy.Ret {
+	client_shutdown_subsystems()
+	return .Ok
+}
+
+cy_setting :: proc(t : ^cy.Thread) -> cy.Ret {
+
 	return .Ok
 }
 

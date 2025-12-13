@@ -1,9 +1,7 @@
 package libcyber
 
 import "base:intrinsics"
-import "base:runtime"
 import "core:c"
-import "core:reflect"
 import "core:strings"
 
 when ODIN_OS == .Windows {
@@ -434,9 +432,10 @@ foreign cyber {
 	/// Returns runtime panic summary. Must be freed with `cl_free`.
 	thread_panic_summary :: proc(t : ^Thread) -> Bytes ---
 
-	/// Return and parameters for host functions.
+	/// Return value for the function. Prefer `get_ret`.
 	thread_ret :: proc(t : ^Thread, size : c.size_t) -> rawptr ---
 	thread_ret_panic :: proc(t : ^Thread, msg : Bytes) -> Ret ---
+	/// Parameter for the function. Prefer `get`.
 	thread_param :: proc(t : ^Thread, size : c.size_t) -> rawptr ---
 	thread_str :: proc(t : ^Thread) -> CyberStr ---
 	thread_ptr :: proc(t : ^Thread) -> rawptr ---
