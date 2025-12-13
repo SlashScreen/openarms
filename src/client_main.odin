@@ -7,7 +7,7 @@ import rl "vendor:raylib"
 dt_tick : time.Tick
 success := false
 
-client_init :: proc() {
+client_init :: proc() -> bool {
 	rl.SetTraceLogCallback(rl_log_callback)
 	rl.InitWindow(c.int(WIDTH), c.int(HEIGHT), "Hellope!")
 	rl.SetTargetFPS(60)
@@ -16,12 +16,23 @@ client_init :: proc() {
 	mount_mods()
 	entry_point, ok := get_game_entry_point()
 	if !ok {
-		error_screen_init()
-		return
+		vfs_deinit()
+		return false
 	}
 
 	log("Entry point at: %s", entry_point)
-	success = true
+	api_init()
+	code, c_ok := vfs_read_file(entry_point)
+	if !c_ok {
+		api_deinit()
+		return false
+	}
+	api_run_script(code)
+
+	return true
+}
+
+client_init_subsystems :: proc() {
 	asset_db_init()
 
 	message_bus_create()
@@ -35,12 +46,8 @@ client_init :: proc() {
 	navigation_init()
 	hud_init()
 	api_init()
-	//gs_init()
-	//net_init()
 
 	subscribe("render_texture_present", NIL_USERDATA, window_present)
-
-	dt_tick = time.tick_now()
 }
 
 client_tick :: proc() {
@@ -56,35 +63,34 @@ client_tick :: proc() {
 		error_screen_draw(dt)
 		return
 	}
-	//net_tick()
-	//gs_tick(dt)
+}
+
+client_tick_subsystems :: proc(dt : f32) {
 	poll_input()
 	sim_tick(dt)
 	game_systems_tick(dt)
+}
+
+client_draw_subsystems :: proc() {
 	client_render_loop()
 	navigation_draw()
-
 	draw()
 }
 
-client_shutdown :: proc() {
+client_shutdown_subsystems :: proc() {
 	rl.CloseWindow()
-	if success {
-		api_deinit()
-		hud_deinit()
-		navigation_deinit()
-		message_bus_destroy()
-		client_render_deinit()
-		archetypes_deinit()
-		sim_shutdown()
 
-		renderer_deinit()
-		asset_db_deinit()
-		vfs_deinit()
-	} else {
-		error_screen_deinit()
-		vfs_deinit()
-	}
+	api_deinit()
+	hud_deinit()
+	navigation_deinit()
+	message_bus_destroy()
+	client_render_deinit()
+	archetypes_deinit()
+	sim_shutdown()
+
+	renderer_deinit()
+	asset_db_deinit()
+	vfs_deinit()
 }
 
 window_present :: proc(_ : ^int, tex : ^rl.RenderTexture2D) {

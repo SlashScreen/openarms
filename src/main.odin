@@ -1,38 +1,27 @@
 package main
 
-// ENtry point.
+import "vendor:raylib"
+// Entry point.
 
-running := true
 
 main :: proc() {
-	if #config(HEADLESS, false) {
-		headless_main()
-	} else {
-		default_main()
-	}
+	default_main()
 }
 
-headless_main :: proc() {
-
-	subscribe("shutdown", NIL_USERDATA, close)
-
-	for running {
-	}
-}
 
 default_main :: proc() {
-	client_init()
-
-	subscribe("shutdown", NIL_USERDATA, close)
-
-	for running {
-		client_tick()
-	}
-
-	client_shutdown()
+	ok := client_init()
+	if !ok do error_main()
 }
 
-close :: proc(_ : ^int, _ : ^int) {
-	running = false
+error_main :: proc() {
+	error_screen_init()
+
+	for !raylib.WindowShouldClose() {
+		error_screen_draw(raylib.GetFrameTime())
+	}
+
+	error_screen_deinit()
+	raylib.CloseWindow()
 }
 
