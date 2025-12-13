@@ -9,7 +9,6 @@ MOD_FOLDER :: "mods"
 ModManifest :: struct {
 	mod_name :   string,
 	game_entry : string,
-	menu_entry : string,
 }
 
 mount_mods :: proc() -> bool {
