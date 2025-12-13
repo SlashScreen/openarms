@@ -584,3 +584,17 @@ get :: proc "contextless" (t : ^Thread, $T : typeid) -> ^T {
 	return (^T)(thread_ptr(t))
 }
 
+// Representation of an option value within Cyber.
+Option :: struct($T : typeid) {
+	tag :     int,
+	payload : T,
+}
+
+option_some :: proc($T : typeid, payload : T) -> Option(T) {
+	return {tag = 1, payload = payload}
+}
+
+option_none :: proc($T : typeid) -> Option(T) {
+	return {tag = 0}
+}
+

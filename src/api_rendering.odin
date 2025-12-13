@@ -11,3 +11,9 @@ cy_screen_to_world_ray :: proc(t : ^cy.Thread) -> cy.Ret {
 	return .Ok
 }
 
+cy_main_camera :: proc(t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, ^raylib.Camera3D)
+	res^ = get_main_camera()
+	return .Ok
+}
+

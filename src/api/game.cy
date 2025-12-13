@@ -1,13 +1,17 @@
 use math
+use meta
 
 type Options enum:
 	.inverted_camera_scroll
 
 type UnitSetTargetInfo(id UnitID, math.Vector2)
 
-#[bind] fn setting(o Option, %T type) -> T
+#[bind] -host_setting(o Option, )
+fn setting(o Option, %T type) -> T:
+	return host_setting(o, meta.type.id(T))
 
--- Meta
+
+-- Game loop
 
 type Event(tag symbol, info Ptr[void])
 
