@@ -2,6 +2,7 @@ package libcyber
 
 import "base:intrinsics"
 import "core:c"
+import "core:reflect"
 import "core:strings"
 
 when ODIN_OS == .Windows {
@@ -584,6 +585,39 @@ get :: proc "contextless" (t : ^Thread, $T : typeid) -> ^T {
 	return (^T)(thread_ptr(t))
 }
 
+// Get a primitive value
+get_prim :: proc "contextless" (t : ^Thread, $T : typeid) -> T {
+	when T == i8 {
+		return thread_i8(t)
+	} else when T == i16 {
+		return thread_i16(t)
+	} else when T == i32 {
+		return thread_i32(t)
+	} else when T == i64 {
+		return thread_int(t)
+	} else when T == u8 {
+		return thread_byte(t)
+	} else when T == u16 {
+		return thread_r16(t)
+	} else when T == u32 {
+		return thread_r32(t)
+	} else when T == u64 {
+		return thread_r64(t)
+	} else when T == f32 {
+		return thread_f32(t)
+	} else when T == f64 {
+		return thread_float(t)
+	} else when T == Slice {
+		return thread_slice(t)
+	} else when T == CyberStr {
+		return thread_str(t)
+	} else when T == rawptr {
+		return thread_ptr(t)
+	} else {
+		#panic("Not a primitive type")
+	}
+}
+
 // Representation of an option value within Cyber.
 Option :: struct($T : typeid) {
 	tag :     int,
@@ -596,5 +630,59 @@ option_some :: proc($T : typeid, payload : T) -> Option(T) {
 
 option_none :: proc($T : typeid) -> Option(T) {
 	return {tag = 0}
+}
+
+// Representation of an option value within Cyber.
+ErrorUnion :: struct($T : typeid) {
+	tag :     int,
+	payload : T,
+}
+
+err_some :: proc($T : typeid, payload : T) -> ErrorUnion(T) {
+	return {tag = 1, payload = payload}
+}
+
+err_none :: proc($T : typeid) -> ErrorUnion(T) {
+	return {tag = 0}
+}
+
+type_id_to_type :: proc(n : i32) -> TypeId {
+	if n > len(TypeId) || n < 0 do return .Null
+	return (TypeId)(n)
+}
+
+type_to_odin_type :: proc(id : TypeId) -> (typeid, bool) {
+	#partial switch id {
+	case .Bool:
+		return bool, true
+	case .I8:
+		return i8, true
+	case .I16:
+		return i16, true
+	case .I32:
+		return i32, true
+	case .I64:
+		return i64, true
+	case .R8:
+		return u8, true
+	case .R16:
+		return u16, true
+	case .R32:
+		return u32, true
+	case .R64:
+		return u64, true
+	case .F32:
+		return f32, true
+	case .F64:
+		return f64, true
+	case .Symbol:
+		return i64, true
+	case .Str:
+		return CyberStr, true
+	case .StrLit:
+		return Bytes, true
+	case:
+		return u8, false
+	}
 }
 

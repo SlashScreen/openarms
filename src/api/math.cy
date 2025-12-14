@@ -75,7 +75,7 @@ const sqrt2 = 1.414213562373095048801688724209698079
 #[bind] fn ceil(a float) -> float
 
 --| Returns the number of leading zero bits in the 32-bit integer representation of x.
-#[bind] fn clz32(a float) -> float
+#[bind] fn clz32(a float) -> i32
 
 --| Returns a value with the magnitude of `mag` and the sign of `sign`.
 #[bind] fn copysign(mag float, sign float) -> float
@@ -154,6 +154,13 @@ const sqrt2 = 1.414213562373095048801688724209698079
 
 --| Returns a pseudo-random number between 0 (inclusive) and 1 (exclusive).
 #[bind] fn random() -> float
+#[bind] fn rand_int(min i32, max i32) -> i32
+fn rand_choice(arr []%T) -> T:
+	idx := rand_int(0, arr.len() - 1)
+	return arr[idx]
+fn rand_choice(arr [%N]%T) -> T:
+	idx := rand_int(0, N - 1)
+	return arr[idx]
 
 --| Remap `value` from the input range [low1, high1] to the output range [low2, high2].
 #[bind] fn remap(value, low1, high1, low2, high2 f32) -> f32

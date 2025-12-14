@@ -47,7 +47,17 @@ cy_shutdown :: proc(_ : ^cy.Thread) -> cy.Ret {
 }
 
 cy_setting :: proc(t : ^cy.Thread) -> cy.Ret {
-
+	// TODO
+	o := cy.get(t, Options)
+	id := cy.get(t, i32)
+	o_type, ok := cy.type_to_odin_type(cy.type_id_to_type(id^))
+	//res := cy.get_ret(t, cy.ErrorUnion(o_type))
+	if ok {
+		//		o_value := options_settings[o^]
+		//	res^ = cy.err_some(o_value, o_type)
+	} else {
+		//	res^ = cy.err_none(o_type)
+	}
 	return .Ok
 }
 

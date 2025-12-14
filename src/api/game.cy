@@ -7,7 +7,7 @@ type Options enum:
 type UnitSetTargetInfo(id UnitID, math.Vector2)
 
 #[bind] -host_setting(o Option, )
-fn setting(o Option, %T type) -> T:
+fn setting(o Option, %T type) -> !T:
 	return host_setting(o, meta.type.id(T))
 
 
