@@ -273,3 +273,109 @@ fn rand_choice(arr [%N]%T) -> T:
 --| Returns the integer portion of x, removing any fractional digits.
 #[bind="trunc_f32"] fn trunc(a f32) -> f32
 #[bind="trunc_f64"] fn trunc(a f64) -> f64
+
+-- Matrix
+
+--type MatrixSquare[T Any, const %N int]:
+--	-inner [N * N]T
+--
+--#[bind] fn -init_mat[T Any, const %N int](data [N * N]T) -> MatrixSquare[T, N]
+--
+--fn -MatrixSquare[T Any, const %N int] :: @init(data [N * N]T) -> Self:
+--	#if i < 2 or i > 4:
+--		unsupported()
+--
+--	#switch meta.type.info(T):
+--		#case .int |_|:
+--			pass
+--		#case .float |_|:
+--			pass
+--		#else:
+--			unsupported()
+--
+--	return init_mat[T, N](data)
+--
+--type Matrix4[T Any] = MatrixSquare[T, 4]
+--
+--fn Matrix4[T Any] :: @init(data [16]T) -> Self:
+--	return MatrixSquare[T, 4](data)
+--
+--fn Matrix4[] :: identity() -> Self:
+--	return {
+--		inner = {
+--			1, 0, 0, 0,
+--			0, 1, 0, 0,
+--			0, 0, 1, 0,
+--			0, 0, 0, 1,
+--		}
+--	}
+--
+--type Matrix3[T Any] = MatrixSquare[T, 3]
+--
+--fn Matrix3[T Any] :: @init(data [9]T) -> Self:
+--	return MatrixSquare[T, 9](data)
+--
+--type Matrix2[T Any] = MatrixSquare[T, 2]
+--
+--fn Matrix2[T Any] :: @init(data [4]T) -> Self:
+--	return MatrixSquare[T, 2](data)
+--
+
+type Transform:
+	-internal [16]
+
+-- Vector
+
+type -Vector[T Any, const %N len]:
+	internal [len]T
+
+fn -axis_to_index(a string) -> int:
+	switch a:
+		case 'x', 'r':
+			return 0
+		case 'y', 'g':
+			return 1
+		case 'z', 'b':
+			return 2
+		case 'w', 'a':
+			return 3
+		case '0':
+			return -1
+
+fn (Vector[T Any, const %N len]) @get(%swizzle string) -> #if (N == 1) T else [#swizzle.len()]T:
+	#if N == 1:
+		idx := #axis_to_index(swizzle[0])
+		#if idx == -1:
+			return T{}
+		#else:
+			return $internal[idx]
+	#else:
+		res := [#swizzle.len()]T{}
+		#for 0..#swizzle.len() |i|:
+			idx := #axis_to_index(swizzle[i])
+			res[i] = #if (idx == -1) T{} else $internal[i]
+		return res
+
+fn (Vector[T Any, const %N len]) @set(%swizzle string, value #if (N == 1) T else [#swizzle.len()]T):
+	#if N == 1:
+		idx := #axis_to_index(swizzle[0])
+		#if idx == -1:
+			meta.error("Cannot set a zero axis in a vector")
+		#else:
+			#internal[idx] = value
+	#else:
+		#for 0..#swizzle.len() |i|:
+			idx := #axis_to_index(swizzle[0])
+			#if idx == -1:
+				meta.error("Cannot set a zero axis in a vector")
+			#else:
+				#internal[idx] = value[i]
+
+type Vector4 = Vector[f32, 4]
+type Vector4i = Vector[i32, 4]
+type Vector3 = Vector[f32, 3]
+type Vector3i = Vector[i32, 3]
+type Vector2 = Vector[f32, 2]
+type Vector2i = Vector[i32, 2]
+
+-- Quaternion

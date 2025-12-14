@@ -651,7 +651,7 @@ type_id_to_type :: proc(n : i32) -> TypeId {
 	return (TypeId)(n)
 }
 
-type_to_odin_type :: proc(id : TypeId) -> (typeid, bool) {
+type_to_odin_type :: proc(id : TypeId) -> (typeid, bool) #optional_ok {
 	#partial switch id {
 	case .Bool:
 		return bool, true

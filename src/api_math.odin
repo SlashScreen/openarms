@@ -7,6 +7,7 @@ import "core:math"
 import "core:math/bits"
 import "core:math/linalg"
 import "core:math/rand"
+import "core:mem"
 import "core:reflect"
 import "core:slice"
 import cy "cyber"
@@ -993,5 +994,194 @@ cy_trunc_f32 :: proc(t : ^cy.Thread) -> cy.Ret {
 cy_trunc_f64 :: proc(t : ^cy.Thread) -> cy.Ret {
 	T :: f64
 	return u_op(T, proc "contextless" (x : T) -> T {return math.trunc(x)}, t)
+}
+
+// Matrix stuff
+
+// matrix_type :: proc($N : int, id : cy.TypeId) -> (typeid, bool) {
+// 	#partial switch id {
+// 	case .I8:
+// 		return matrix[N, N]i8, true
+// 	case .I16:
+// 		return matrix[N, N]i16, true
+// 	case .I32:
+// 		return matrix[N, N]i32, true
+// 	case .I64:
+// 		return matrix[N, N]i64, true
+// 	case .R8:
+// 		return matrix[N, N]u8, true
+// 	case .R16:
+// 		return matrix[N, N]u16, true
+// 	case .R32:
+// 		return matrix[N, N]u32, true
+// 	case .R64:
+// 		return matrix[N, N]u64, true
+// 	case .F32:
+// 		return matrix[N, N]f32, true
+// 	case .F64:
+// 		return matrix[N, N]f64, true
+// 	case:
+// 		return matrix[N, N]u8, false
+// 	}
+// }
+
+// matrix_4_type :: proc(id : cy.TypeId) -> (typeid, bool) {
+// 	return matrix_type(4, id)
+// }
+
+// matrix_3_type :: proc(id : cy.TypeId) -> (typeid, bool) {
+// 	return matrix_type(3, id)
+// }
+
+// matrix_2_type :: proc(id : cy.TypeId) -> (typeid, bool) {
+// 	return matrix_type(2, id)
+// }
+
+// cy_init_mat :: proc(t : ^cy.Thread) -> cy.Ret {
+// 	i := cy.get_prim(t, u8)
+// 	kind := cy.get_prim(t, i32)
+
+// 	type_id := cy.type_id_to_type(kind)
+
+// 	mat_t : typeid
+// 	ok : bool
+// 	switch i {
+// 	case 2:
+// 		mat_t, ok = matrix_2_type(type_id)
+// 	case 3:
+// 		mat_t, ok = matrix_3_type(type_id)
+// 	case 4:
+// 		mat_t, ok = matrix_4_type(type_id)
+// 	case:
+// 		log_err("Invalid matrix dimensions. This shouldn't happen.")
+// 		return .Ok
+// 	}
+
+// 	if !ok {
+// 		log_err("Invalid matrix type. This shouldn't happen.")
+// 		return .Ok
+// 	}
+
+// 	// TODO: Optional
+// 	res := cy.thread_param(t, uint(reflect.size_of_typeid(mat_t)))
+// 	// Copy the raw vector data into the matrix
+// 	stride := reflect.size_of_typeid(cy.type_to_odin_type(type_id))
+// 	buff_len := i * i * u8(stride)
+// 	arr := cy.thread_param(t, uint(buff_len))
+
+// 	mem.copy(res, arr, int(buff_len))
+
+// 	return .Ok
+// }
+
+// mat_mul_internal :: proc($T : typeid, t : ^cy.Thread) -> cy.Ret {
+// 	n := cy.get_prim(t, int)
+// 	switch n {
+// 	case 2:
+// 		res := cy.get_ret(t, matrix[2, 2]T)
+// 		a := cy.get_prim(t, matrix[2, 2]T)
+// 		b := cy.get_prim(t, matrix[2, 2]T)
+// 		res^ = a * b
+// 	case 3:
+// 		res := cy.get_ret(t, matrix[3, 3]T)
+// 		a := cy.get_prim(t, matrix[3, 3]T)
+// 		b := cy.get_prim(t, matrix[3, 3]T)
+// 		res^ = a * b
+// 	case 4:
+// 		res := cy.get_ret(t, matrix[4, 4]T)
+// 		a := cy.get_prim(t, matrix[4, 4]T)
+// 		b := cy.get_prim(t, matrix[4, 4]T)
+// 		res^ = a * b
+// 	}
+
+// 	return .Ok
+// }
+
+// cy_mat_mul_f32 :: proc(t : ^cy.Thread) -> cy.Ret {
+// 	return mat_mul_internal(f32, t)
+// }
+
+// cy_mat_mul_f64 :: proc(t : ^cy.Thread) -> cy.Ret {
+// 	return mat_mul_internal(f64, t)
+// }
+
+// cy_mat_mul_i8 :: proc(t : ^cy.Thread) -> cy.Ret {
+// 	return mat_mul_internal(i8, t)
+// }
+
+// cy_mat_mul_i16 :: proc(t : ^cy.Thread) -> cy.Ret {
+// 	return mat_mul_internal(i16, t)
+// }
+
+// cy_mat_mul_i32 :: proc(t : ^cy.Thread) -> cy.Ret {
+// 	return mat_mul_internal(i32, t)
+// }
+
+// cy_mat_mul_i64 :: proc(t : ^cy.Thread) -> cy.Ret {
+// 	return mat_mul_internal(i64, t)
+// }
+
+// cy_mat_mul_u8 :: proc(t : ^cy.Thread) -> cy.Ret {
+// 	return mat_mul_internal(u8, t)
+// }
+
+// cy_mat_mul_u16 :: proc(t : ^cy.Thread) -> cy.Ret {
+// 	return mat_mul_internal(u16, t)
+// }
+
+// cy_mat_mul_u32 :: proc(t : ^cy.Thread) -> cy.Ret {
+// 	return mat_mul_internal(u32, t)
+// }
+
+// cy_mat_mul_u64 :: proc(t : ^cy.Thread) -> cy.Ret {
+// 	return mat_mul_internal(u64, t)
+// }
+
+cy_transform_init_euler :: proc(t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, matrix[4, 4]f32)
+
+	pos := cy.get(t, [3]f32)
+	mat := linalg.MATRIX4F32_IDENTITY
+	mat *= linalg.matrix4_translate(pos^)
+
+	euler := cy.get(t, [3]f32)
+	quat := linalg.quaternion_from_euler_angles_f32(euler.z, euler.y, euler.x, .ZYX)
+	mat *= linalg.matrix4_rotate_f32(
+		linalg.angle_from_quaternion_f32(quat),
+		linalg.axis_from_quaternion_f32(quat),
+	)
+
+	res^ = mat
+
+	return .Ok
+}
+
+cy_transform_init_quaternion :: proc(t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, matrix[4, 4]f32)
+
+	pos := cy.get(t, [3]f32)
+	mat := linalg.MATRIX4F32_IDENTITY
+	mat *= linalg.matrix4_translate(pos^)
+
+	euler := cy.get(t, [3]f32)
+	quat := cy.get(t, quaternion128)
+	mat *= linalg.matrix4_rotate_f32(
+		linalg.angle_from_quaternion_f32(quat^),
+		linalg.axis_from_quaternion_f32(quat^),
+	)
+
+	res^ = mat
+
+	return .Ok
+}
+
+cy_transform_translate :: proc(t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, matrix[4, 4]f32)
+
+	pos := cy.get(t, [3]f32)
+	mat := cy.get(t, matrix[4, 4]f32)
+	res^ = mat^ * linalg.matrix4_translate(pos^)
+
+	return .Ok
 }
 
