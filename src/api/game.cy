@@ -1,5 +1,6 @@
 use math
 use meta
+use input
 
 type Options enum:
 	.inverted_camera_scroll
@@ -10,10 +11,11 @@ type UnitSetTargetInfo(id UnitID, math.Vector2)
 fn setting(o Option, %T type) -> !T:
 	return host_setting(o, meta.type.id(T))
 
-
 -- Game loop
 
-type Event(tag symbol, info Ptr[void])
+type EventPacket enum:
+	case key input.KeyEvent
+	case mouse input.MouseEvent
 
 #[bind] init()
 #[bind] gather_updates() -> []Event

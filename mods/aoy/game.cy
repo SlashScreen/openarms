@@ -40,36 +40,39 @@ fn main():
 	game.shutdown()
 
 
-fn process_update(ev game.Event):
-	switch ev.tag:
-		case @input_event:
-			on_input(ev.info as Ptr[InputEvent])
+fn process_update(ev game.EventPacket):
+	switch ev:
+		case .key |kev|:
+			on_key_input(kev)
+		case .mouse |mev|:
+			on_mouse_input(mev)
 
 
-fn on_input(event Ptr[InputEvent]):
-	switch event:
-		case .key_event |ev|:
-			switch ev.key_action:
-				case .pressed:
-					switch ev.key:
-						case .space:
-							print("Space pressed.")
-		case .mouse_event |ev|:
-			switch ev.mouse_action:
-				case .pressed:
-					switch ev.button:
-						case .left:
-							cam := render.main_camera()
-							ray := cam.screen_to_world_ray(ev.position)
-							selected_unit = physics.query_ray(ray, 1000.0)
-						case .right:
-							cam := render.main_camera()
-							ray := cam.screen_to_world_ray(ev.position)
-							if physics.query_ray_terrain(ray) |res|:
-								print("hit terrain")
-								if selected_unit |id|:
-									info := game.UnitSetTargetInfo(id, res.point.xz)
-									game.broadcast(game.SET_UNIT_TARGET_COMMAND, &info)
+fn on_mouse_input(ev input.MouseEvent):
+	switch ev.mouse_action:
+		case .pressed:
+			switch ev.button:
+				case .left:
+					cam := render.main_camera()
+					ray := cam.screen_to_world_ray(ev.position)
+					selected_unit = physics.query_ray(ray, 1000.0)
+				case .right:
+					cam := render.main_camera()
+					ray := cam.screen_to_world_ray(ev.position)
+					if physics.query_ray_terrain(ray) |res|:
+						print("hit terrain")
+						if selected_unit |id|:
+							info := game.UnitSetTargetInfo(id, res.point.xz)
+							game.broadcast(game.SET_UNIT_TARGET_COMMAND, &info)
+
+
+fn on_key_input(ev input.KeyEvent):
+	switch ev.key_action:
+		case .pressed:
+			switch ev.key:
+				case .space:
+					print("Space pressed.")
+
 
 
 fn on_update(delta f32):

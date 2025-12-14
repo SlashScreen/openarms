@@ -49,6 +49,7 @@ api_init :: proc() {
 	add_module_loader("rendering", load_rendering_api)
 	add_module_loader("physics", load_physics_api)
 	add_module_loader("math", load_math_api)
+	add_module_loader("meta", load_meta_api)
 }
 
 api_run_script :: proc(src : string) {
@@ -68,5 +69,10 @@ api_run_script :: proc(src : string) {
 api_deinit :: proc() {
 	cyber.vm_deinit(vm)
 	delete(cyber_modules)
+}
+
+load_meta_api :: proc(vm : ^cyber.VM, mod : ^cyber.Sym, _ : ^cyber.LoaderResult) -> bool {
+	cyber.mod_bind_meta(vm, mod)
+	return true
 }
 

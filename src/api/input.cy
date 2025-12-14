@@ -168,10 +168,6 @@ type MouseEvent:
 	position math.Vector2
 	delta math.Vector2
 
-type InputEvent enum:
-	case key_event KeyEvent
-	case mouse_event MouseEvent
-
 -- Keys
 
 #[bind] fn binding(b KeyBinding) -> Key
