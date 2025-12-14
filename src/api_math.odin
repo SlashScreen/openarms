@@ -200,11 +200,74 @@ cy_clamp_f64 :: proc(t : ^cy.Thread) -> cy.Ret {
 	return .Ok
 }
 
+cy_clamp_u8 :: proc(t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, u8)
+	x := cy.get_prim(t, u8)
+	min := cy.get_prim(t, u8)
+	max := cy.get_prim(t, u8)
+	res^ = math.clamp(x, min, max)
+	return .Ok
+}
+
+cy_clamp_u16 :: proc(t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, u16)
+	x := cy.get_prim(t, u16)
+	min := cy.get_prim(t, u16)
+	max := cy.get_prim(t, u16)
+	res^ = math.clamp(x, min, max)
+	return .Ok
+}
+
+cy_clamp_u32 :: proc(t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, u32)
+	x := cy.get_prim(t, u32)
+	min := cy.get_prim(t, u32)
+	max := cy.get_prim(t, u32)
+	res^ = math.clamp(x, min, max)
+	return .Ok
+}
+
+cy_clamp_u64 :: proc(t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, u64)
+	x := cy.get_prim(t, u64)
+	min := cy.get_prim(t, u64)
+	max := cy.get_prim(t, u64)
+	res^ = math.clamp(x, min, max)
+	return .Ok
+}
+
+cy_clamp_i8 :: proc(t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, i8)
+	x := cy.get_prim(t, i8)
+	min := cy.get_prim(t, i8)
+	max := cy.get_prim(t, i8)
+	res^ = math.clamp(x, min, max)
+	return .Ok
+}
+
+cy_clamp_i16 :: proc(t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, i16)
+	x := cy.get_prim(t, i16)
+	min := cy.get_prim(t, i16)
+	max := cy.get_prim(t, i16)
+	res^ = math.clamp(x, min, max)
+	return .Ok
+}
+
 cy_clamp_i32 :: proc(t : ^cy.Thread) -> cy.Ret {
 	res := cy.get_ret(t, i32)
 	x := cy.get_prim(t, i32)
 	min := cy.get_prim(t, i32)
 	max := cy.get_prim(t, i32)
+	res^ = math.clamp(x, min, max)
+	return .Ok
+}
+
+cy_clamp_i64 :: proc(t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, i64)
+	x := cy.get_prim(t, i64)
+	min := cy.get_prim(t, i64)
+	max := cy.get_prim(t, i64)
 	res^ = math.clamp(x, min, max)
 	return .Ok
 }
@@ -797,6 +860,42 @@ cy_round_to_int_f64 :: proc(t : ^cy.Thread) -> cy.Ret {
 
 // Sign
 
+cy_sign_f32 :: proc(t : ^cy.Thread) -> cy.Ret {
+	T :: f32
+	return u_op(T, proc "contextless" (x : T) -> T {return math.sign(x)}, t)
+}
+
+cy_sign_f64 :: proc(t : ^cy.Thread) -> cy.Ret {
+	T :: f64
+	return u_op(T, proc "contextless" (x : T) -> T {return math.sign(x)}, t)
+}
+
+cy_sign_i8 :: proc(t : ^cy.Thread) -> cy.Ret {
+	T :: i8
+	return u_op(T, proc "contextless" (x : T) -> T {
+			if x > 0 {
+				return 1
+			} else if x < 0 {
+				return -1
+			} else {
+				return 0
+			}
+		}, t)
+}
+
+cy_sign_i16 :: proc(t : ^cy.Thread) -> cy.Ret {
+	T :: i16
+	return u_op(T, proc "contextless" (x : T) -> T {
+			if x > 0 {
+				return 1
+			} else if x < 0 {
+				return -1
+			} else {
+				return 0
+			}
+		}, t)
+}
+
 cy_sign_int32 :: proc(t : ^cy.Thread) -> cy.Ret {
 	T :: i32
 	return u_op(T, proc "contextless" (x : T) -> T {
@@ -810,10 +909,19 @@ cy_sign_int32 :: proc(t : ^cy.Thread) -> cy.Ret {
 		}, t)
 }
 
-cy_sign_f64 :: proc(t : ^cy.Thread) -> cy.Ret {
-	T :: f64
-	return u_op(T, proc "contextless" (x : T) -> T {return math.sign(x)}, t)
+cy_sign_i64 :: proc(t : ^cy.Thread) -> cy.Ret {
+	T :: i64
+	return u_op(T, proc "contextless" (x : T) -> T {
+			if x > 0 {
+				return 1
+			} else if x < 0 {
+				return -1
+			} else {
+				return 0
+			}
+		}, t)
 }
+
 
 // Sin
 
