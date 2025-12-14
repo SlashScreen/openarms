@@ -1175,7 +1175,7 @@ cy_transform_init_quaternion :: proc(t : ^cy.Thread) -> cy.Ret {
 	return .Ok
 }
 
-cy_transform_translate :: proc(t : ^cy.Thread) -> cy.Ret {
+transform_translate :: proc(t : ^cy.Thread) -> cy.Ret {
 	res := cy.get_ret(t, matrix[4, 4]f32)
 
 	pos := cy.get(t, [3]f32)
@@ -1183,5 +1183,202 @@ cy_transform_translate :: proc(t : ^cy.Thread) -> cy.Ret {
 	res^ = mat^ * linalg.matrix4_translate(pos^)
 
 	return .Ok
+}
+
+vector_add_f32 :: proc($N : int, t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, [N]f32)
+
+	vec := cy.get(t, [N]f32)
+	scal := cy.get_prim(t, f32)
+	res^ = vec^ + scal
+
+	return .Ok
+}
+
+vector_add_vec :: proc($N : int, t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, [N]f32)
+
+	vec := cy.get(t, [N]f32)
+	b := cy.get(t, [N]f32)
+	res^ = vec^ + b^
+
+	return .Ok
+}
+
+vector_sub_f32 :: proc($N : int, t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, [N]f32)
+
+	vec := cy.get(t, [N]f32)
+	scal := cy.get_prim(t, f32)
+	res^ = vec^ - scal
+
+	return .Ok
+}
+
+vector_sub_vec :: proc($N : int, t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, [N]f32)
+
+	vec := cy.get(t, [N]f32)
+	b := cy.get(t, [N]f32)
+	res^ = vec^ - b^
+
+	return .Ok
+}
+
+vector_mul_f32 :: proc($N : int, t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, [N]f32)
+
+	vec := cy.get(t, [N]f32)
+	scal := cy.get_prim(t, f32)
+	res^ = vec^ * scal
+
+	return .Ok
+}
+
+vector_mul_vec :: proc($N : int, t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, [N]f32)
+
+	vec := cy.get(t, [N]f32)
+	b := cy.get(t, [N]f32)
+	res^ = vec^ * b^
+
+	return .Ok
+}
+
+vector_div_f32 :: proc($N : int, t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, [N]f32)
+
+	vec := cy.get(t, [N]f32)
+	scal := cy.get_prim(t, f32)
+	res^ = vec^ / scal
+
+	return .Ok
+}
+
+vector_div_vec :: proc($N : int, t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, [N]f32)
+
+	vec := cy.get(t, [N]f32)
+	b := cy.get(t, [N]f32)
+	res^ = vec^ / b^
+
+	return .Ok
+}
+
+vector_neg :: proc($N : int, t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, [N]f32)
+
+	vec := cy.get(t, [N]f32)
+	res^ = -vec^
+
+	return .Ok
+}
+
+cy_vec2_add_f32 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_add_f32(2, t)
+}
+
+cy_vec2_add_vec2 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_add_vec(2, t)
+}
+
+cy_vec2_sub_f32 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_sub_f32(2, t)
+}
+
+cy_vec2_sub_vec2 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_sub_vec(2, t)
+}
+
+cy_vec2_mul_f32 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_mul_f32(2, t)
+}
+
+cy_vec2_mul_vec2 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_mul_vec(2, t)
+}
+
+cy_vec2_div_f32 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_div_f32(2, t)
+}
+
+cy_vec2_div_vec2 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_div_vec(2, t)
+}
+
+cy_vec2_neg :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_neg(2, t)
+}
+
+cy_vec3_add_f32 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_add_f32(3, t)
+}
+
+cy_vec3_add_vec3 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_add_vec(3, t)
+}
+
+cy_vec3_sub_f32 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_sub_f32(3, t)
+}
+
+cy_vec3_sub_vec3 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_sub_vec(3, t)
+}
+
+cy_vec3_mul_f32 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_mul_f32(3, t)
+}
+
+cy_vec3_mul_vec3 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_mul_vec(3, t)
+}
+
+cy_vec3_div_f32 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_div_f32(3, t)
+}
+
+cy_vec3_div_vec3 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_div_vec(3, t)
+}
+
+cy_vec3_neg :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_neg(3, t)
+}
+
+cy_vec4_add_f32 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_add_f32(4, t)
+}
+
+cy_vec4_add_vec3 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_add_vec(4, t)
+}
+
+cy_vec4_sub_f32 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_sub_f32(4, t)
+}
+
+cy_vec4_sub_vec3 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_sub_vec(4, t)
+}
+
+cy_vec4_mul_f32 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_mul_f32(4, t)
+}
+
+cy_vec4_mul_vec3 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_mul_vec(4, t)
+}
+
+cy_vec4_div_f32 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_div_f32(4, t)
+}
+
+cy_vec4_div_vec3 :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_div_vec(4, t)
+}
+
+cy_vec4_neg :: proc(t : ^cy.Thread) -> cy.Ret {
+	return vector_neg(4, t)
 }
 

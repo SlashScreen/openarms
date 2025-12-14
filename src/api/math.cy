@@ -372,10 +372,40 @@ fn (Vector[T Any, const %N len]) @set(%swizzle string, value #if (N == 1) T else
 				#internal[idx] = value[i]
 
 type Vector4 = Vector[f32, 4]
+#[bind="vec4_add_f32"] fn (&Vector4) `+` (scale f32) -> Self
+#[bind="vec4_add_vec4"] fn (&Vector4) `+` (other Vector4) -> Self
+#[bind="vec4_sub_f32"] fn (&Vector4) `-` (scale f32) -> Self
+#[bind="vec4_sub_vec4"] fn (&Vector4) `-` (other Vector4) -> Self
+#[bind="vec4_mul_f32"] fn (&Vector4) `*` (scale f32) -> Self
+#[bind="vec4_mul_vec4"] fn (&Vector4) `*` (other Vector4) -> Self
+#[bind="vec4_div_f32"] fn (&Vector4) `/` (scale f32) -> Self
+#[bind="vec4_div_vec4"] fn (&Vector4) `/` (other Vector4) -> Self
+#[bind="vec4_neg"] fn (&Vector4) `-` () -> Self
 type Vector4i = Vector[i32, 4]
 type Vector3 = Vector[f32, 3]
+#[bind="vec3_add_f32"] fn (&Vector3) `+` (scale f32) -> Self
+#[bind="vec3_add_vec3"] fn (&Vector3) `+` (other Vector3) -> Self
+#[bind="vec3_sub_f32"] fn (&Vector3) `-` (scale f32) -> Self
+#[bind="vec3_sub_vec3"] fn (&Vector3) `-` (other Vector3) -> Self
+#[bind="vec3_mul_f32"] fn (&Vector3) `*` (scale f32) -> Self
+#[bind="vec3_mul_vec3"] fn (&Vector3) `*` (other Vector3) -> Self
+#[bind="vec3_div_f32"] fn (&Vector3) `/` (scale f32) -> Self
+#[bind="vec3_div_vec3"] fn (&Vector3) `/` (other Vector3) -> Self
+#[bind="vec3_neg"] fn (&Vector3) `-` () -> Self
 type Vector3i = Vector[i32, 3]
 type Vector2 = Vector[f32, 2]
+#[bind="vec2_add_f32"] fn (&Vector2) `+` (scale f32) -> Self
+#[bind="vec2_add_vec2"] fn (&Vector2) `+` (other Vector2) -> Self
+#[bind="vec2_sub_f32"] fn (&Vector2) `-` (scale f32) -> Self
+#[bind="vec2_sub_vec2"] fn (&Vector2) `-` (other Vector2) -> Self
+#[bind="vec2_mul_f32"] fn (&Vector2) `*` (scale f32) -> Self
+#[bind="vec2_mul_vec2"] fn (&Vector2) `*` (other Vector2) -> Self
+#[bind="vec2_div_f32"] fn (&Vector2) `/` (scale f32) -> Self
+#[bind="vec2_div_vec2"] fn (&Vector2) `/` (other Vector2) -> Self
+#[bind="vec2_neg"] fn (&Vector2) `-` () -> Self
 type Vector2i = Vector[i32, 2]
 
 -- Quaternion
+
+type Quaternion:
+	-internal [4]f32
