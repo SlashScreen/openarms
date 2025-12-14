@@ -381,7 +381,17 @@ type Vector4 = Vector[f32, 4]
 #[bind="vec4_div_f32"] fn (&Vector4) `/` (scale f32) -> Self
 #[bind="vec4_div_vec4"] fn (&Vector4) `/` (other Vector4) -> Self
 #[bind="vec4_neg"] fn (&Vector4) `-` () -> Self
+fn Vector4 :: @init(x, y, z, w f32) -> Self:
+	return {
+		internal = {x, y, z, w}
+	}
+fn Vector4 :: zero() -> Self:
+	return {
+		internal = {0.0, 0.0, 0.0, 0.0}
+	}
+
 type Vector4i = Vector[i32, 4]
+
 type Vector3 = Vector[f32, 3]
 #[bind="vec3_add_f32"] fn (&Vector3) `+` (scale f32) -> Self
 #[bind="vec3_add_vec3"] fn (&Vector3) `+` (other Vector3) -> Self
@@ -392,7 +402,17 @@ type Vector3 = Vector[f32, 3]
 #[bind="vec3_div_f32"] fn (&Vector3) `/` (scale f32) -> Self
 #[bind="vec3_div_vec3"] fn (&Vector3) `/` (other Vector3) -> Self
 #[bind="vec3_neg"] fn (&Vector3) `-` () -> Self
+fn Vector3 :: @init(x, y, z f32) -> Self:
+	return {
+		internal = {x, y, z}
+	}
+fn Vector3 :: zero() -> Self:
+	return {
+		internal = {0.0, 0.0, 0.0}
+	}
+
 type Vector3i = Vector[i32, 3]
+
 type Vector2 = Vector[f32, 2]
 #[bind="vec2_add_f32"] fn (&Vector2) `+` (scale f32) -> Self
 #[bind="vec2_add_vec2"] fn (&Vector2) `+` (other Vector2) -> Self
@@ -403,6 +423,15 @@ type Vector2 = Vector[f32, 2]
 #[bind="vec2_div_f32"] fn (&Vector2) `/` (scale f32) -> Self
 #[bind="vec2_div_vec2"] fn (&Vector2) `/` (other Vector2) -> Self
 #[bind="vec2_neg"] fn (&Vector2) `-` () -> Self
+fn Vector2 :: @init(x, y f32) -> Self:
+	return {
+		internal = {x, y}
+	}
+fn Vector2 :: zero() -> Self:
+	return {
+		internal = {0.0, 0.0}
+	}
+
 type Vector2i = Vector[i32, 2]
 
 -- Quaternion

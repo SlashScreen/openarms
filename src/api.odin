@@ -4,7 +4,7 @@ import "base:runtime"
 import "core:strings"
 import "cyber"
 
-CyberLoadModuleFn :: proc(vm : ^cyber.VM, mod : ^cyber.Sym, res : ^cyber.LoaderResult)
+CyberLoadModuleFn :: proc(vm : ^cyber.VM, mod : ^cyber.Sym, res : ^cyber.LoaderResult) -> bool
 
 vm : ^cyber.VM
 cyber_modules : map[string]CyberLoadModuleFn
@@ -28,11 +28,10 @@ cyber_load_module :: proc "c" (
 	context = runtime.default_context()
 	for k, p in cyber_modules {
 		if cyber.compare_string_to_bytes(k, uri) {
-			p(vm, mod, res)
-			return true
+			return p(vm, mod, res)
 		}
 	}
-	return cyber.default_loader(vm, mod, uri, res)
+	return false //cyber.default_loader(vm, mod, uri, res)
 }
 
 add_module_loader :: proc(name : string, p : CyberLoadModuleFn) {
@@ -45,6 +44,11 @@ api_init :: proc() {
 	cyber.vm_set_printer(vm, cyber_print_fn)
 	cyber.vm_set_eprinter(vm, cyber_print_err_fn)
 	cyber.vm_set_loader(vm, cyber_load_module)
+
+	add_module_loader("game", load_game_api)
+	add_module_loader("rendering", load_rendering_api)
+	add_module_loader("physics", load_physics_api)
+	add_module_loader("math", load_math_api)
 }
 
 api_run_script :: proc(src : string) {
