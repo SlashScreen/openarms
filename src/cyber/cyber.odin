@@ -527,6 +527,8 @@ foreign cyber {
 	// This is very basic compared to the core API's `to_print_string` and `dump`.
 	value_desc :: proc(vm : ^VM, val_t : TypeId, val : ^Value) -> Bytes ---
 
+	// Error value. Use for a tag in an error union.
+	error :: proc(vm : ^VM, str : Bytes) -> Value ---
 	// Symbol value.
 	symbol :: proc(vm : ^VM, str : Bytes) -> i64 ---
 
@@ -632,18 +634,18 @@ option_none :: proc($T : typeid) -> Option(T) {
 	return {tag = 0}
 }
 
-// Representation of an option value within Cyber.
+// Representation of an error value within Cyber. Use the result of `error` for the error tag.
 ErrorUnion :: struct($T : typeid) {
 	tag :     int,
 	payload : T,
 }
 
 err_some :: proc($T : typeid, payload : T) -> ErrorUnion(T) {
-	return {tag = 1, payload = payload}
+	return {tag = 0, payload = payload}
 }
 
-err_none :: proc($T : typeid) -> ErrorUnion(T) {
-	return {tag = 0}
+err_err :: proc($T : typeid, error_code : i64) -> ErrorUnion(T) {
+	return {tag = error_code}
 }
 
 type_id_to_type :: proc(n : i32) -> TypeId {

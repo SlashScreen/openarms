@@ -23,7 +23,10 @@ running := true
 fn main():
 	game.init()
 
+	print("Game starting.")
+
 	while running:
+		print("Tick.")
 		events := game.gather_updates()
 		for events |ev|:
 			process_update(ev)
@@ -37,6 +40,7 @@ fn main():
 
 		running = game.should_be_running()
 
+	print("Game stopping.")
 	game.shutdown()
 
 

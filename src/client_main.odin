@@ -1,6 +1,7 @@
 package main
 
 import c "core:c"
+import "core:os/os2"
 import "core:time"
 import rl "vendor:raylib"
 
@@ -22,14 +23,15 @@ client_init :: proc() -> bool {
 
 	log("Entry point at: %s", entry_point)
 	api_init()
-	code, c_ok := vfs_read_file(entry_point)
-	if !c_ok {
+	code, f_ok := vfs_read_file(entry_point)
+	if !ok {
+		log_err("Failed to read game script")
 		api_deinit()
 		return false
 	}
-	api_run_script(code)
+	log("Attempting to run game script...")
 
-	return true
+	return api_run_script(string(code))
 }
 
 client_init_subsystems :: proc() {

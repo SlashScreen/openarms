@@ -15,10 +15,13 @@ default_main :: proc() {
 }
 
 error_main :: proc() {
+	log("Entering error screen...")
 	error_screen_init()
 
 	for !raylib.WindowShouldClose() {
+		raylib.BeginDrawing()
 		error_screen_draw(raylib.GetFrameTime())
+		raylib.EndDrawing()
 	}
 
 	error_screen_deinit()

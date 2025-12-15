@@ -68,8 +68,17 @@ vfs_list_dir :: proc(path : string) -> [dynamic]string {
 }
 
 vfs_read_file :: proc(path : string) -> (string, bool) {
-	data, err := os2.read_entire_file_from_path(path, context.allocator)
-	if err != nil do return "", false
-	return string(data), true
+	v_path, ok := vfs_find(path)
+	if !ok {
+		log_err("vfs_read_file: file not found %s", path)
+		return "", false
+	}
+	data, err := os2.read_entire_file_from_path(v_path, context.allocator)
+	if err == nil {
+		return string(data), true
+	} else {
+		log_err("vfs_read_file: failed to read file %s: %s", path, err)
+		return "", false
+	}
 }
 

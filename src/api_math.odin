@@ -1470,6 +1470,7 @@ FUNCS :: [?]struct {
 	{"tanh_f64", cy_tanh_f64},
 	{"trunc_f32", cy_trunc_f32},
 	{"trunc_f64", cy_trunc_f64},
+	// Vector operations
 	{"vec2_add_f32", cy_vec2_add_f32},
 	{"vec2_add_vec2", cy_vec2_add_vec2},
 	{"vec2_sub_f32", cy_vec2_sub_f32},
@@ -1497,6 +1498,7 @@ FUNCS :: [?]struct {
 	{"vec4_div_f32", cy_vec4_div_f32},
 	{"vec4_div_vec3", cy_vec4_div_vec3},
 	{"vec4_neg", cy_vec4_neg},
+	// Matrix operations
 	{"mat2f32_mul", cy_mat2f32_mul},
 	{"mat2f64_mul", cy_mat2f64_mul},
 	{"mat2u8_mul", cy_mat2u8_mul},

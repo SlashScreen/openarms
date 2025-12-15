@@ -48,12 +48,15 @@ get_game_entry_point :: proc() -> (string, bool) {
 
 @(private = "file")
 load_manifest_json :: proc(path : string) -> (ModManifest, bool) {
-	data, ok := vfs_read_file(path)
+	data, p_err := os2.read_entire_file_from_path(path, context.allocator)
 	defer delete(data)
-	if !ok do return {}, false
+	if p_err != nil {
+		log_err("Failed to read manifest.json: %s", p_err)
+		return {}, false
+	}
 
 	manifest : ModManifest
-	err := json.unmarshal_string(data, &manifest)
+	err := json.unmarshal(data, &manifest)
 	if err != nil do return {}, false
 
 	return manifest, true

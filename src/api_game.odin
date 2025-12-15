@@ -38,13 +38,14 @@ cy_init :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 
 cy_gather_updates :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	res := cy.get_ret(t, cy.Slice)
-	size := uint(len(event_queue) * size_of(EventPacket))
-	sl_ptr := cy.vm_alloc(cy.thread_vm(t), size)
 
-	slice := cy.Slice{sl_ptr, sl_ptr, size, size}
+	size := uint(len(event_queue) * size_of(EventPacket))
+	slice := cy.Slice {
+		ptr = raw_data(event_queue),
+		len = size,
+	}
 	res^ = slice
 
-	clear(&event_queue)
 	return .Ok
 }
 
