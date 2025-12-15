@@ -26,12 +26,13 @@ cyber_load_module :: proc "c" (
 	res : ^cyber.LoaderResult,
 ) -> bool {
 	context = runtime.default_context()
-	for k, p in cyber_modules {
-		if cyber.compare_string_to_bytes(k, uri) {
-			return p(vm, mod, res)
-		}
+	mod_name := strings.clone_from_cstring_bounded(uri.ptr, int(uri.len))
+	log_debug("Loading cyber module: %s", mod_name)
+	defer delete(mod_name)
+	if p, ok := cyber_modules[mod_name]; ok {
+		return p(vm, mod, res)
 	}
-	return false //cyber.default_loader(vm, mod, uri, res)
+	return false
 }
 
 add_module_loader :: proc(name : string, p : CyberLoadModuleFn) {
