@@ -467,37 +467,37 @@ cy_lerp_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 
 cy_lerp_vec2 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	res := cy.get_ret(t, linalg.Vector2f32)
-	a := cy.get_prim(t, linalg.Vector2f32)
-	b := cy.get_prim(t, linalg.Vector2f32)
+	a := cy.get(t, linalg.Vector2f32)
+	b := cy.get(t, linalg.Vector2f32)
 	alpha := cy.get_prim(t, f32)
-	res^ = linalg.lerp(a, b, alpha)
+	res^ = linalg.lerp(a^, b^, alpha)
 	return .Ok
 }
 
 cy_lerp_vec3 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	res := cy.get_ret(t, linalg.Vector3f32)
-	a := cy.get_prim(t, linalg.Vector3f32)
-	b := cy.get_prim(t, linalg.Vector3f32)
+	a := cy.get(t, linalg.Vector3f32)
+	b := cy.get(t, linalg.Vector3f32)
 	alpha := cy.get_prim(t, f32)
-	res^ = linalg.lerp(a, b, alpha)
+	res^ = linalg.lerp(a^, b^, alpha)
 	return .Ok
 }
 
 cy_lerp_vec4 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	res := cy.get_ret(t, linalg.Vector4f32)
-	a := cy.get_prim(t, linalg.Vector4f32)
-	b := cy.get_prim(t, linalg.Vector4f32)
+	a := cy.get(t, linalg.Vector4f32)
+	b := cy.get(t, linalg.Vector4f32)
 	alpha := cy.get_prim(t, f32)
-	res^ = linalg.lerp(a, b, alpha)
+	res^ = linalg.lerp(a^, b^, alpha)
 	return .Ok
 }
 
 cy_lerp_quat :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	res := cy.get_ret(t, linalg.Quaternionf32)
-	a := cy.get_prim(t, linalg.Quaternionf32)
-	b := cy.get_prim(t, linalg.Quaternionf32)
+	a := cy.get(t, linalg.Quaternionf32)
+	b := cy.get(t, linalg.Quaternionf32)
 	alpha := cy.get_prim(t, f32)
-	res^ = linalg.lerp(a, b, alpha)
+	res^ = linalg.lerp(a^, b^, alpha)
 	return .Ok
 }
 
@@ -615,25 +615,25 @@ cy_max_u64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 
 cy_max_vec2 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	res := cy.get_ret(t, linalg.Vector2f32)
-	a := cy.get_prim(t, linalg.Vector2f32)
-	b := cy.get_prim(t, linalg.Vector2f32)
-	res^ = linalg.max(a, b)
+	a := cy.get(t, linalg.Vector2f32)
+	b := cy.get(t, linalg.Vector2f32)
+	res^ = linalg.max(a^, b^)
 	return .Ok
 }
 
 cy_max_vec3 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	res := cy.get_ret(t, linalg.Vector3f32)
-	a := cy.get_prim(t, linalg.Vector3f32)
-	b := cy.get_prim(t, linalg.Vector3f32)
-	res^ = linalg.max(a, b)
+	a := cy.get(t, linalg.Vector3f32)
+	b := cy.get(t, linalg.Vector3f32)
+	res^ = linalg.max(a^, b^)
 	return .Ok
 }
 
 cy_max_vec4 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	res := cy.get_ret(t, linalg.Vector4f32)
-	a := cy.get_prim(t, linalg.Vector4f32)
-	b := cy.get_prim(t, linalg.Vector4f32)
-	res^ = linalg.max(a, b)
+	a := cy.get(t, linalg.Vector4f32)
+	b := cy.get(t, linalg.Vector4f32)
+	res^ = linalg.max(a^, b^)
 	return .Ok
 }
 
@@ -691,25 +691,25 @@ cy_min_u64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 
 cy_min_vec2 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	res := cy.get_ret(t, linalg.Vector2f32)
-	a := cy.get_prim(t, linalg.Vector2f32)
-	b := cy.get_prim(t, linalg.Vector2f32)
-	res^ = linalg.min(a, b)
+	a := cy.get(t, linalg.Vector2f32)
+	b := cy.get(t, linalg.Vector2f32)
+	res^ = linalg.min(a^, b^)
 	return .Ok
 }
 
 cy_min_vec3 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	res := cy.get_ret(t, linalg.Vector3f32)
-	a := cy.get_prim(t, linalg.Vector3f32)
-	b := cy.get_prim(t, linalg.Vector3f32)
-	res^ = linalg.min(a, b)
+	a := cy.get(t, linalg.Vector3f32)
+	b := cy.get(t, linalg.Vector3f32)
+	res^ = linalg.min(a^, b^)
 	return .Ok
 }
 
 cy_min_vec4 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	res := cy.get_ret(t, linalg.Vector4f32)
-	a := cy.get_prim(t, linalg.Vector4f32)
-	b := cy.get_prim(t, linalg.Vector4f32)
-	res^ = linalg.min(a, b)
+	a := cy.get(t, linalg.Vector4f32)
+	b := cy.get(t, linalg.Vector4f32)
+	res^ = linalg.min(a^, b^)
 	return .Ok
 }
 
@@ -789,11 +789,11 @@ cy_remap_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 
 cy_remap_vec2 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	res := cy.get_ret(t, linalg.Vector2f32)
-	x := cy.get_prim(t, linalg.Vector2f32)
-	in_min := cy.get_prim(t, linalg.Vector2f32)
-	in_max := cy.get_prim(t, linalg.Vector2f32)
-	out_min := cy.get_prim(t, linalg.Vector2f32)
-	out_max := cy.get_prim(t, linalg.Vector2f32)
+	x := cy.get(t, linalg.Vector2f32)
+	in_min := cy.get(t, linalg.Vector2f32)
+	in_max := cy.get(t, linalg.Vector2f32)
+	out_min := cy.get(t, linalg.Vector2f32)
+	out_max := cy.get(t, linalg.Vector2f32)
 	res^ = linalg.Vector2f32 {
 		math.remap(x.x, in_min.x, in_max.x, out_min.x, out_max.x),
 		math.remap(x.y, in_min.y, in_max.y, out_min.y, out_max.y),
@@ -803,11 +803,11 @@ cy_remap_vec2 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 
 cy_remap_vec3 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	res := cy.get_ret(t, linalg.Vector3f32)
-	x := cy.get_prim(t, linalg.Vector3f32)
-	in_min := cy.get_prim(t, linalg.Vector3f32)
-	in_max := cy.get_prim(t, linalg.Vector3f32)
-	out_min := cy.get_prim(t, linalg.Vector3f32)
-	out_max := cy.get_prim(t, linalg.Vector3f32)
+	x := cy.get(t, linalg.Vector3f32)
+	in_min := cy.get(t, linalg.Vector3f32)
+	in_max := cy.get(t, linalg.Vector3f32)
+	out_min := cy.get(t, linalg.Vector3f32)
+	out_max := cy.get(t, linalg.Vector3f32)
 	res^ = linalg.Vector3f32 {
 		math.remap(x.x, in_min.x, in_max.x, out_min.x, out_max.x),
 		math.remap(x.y, in_min.y, in_max.y, out_min.y, out_max.y),
@@ -818,11 +818,11 @@ cy_remap_vec3 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 
 cy_remap_vec4 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	res := cy.get_ret(t, linalg.Vector4f32)
-	x := cy.get_prim(t, linalg.Vector4f32)
-	in_min := cy.get_prim(t, linalg.Vector4f32)
-	in_max := cy.get_prim(t, linalg.Vector4f32)
-	out_min := cy.get_prim(t, linalg.Vector4f32)
-	out_max := cy.get_prim(t, linalg.Vector4f32)
+	x := cy.get(t, linalg.Vector4f32)
+	in_min := cy.get(t, linalg.Vector4f32)
+	in_max := cy.get(t, linalg.Vector4f32)
+	out_min := cy.get(t, linalg.Vector4f32)
+	out_max := cy.get(t, linalg.Vector4f32)
 	res^ = linalg.Vector4f32 {
 		math.remap(x.x, in_min.x, in_max.x, out_min.x, out_max.x),
 		math.remap(x.y, in_min.y, in_max.y, out_min.y, out_max.y),
@@ -997,192 +997,141 @@ cy_trunc_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 
 // Matrix stuff
 
-// matrix_type :: proc "c" ($N : int, id : cy.TypeId) -> (typeid, bool) {
-// 	#partial switch id {
-// 	case .I8:
-// 		return matrix[N, N]i8, true
-// 	case .I16:
-// 		return matrix[N, N]i16, true
-// 	case .I32:
-// 		return matrix[N, N]i32, true
-// 	case .I64:
-// 		return matrix[N, N]i64, true
-// 	case .R8:
-// 		return matrix[N, N]u8, true
-// 	case .R16:
-// 		return matrix[N, N]u16, true
-// 	case .R32:
-// 		return matrix[N, N]u32, true
-// 	case .R64:
-// 		return matrix[N, N]u64, true
-// 	case .F32:
-// 		return matrix[N, N]f32, true
-// 	case .F64:
-// 		return matrix[N, N]f64, true
-// 	case:
-// 		return matrix[N, N]u8, false
-// 	}
-// }
+mat_mul :: proc "c" ($N : int, $T : typeid, t : ^cy.Thread) -> cy.Ret {
+	res := cy.get_ret(t, matrix[N, N]T)
+	a := cy.get(t, matrix[N, N]T)
+	b := cy.get(t, matrix[N, N]T)
+	res^ = a^ * b^
+	return .Ok
+}
 
-// matrix_4_type :: proc "c" (id : cy.TypeId) -> (typeid, bool) {
-// 	return matrix_type(4, id)
-// }
+// mat 2
 
-// matrix_3_type :: proc "c" (id : cy.TypeId) -> (typeid, bool) {
-// 	return matrix_type(3, id)
-// }
+cy_mat2f32_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(2, f32, t)
+}
 
-// matrix_2_type :: proc "c" (id : cy.TypeId) -> (typeid, bool) {
-// 	return matrix_type(2, id)
-// }
+cy_mat2f64_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(2, f64, t)
+}
 
-// cy_init_mat :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-// 	i := cy.get_prim(t, u8)
-// 	kind := cy.get_prim(t, i32)
+cy_mat2u8_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(2, u8, t)
+}
 
-// 	type_id := cy.type_id_to_type(kind)
+cy_mat2u16_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(2, u16, t)
+}
 
-// 	mat_t : typeid
-// 	ok : bool
-// 	switch i {
-// 	case 2:
-// 		mat_t, ok = matrix_2_type(type_id)
-// 	case 3:
-// 		mat_t, ok = matrix_3_type(type_id)
-// 	case 4:
-// 		mat_t, ok = matrix_4_type(type_id)
-// 	case:
-// 		log_err("Invalid matrix dimensions. This shouldn't happen.")
-// 		return .Ok
-// 	}
+cy_mat2u32_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(2, u32, t)
+}
 
-// 	if !ok {
-// 		log_err("Invalid matrix type. This shouldn't happen.")
-// 		return .Ok
-// 	}
+cy_mat2u64_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(2, u64, t)
+}
 
-// 	// TODO: Optional
-// 	res := cy.thread_param(t, uint(reflect.size_of_typeid(mat_t)))
-// 	// Copy the raw vector data into the matrix
-// 	stride := reflect.size_of_typeid(cy.type_to_odin_type(type_id))
-// 	buff_len := i * i * u8(stride)
-// 	arr := cy.thread_param(t, uint(buff_len))
+cy_mat2i8_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(2, i8, t)
+}
 
-// 	mem.copy(res, arr, int(buff_len))
+cy_mat2i16_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(2, i16, t)
+}
 
-// 	return .Ok
-// }
+cy_mat2i32_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(2, i32, t)
+}
 
-// mat_mul_internal :: proc "c" ($T : typeid, t : ^cy.Thread) -> cy.Ret {
-// 	n := cy.get_prim(t, int)
-// 	switch n {
-// 	case 2:
-// 		res := cy.get_ret(t, matrix[2, 2]T)
-// 		a := cy.get_prim(t, matrix[2, 2]T)
-// 		b := cy.get_prim(t, matrix[2, 2]T)
-// 		res^ = a * b
-// 	case 3:
-// 		res := cy.get_ret(t, matrix[3, 3]T)
-// 		a := cy.get_prim(t, matrix[3, 3]T)
-// 		b := cy.get_prim(t, matrix[3, 3]T)
-// 		res^ = a * b
-// 	case 4:
-// 		res := cy.get_ret(t, matrix[4, 4]T)
-// 		a := cy.get_prim(t, matrix[4, 4]T)
-// 		b := cy.get_prim(t, matrix[4, 4]T)
-// 		res^ = a * b
-// 	}
+cy_mat2i64_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(2, i64, t)
+}
 
-// 	return .Ok
-// }
+// mat 3
 
-// cy_mat_mul_f32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-// 	return mat_mul_internal(f32, t)
-// }
+cy_mat3f32_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(3, f32, t)
+}
 
-// cy_mat_mul_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-// 	return mat_mul_internal(f64, t)
-// }
+cy_mat3f64_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(3, f64, t)
+}
 
-// cy_mat_mul_i8 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-// 	return mat_mul_internal(i8, t)
-// }
+cy_mat3u8_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(3, u8, t)
+}
 
-// cy_mat_mul_i16 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-// 	return mat_mul_internal(i16, t)
-// }
+cy_mat3u16_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(3, u16, t)
+}
 
-// cy_mat_mul_i32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-// 	return mat_mul_internal(i32, t)
-// }
+cy_mat3u32_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(3, u32, t)
+}
 
-// cy_mat_mul_i64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-// 	return mat_mul_internal(i64, t)
-// }
+cy_mat3u64_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(3, u64, t)
+}
 
-// cy_mat_mul_u8 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-// 	return mat_mul_internal(u8, t)
-// }
+cy_mat3i8_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(3, i8, t)
+}
 
-// cy_mat_mul_u16 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-// 	return mat_mul_internal(u16, t)
-// }
+cy_mat3i16_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(3, i16, t)
+}
 
-// cy_mat_mul_u32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-// 	return mat_mul_internal(u32, t)
-// }
+cy_mat3i32_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(3, i32, t)
+}
 
-// cy_mat_mul_u64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-// 	return mat_mul_internal(u64, t)
-// }
+cy_mat3i64_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(3, i64, t)
+}
 
-// cy_transform_init_euler :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-// 	res := cy.get_ret(t, matrix[4, 4]f32)
+// mat 4
 
-// 	pos := cy.get(t, [3]f32)
-// 	mat := linalg.MATRIX4F32_IDENTITY
-// 	mat *= linalg.matrix4_translate(pos^)
+cy_mat4f32_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(4, f32, t)
+}
 
-// 	euler := cy.get(t, [3]f32)
-// 	quat := linalg.quaternion_from_euler_angles_f32(euler.z, euler.y, euler.x, .ZYX)
-// 	mat *= linalg.matrix4_rotate_f32(
-// 		linalg.angle_from_quaternion_f32(quat),
-// 		linalg.axis_from_quaternion_f32(quat),
-// 	)
+cy_mat4f64_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(4, f64, t)
+}
 
-// 	res^ = mat
+cy_mat4u8_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(4, u8, t)
+}
 
-// 	return .Ok
-// }
+cy_mat4u16_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(4, u16, t)
+}
 
-// cy_transform_init_quaternion :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-// 	res := cy.get_ret(t, matrix[4, 4]f32)
+cy_mat4u32_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(4, u32, t)
+}
 
-// 	pos := cy.get(t, [3]f32)
-// 	mat := linalg.MATRIX4F32_IDENTITY
-// 	mat *= linalg.matrix4_translate(pos^)
+cy_mat4u64_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(4, u64, t)
+}
 
-// 	euler := cy.get(t, [3]f32)
-// 	quat := cy.get(t, quaternion128)
-// 	mat *= linalg.matrix4_rotate_f32(
-// 		linalg.angle_from_quaternion_f32(quat^),
-// 		linalg.axis_from_quaternion_f32(quat^),
-// 	)
+cy_mat4i8_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(4, i8, t)
+}
 
-// 	res^ = mat
+cy_mat4i16_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(4, i16, t)
+}
 
-// 	return .Ok
-// }
+cy_mat4i32_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(4, i32, t)
+}
 
-// transform_translate :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-// 	res := cy.get_ret(t, matrix[4, 4]f32)
+cy_mat4i64_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	return mat_mul(4, i64, t)
+}
 
-// 	pos := cy.get(t, [3]f32)
-// 	mat := cy.get(t, matrix[4, 4]f32)
-// 	res^ = mat^ * linalg.matrix4_translate(pos^)
-
-// 	return .Ok
-// }
+// Vector stuff
 
 vector_add_f32 :: proc "c" ($N : int, t : ^cy.Thread) -> cy.Ret {
 	res := cy.get_ret(t, [N]f32)
@@ -1548,6 +1497,36 @@ FUNCS :: [?]struct {
 	{"vec4_div_f32", cy_vec4_div_f32},
 	{"vec4_div_vec3", cy_vec4_div_vec3},
 	{"vec4_neg", cy_vec4_neg},
+	{"mat2f32_mul", cy_mat2f32_mul},
+	{"mat2f64_mul", cy_mat2f64_mul},
+	{"mat2u8_mul", cy_mat2u8_mul},
+	{"mat2u16_mul", cy_mat2u16_mul},
+	{"mat2u32_mul", cy_mat2u32_mul},
+	{"mat2u64_mul", cy_mat2u64_mul},
+	{"mat2i8_mul", cy_mat2i8_mul},
+	{"mat2i16_mul", cy_mat2i16_mul},
+	{"mat2i32_mul", cy_mat2i32_mul},
+	{"mat2i64_mul", cy_mat2i64_mul},
+	{"mat3f32_mul", cy_mat3f32_mul},
+	{"mat3f64_mul", cy_mat3f64_mul},
+	{"mat3u8_mul", cy_mat3u8_mul},
+	{"mat3u16_mul", cy_mat3u16_mul},
+	{"mat3u32_mul", cy_mat3u32_mul},
+	{"mat3u64_mul", cy_mat3u64_mul},
+	{"mat3i8_mul", cy_mat3i8_mul},
+	{"mat3i16_mul", cy_mat3i16_mul},
+	{"mat3i32_mul", cy_mat3i32_mul},
+	{"mat3i64_mul", cy_mat3i64_mul},
+	{"mat4f32_mul", cy_mat4f32_mul},
+	{"mat4f64_mul", cy_mat4f64_mul},
+	{"mat4u8_mul", cy_mat4u8_mul},
+	{"mat4u16_mul", cy_mat4u16_mul},
+	{"mat4u32_mul", cy_mat4u32_mul},
+	{"mat4u64_mul", cy_mat4u64_mul},
+	{"mat4i8_mul", cy_mat4i8_mul},
+	{"mat4i16_mul", cy_mat4i16_mul},
+	{"mat4i32_mul", cy_mat4i32_mul},
+	{"mat4i64_mul", cy_mat4i64_mul},
 }
 
 @(private)

@@ -276,53 +276,317 @@ fn rand_choice(arr [%N]%T) -> T:
 
 -- Matrix
 
---type MatrixSquare[T Any, const %N int]:
---	-inner [N * N]T
---
---#[bind] fn -init_mat[T Any, const %N int](data [N * N]T) -> MatrixSquare[T, N]
---
---fn -MatrixSquare[T Any, const %N int] :: @init(data [N * N]T) -> Self:
---	#if i < 2 or i > 4:
---		unsupported()
---
---	#switch meta.type.info(T):
---		#case .int |_|:
---			pass
---		#case .float |_|:
---			pass
---		#else:
---			unsupported()
---
---	return init_mat[T, N](data)
---
---type Matrix4[T Any] = MatrixSquare[T, 4]
---
---fn Matrix4[T Any] :: @init(data [16]T) -> Self:
---	return MatrixSquare[T, 4](data)
---
---fn Matrix4[] :: identity() -> Self:
---	return {
---		inner = {
---			1, 0, 0, 0,
---			0, 1, 0, 0,
---			0, 0, 1, 0,
---			0, 0, 0, 1,
---		}
---	}
---
---type Matrix3[T Any] = MatrixSquare[T, 3]
---
---fn Matrix3[T Any] :: @init(data [9]T) -> Self:
---	return MatrixSquare[T, 9](data)
---
---type Matrix2[T Any] = MatrixSquare[T, 2]
---
---fn Matrix2[T Any] :: @init(data [4]T) -> Self:
---	return MatrixSquare[T, 2](data)
---
+type Matrix4[T Any]:
+	-internal [16]T
 
-type Transform:
-	-internal [16]
+#[bind="mat4f32_mul"] fn -mat4f32_mul(a Matrix4[f32], b Matrix4[f32]) -> Matrix4[f32]
+#[bind="mat4f64_mul"] fn -mat4f64_mul(a Matrix4[f64], b Matrix4[f64]) -> Matrix4[f64]
+#[bind="mat4u8_mul"] fn -mat4u8_mul(a Matrix4[r8], b Matrix4[r8]) -> Matrix4[r8]
+#[bind="mat4u16_mul"] fn -mat4u16_mul(a Matrix4[r16], b Matrix4[r16]) -> Matrix4[r16]
+#[bind="mat4u32_mul"] fn -mat4u32_mul(a Matrix4[r32], b Matrix4[r32]) -> Matrix4[r32]
+#[bind="mat4u64_mul"] fn -mat4u64_mul(a Matrix4[r64], b Matrix4[r64]) -> Matrix4[r64]
+#[bind="mat4i8_mul"] fn -mat4i8_mul(a Matrix4[i8], b Matrix4[i8]) -> Matrix4[i8]
+#[bind="mat4i16_mul"] fn -mat4i16_mul(a Matrix4[i16], b Matrix4[i16]) -> Matrix4[i16]
+#[bind="mat4i32_mul"] fn -mat4i32_mul(a Matrix4[i32], b Matrix4[i32]) -> Matrix4[i32]
+#[bind="mat4i64_mul"] fn -mat4i64_mul(a Matrix4[i64], b Matrix4[i64]) -> Matrix4[i64]
+
+fn Matrix4[T Any] :: @init(elements [16]T) -> Self:
+	return {
+		internal = elements
+	}
+
+fn Matrix4[T Any] :: identity() -> Self:
+	return {
+		internal = {
+			1 as T, 0 as T, 0 as T, 0 as T,
+			0 as T, 1 as T, 0 as T, 0 as T,
+			0 as T, 0 as T, 1 as T, 0 as T,
+			0 as T, 0 as T, 0 as T, 1 as T,
+		}
+	}
+
+fn Matrix4[T Any] :: zero() -> Self:
+	return {
+		internal = [16]T{}
+	}
+
+fn (m &Matrix4[T]) @get(row, col int) -> T:
+	return m.internal[row * 4 + col]
+
+fn (m &Matrix4[T]) @set(row, col int, value T):
+	m.internal[row * 4 + col] = value
+
+fn (m Matrix4[T]) `*` (other Self) -> Matrix4[T]:
+	return #switch T:
+		#case f32:
+			return mat4f32_mul(m, other)
+		#case f64:
+			return mat4f64_mul(m, other)
+		#case r8:
+			return mat4u8_mul(m, other)
+		#case r16:
+			return mat4u16_mul(m, other)
+		#case r32:
+			return mat4u32_mul(m, other)
+		#case r64:
+			return mat4u64_mul(m, other)
+		#case i8:
+			return mat4i8_mul(m, other)
+		#case i16:
+			return mat4i16_mul(m, other)
+		#case i32:
+			return mat4i32_mul(m, other)
+		#case i64:
+			return mat4i64_mul(m, other)
+		#else:
+			return mat4_cyber_mul(m, other)
+
+fn -mat4_cyber_mul[T Any](a, b Matrix4[T]) -> Matrix4[T]:
+	const stride int = 4
+    r0 := 0 * stride
+    r1 := 1 * stride
+    r2 := 2 * stride
+    r3 := 3 * stride
+    a00 := b.internal[r0 + 0]
+    a01 := b.internal[r0 + 1]
+    a02 := b.internal[r0 + 2]
+    a03 := b.internal[r0 + 3]
+    a10 := b.internal[r1 + 0]
+    a11 := b.internal[r1 + 1]
+    a12 := b.internal[r1 + 2]
+    a13 := b.internal[r1 + 3]
+    a20 := b.internal[r2 + 0]
+    a21 := b.internal[r2 + 1]
+    a22 := b.internal[r2 + 2]
+    a23 := b.internal[r2 + 3]
+    a30 := b.internal[r3 + 0]
+    a31 := b.internal[r3 + 1]
+    a32 := b.internal[r3 + 2]
+    a33 := b.internal[r3 + 3]
+    b00 := a.internal[r0 + 0]
+    b01 := a.internal[r0 + 1]
+    b02 := a.internal[r0 + 2]
+    b03 := a.internal[r0 + 3]
+    b10 := a.internal[r1 + 0]
+    b11 := a.internal[r1 + 1]
+    b12 := a.internal[r1 + 2]
+    b13 := a.internal[r1 + 3]
+    b20 := a.internal[r2 + 0]
+    b21 := a.internal[r2 + 1]
+    b22 := a.internal[r2 + 2]
+    b23 := a.internal[r2 + 3]
+    b30 := a.internal[r3 + 0]
+    b31 := a.internal[r3 + 1]
+    b32 := a.internal[r3 + 2]
+    b33 := a.internal[r3 + 3]
+    return Matrix4[T]({
+        -- First row.
+        a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30,
+        a00 * b01 + a01 * b11 + a02 * b21 + a03 * b31,
+        a00 * b02 + a01 * b12 + a02 * b22 + a03 * b32,
+        a00 * b03 + a01 * b13 + a02 * b23 + a03 * b33,
+
+        a10 * b00 + a11 * b10 + a12 * b20 + a13 * b30,
+        a10 * b01 + a11 * b11 + a12 * b21 + a13 * b31,
+        a10 * b02 + a11 * b12 + a12 * b22 + a13 * b32,
+        a10 * b03 + a11 * b13 + a12 * b23 + a13 * b33,
+
+        a20 * b00 + a21 * b10 + a22 * b20 + a23 * b30,
+        a20 * b01 + a21 * b11 + a22 * b21 + a23 * b31,
+        a20 * b02 + a21 * b12 + a22 * b22 + a23 * b32,
+        a20 * b03 + a21 * b13 + a22 * b23 + a23 * b33,
+
+        a30 * b00 + a31 * b10 + a32 * b20 + a33 * b30,
+        a30 * b01 + a31 * b11 + a32 * b21 + a33 * b31,
+        a30 * b02 + a31 * b12 + a32 * b22 + a33 * b32,
+        a30 * b03 + a31 * b13 + a32 * b23 + a33 * b33,
+    })
+
+type Matrix3[T Any]:
+	-internal [9]T
+
+#[bind="mat3f32_mul"] fn -mat3f32_mul(a Matrix3[f32], b Matrix3[f32]) -> Matrix3[f32]
+#[bind="mat3f64_mul"] fn -mat3f64_mul(a Matrix3[f64], b Matrix3[f64]) -> Matrix3[f64]
+#[bind="mat3u8_mul"] fn -mat3u8_mul(a Matrix3[r8], b Matrix3[r8]) -> Matrix3[r8]
+#[bind="mat3u16_mul"] fn -mat3u16_mul(a Matrix3[r16], b Matrix3[r16]) -> Matrix3[r16]
+#[bind="mat3u32_mul"] fn -mat3u32_mul(a Matrix3[r32], b Matrix3[r32]) -> Matrix3[r32]
+#[bind="mat3u64_mul"] fn -mat3u64_mul(a Matrix3[r64], b Matrix3[r64]) -> Matrix3[r64]
+#[bind="mat3i8_mul"] fn -mat3i8_mul(a Matrix3[i8], b Matrix3[i8]) -> Matrix3[i8]
+#[bind="mat3i16_mul"] fn -mat3i16_mul(a Matrix3[i16], b Matrix3[i16]) -> Matrix3[i16]
+#[bind="mat3i32_mul"] fn -mat3i32_mul(a Matrix3[i32], b Matrix3[i32]) -> Matrix3[i32]
+#[bind="mat3i64_mul"] fn -mat3i64_mul(a Matrix3[i64], b Matrix3[i64]) -> Matrix3[i64]
+
+fn Matrix3[T Any] :: @init(elements [9]T) -> Self:
+	return {
+		internal = elements
+	}
+
+fn Matrix3[T Any] :: identity() -> Self:
+	return {
+		internal = {
+			1 as T, 0 as T, 0 as T,
+			0 as T, 1 as T, 0 as T,
+			0 as T, 0 as T, 1 as T,
+		}
+	}
+
+fn Matrix3[T Any] :: zero() -> Self:
+	return {
+		internal = [9]T{}
+	}
+
+fn (m &Matrix3[T]) @get(row, col int) -> T:
+	return m.internal[row * 3 + col]
+
+fn (m &Matrix3[T]) @set(row, col int, value T):
+	m.internal[row * 3 + col] = value
+
+fn (m Matrix3[T]) `*` (other Self) -> Matrix3[T]:
+	return #switch T:
+		#case f32:
+			return mat3f32_mul(m, other)
+		#case f64:
+			return mat3f64_mul(m, other)
+		#case r8:
+			return mat3u8_mul(m, other)
+		#case r16:
+			return mat3u16_mul(m, other)
+		#case r32:
+			return mat3u32_mul(m, other)
+		#case r64:
+			return mat3u64_mul(m, other)
+		#case i8:
+			return mat3i8_mul(m, other)
+		#case i16:
+			return mat3i16_mul(m, other)
+		#case i32:
+			return mat3i32_mul(m, other)
+		#case i64:
+			return mat3i64_mul(m, other)
+		#else:
+			return mat3_cyber_mul(m, other)
+
+fn -mat3_cyber_mul[T Any](a, b Matrix3[T]) -> Matrix3[T]:
+	const stride int = 3
+	r0 := 0 * stride
+	r1 := 1 * stride
+	r2 := 2 * stride
+	a00 := b.internal[r0 + 0]
+	a01 := b.internal[r0 + 1]
+	a02 := b.internal[r0 + 2]
+	a10 := b.internal[r1 + 0]
+	a11 := b.internal[r1 + 1]
+	a12 := b.internal[r1 + 2]
+	a20 := b.internal[r2 + 0]
+	a21 := b.internal[r2 + 1]
+	a22 := b.internal[r2 + 2]
+	b00 := a.internal[r0 + 0]
+	b01 := a.internal[r0 + 1]
+	b02 := a.internal[r0 + 2]
+	b10 := a.internal[r1 + 0]
+	b11 := a.internal[r1 + 1]
+	b12 := a.internal[r1 + 2]
+	b20 := a.internal[r2 + 0]
+	b21 := a.internal[r2 + 1]
+	b22 := a.internal[r2 + 2]
+	return Matrix3[T]({
+		-- First row.
+		a00 * b00 + a01 * b10 + a02 * b20,
+		a00 * b01 + a01 * b11 + a02 * b21,
+		a00 * b02 + a01 * b12 + a02 * b22,
+
+		a10 * b00 + a11 * b10 + a12 * b20,
+		a10 * b01 + a11 * b11 + a12 * b21,
+		a10 * b02 + a11 * b12 + a12 * b22,
+
+		a20 * b00 + a21 * b10 + a22 * b20,
+		a20 * b01 + a21 * b11 + a22 * b21,
+		a20 * b02 + a21 * b12 + a22 * b22,
+	})
+
+type Matrix2[T Any]:
+	-internal [4]T
+
+#[bind="mat2f32_mul"] fn -mat2f32_mul(a Matrix2[f32], b Matrix2[f32]) -> Matrix2[f32]
+#[bind="mat2f64_mul"] fn -mat2f64_mul(a Matrix2[f64], b Matrix2[f64]) -> Matrix2[f64]
+#[bind="mat2u8_mul"] fn -mat2u8_mul(a Matrix2[r8], b Matrix2[r8]) -> Matrix2[r8]
+#[bind="mat2u16_mul"] fn -mat2u16_mul(a Matrix2[r16], b Matrix2[r16]) -> Matrix2[r16]
+#[bind="mat2u32_mul"] fn -mat2u32_mul(a Matrix2[r32], b Matrix2[r32]) -> Matrix2[r32]
+#[bind="mat2u64_mul"] fn -mat2u64_mul(a Matrix2[r64], b Matrix2[r64]) -> Matrix2[r64]
+#[bind="mat2i8_mul"] fn -mat2i8_mul(a Matrix2[i8], b Matrix2[i8]) -> Matrix2[i8]
+#[bind="mat2i16_mul"] fn -mat2i16_mul(a Matrix2[i16], b Matrix2[i16]) -> Matrix2[i16]
+#[bind="mat2i32_mul"] fn -mat2i32_mul(a Matrix2[i32], b Matrix2[i32]) -> Matrix2[i32]
+#[bind="mat2i64_mul"] fn -mat2i64_mul(a Matrix2[i64], b Matrix2[i64]) -> Matrix2[i64]
+
+fn Matrix2[T Any] :: @init(elements [4]T) -> Self:
+	return {
+		internal = elements
+	}
+
+fn Matrix2[T Any] :: identity() -> Self:
+	return {
+		internal = {
+			1 as T, 0 as T,
+			0 as T, 1 as T,
+		}
+	}
+
+fn Matrix2[T Any] :: zero() -> Self:
+	return {
+		internal = [4]T{}
+	}
+
+fn (m &Matrix2[T]) @get(row, col int) -> T:
+	return m.internal[row * 2 + col]
+
+fn (m &Matrix2[T]) @set(row, col int, value T):
+	m.internal[row * 2 + col] = value
+
+fn (m Matrix2[T]) `*` (other Self) -> Matrix2[T]:
+	return #switch T:
+		#case f32:
+			return mat2f32_mul(m, other)
+		#case f64:
+			return mat2f64_mul(m, other)
+		#case r8:
+			return mat2u8_mul(m, other)
+		#case r16:
+			return mat2u16_mul(m, other)
+		#case r32:
+			return mat2u32_mul(m, other)
+		#case r64:
+			return mat2u64_mul(m, other)
+		#case i8:
+			return mat2i8_mul(m, other)
+		#case i16:
+			return mat2i16_mul(m, other)
+		#case i32:
+			return mat2i32_mul(m, other)
+		#case i64:
+			return mat2i64_mul(m, other)
+		#else:
+			return mat2_cyber_mul(m, other)
+
+fn -mat2_cyber_mul[T Any](a, b Matrix2[T]) -> Matrix2[T]:
+	const stride int = 2
+	r0 := 0 * stride
+	r1 := 1 * stride
+	a00 := b.internal[r0 + 0]
+	a01 := b.internal[r0 + 1]
+	a10 := b.internal[r1 + 0]
+	a11 := b.internal[r1 + 1]
+	b00 := a.internal[r0 + 0]
+	b01 := a.internal[r0 + 1]
+	b10 := a.internal[r1 + 0]
+	b11 := a.internal[r1 + 1]
+	return Matrix2[T]({
+		-- First row.
+		a00 * b00 + a01 * b10,
+		a00 * b01 + a01 * b11,
+
+		a10 * b00 + a11 * b10,
+		a10 * b01 + a11 * b11,
+	})
 
 -- Vector
 
