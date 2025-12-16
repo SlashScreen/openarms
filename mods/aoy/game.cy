@@ -87,12 +87,10 @@ fn on_update(delta f32):
 	cam_dist = math.clamp(cam_dist, CAM_MIN_DIST, CAM_MAX_DIST)
 
 	cam_fac := math.remap(cam_dist, CAM_MIN_DIST, CAM_MAX_DIST, 0.0, 1.0)
-	mov_3D := (
-		math.Vector3(mov.x, 0.0, mov.y) *
+	mov_3D := math.Vector3(mov.x, 0.0, mov.y) *
 		(camera_movement_speed * math.lerp(1.0, CAM_MAX_DIST_MOVEMENT_MODIFIER, cam_fac)) *
 		(if (input.key_down(input.binding(.camera_sprint))) CAM_SPRINT_MODIFIER else 1.0) *
 		delta
-	)
 
 	camera_root_position += mov_3D
 	cam.position = camera_root_position + (-math.Vector3(0.0, -1.0, 1.0) * cam_dist)
@@ -101,3 +99,5 @@ fn on_update(delta f32):
 
 fn draw_hud():
 	pass
+
+main()

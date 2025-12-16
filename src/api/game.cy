@@ -3,9 +3,9 @@ use meta
 use input
 
 type Options enum:
-	.inverted_camera_scroll
+	case inverted_camera_scroll
 
-type UnitSetTargetInfo(id UnitID, math.Vector2)
+type UnitSetTargetInfo(id UnitID, pos math.Vector2)
 
 #[bind] -host_setting(o Option, )
 fn setting(o Option, %T type) -> !T:
