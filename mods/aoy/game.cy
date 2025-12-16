@@ -1,5 +1,3 @@
--- WIP cyber port of the main game script
-
 use game
 use input
 use physics

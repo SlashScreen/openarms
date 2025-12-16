@@ -501,13 +501,13 @@ foreign cyber {
 	mod_add_global :: proc(mod : ^Sym, name : Bytes, binding : BindGlobal) ---
 	mod_on_destroy :: proc(mod : ^Sym, on_destroy : ModuleOnDestroyFn) ---
 	mod_on_load :: proc(mod : ^Sym, on_load : ModuleOnLoadFn) ---
-	mod_bind_core :: proc(vm : ^VM, mod : ^Sym) ---
-	mod_bind_cy :: proc(vm : ^VM, mod : ^Sym) ---
-	mod_bind_c :: proc(vm : ^VM, mod : ^Sym) ---
-	mod_bind_io :: proc(vm : ^VM, mod : ^Sym) ---
-	mod_bind_meta :: proc(vm : ^VM, mod : ^Sym) ---
-	mod_bind_math :: proc(vm : ^VM, mod : ^Sym) ---
-	mod_bind_test :: proc(vm : ^VM, mod : ^Sym) ---
+	mod_bind_core :: proc(vm : ^VM, mod : ^Sym) -> Bytes ---
+	mod_bind_cy :: proc(vm : ^VM, mod : ^Sym) -> Bytes ---
+	mod_bind_c :: proc(vm : ^VM, mod : ^Sym) -> Bytes ---
+	mod_bind_io :: proc(vm : ^VM, mod : ^Sym) -> Bytes ---
+	mod_bind_meta :: proc(vm : ^VM, mod : ^Sym) -> Bytes ---
+	mod_bind_math :: proc(vm : ^VM, mod : ^Sym) -> Bytes ---
+	mod_bind_test :: proc(vm : ^VM, mod : ^Sym) -> Bytes ---
 
 	// Expand type template for given arguments.
 	clExpandTypeTemplate :: proc(vm : ^VM, type_t : ^Sym, param_types : ^Type, args : ^Value, nargs : c.size_t) -> ^Type ---

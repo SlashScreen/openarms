@@ -24,6 +24,7 @@ client_init :: proc() -> bool {
 	log("Entry point at: %s", entry_point)
 	api_init()
 	code, f_ok := vfs_read_file(entry_point)
+	defer delete(code)
 	if !ok {
 		log_err("Failed to read game script")
 		api_deinit()
@@ -46,7 +47,6 @@ client_init_subsystems :: proc() {
 
 	game_init()
 	navigation_init()
-	hud_init()
 	api_init()
 
 	subscribe("render_texture_present", NIL_USERDATA, window_present)
@@ -83,7 +83,6 @@ client_shutdown_subsystems :: proc() {
 	rl.CloseWindow()
 
 	api_deinit()
-	hud_deinit()
 	navigation_deinit()
 	message_bus_destroy()
 	client_render_deinit()

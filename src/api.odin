@@ -8,6 +8,7 @@ CyberLoadModuleFn :: proc(vm : ^cyber.VM, mod : ^cyber.Sym, res : ^cyber.LoaderR
 
 vm : ^cyber.VM
 cyber_modules : map[string]CyberLoadModuleFn
+//sources : map[string]cyber.Bytes
 
 cyber_print_fn :: proc "c" (t : ^cyber.Thread, msg : cyber.Bytes) {
 	context = runtime.default_context()
@@ -57,7 +58,9 @@ api_init :: proc() {
 api_run_script :: proc(src : string) -> bool {
 	clstr := cyber.Bytes{strings.unsafe_string_to_cstring(src), len(src)}
 	res : cyber.EvalResult
+	log_debug("Evaluating script: %s", strings.unsafe_string_to_cstring(src))
 	exit_code := cyber.vm_eval(vm, clstr, &res)
+
 	switch exit_code {
 	case .ErrorCompile, .ErrorPanic, .ErrorUnknown:
 		summary := cyber.vm_error_summary(vm)
@@ -78,13 +81,18 @@ api_deinit :: proc() {
 	delete(cyber_modules)
 }
 
-load_meta_api :: proc(vm : ^cyber.VM, mod : ^cyber.Sym, _ : ^cyber.LoaderResult) -> bool {
-	cyber.mod_bind_meta(vm, mod)
+load_meta_api :: proc(vm : ^cyber.VM, mod : ^cyber.Sym, res : ^cyber.LoaderResult) -> bool {
+	src := cyber.mod_bind_meta(vm, mod)
+	//sources["meta"] = cyber.mod_bind_meta(vm, mod)
+	res.src = src
 	return true
 }
 
-load_core_api :: proc(vm : ^cyber.VM, mod : ^cyber.Sym, _ : ^cyber.LoaderResult) -> bool {
-	cyber.mod_bind_core(vm, mod)
+load_core_api :: proc(vm : ^cyber.VM, mod : ^cyber.Sym, res : ^cyber.LoaderResult) -> bool {
+	log_debug("Loading core.")
+	src := cyber.mod_bind_core(vm, mod)
+	//sources["core"] = src
+	res.src = src
 	return true
 }
 
