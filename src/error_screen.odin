@@ -59,7 +59,7 @@ error_screen_layout :: proc() -> clay.ClayArray(clay.RenderCommand) {
 		backgroundColor = clay.Color{0, 0, 0, 255},
 	},
 	) {
-		clay.Text("No games found...", &error_text_style)
+		clay.TextDynamic(err_msg, &error_text_style)
 	}
 
 	return clay.EndLayout()

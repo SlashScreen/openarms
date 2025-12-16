@@ -446,6 +446,11 @@ KeyEvent :: struct {
 	key :        Key,
 }
 
+InputRange :: struct {
+	pos : Key,
+	neg : Key,
+}
+
 // TODO: Modifier
 poll_input :: proc() {
 	for rl_key in rl.KeyboardKey {
@@ -523,13 +528,7 @@ is_key_pressed :: proc(key : Key) -> bool {
 	return rl.IsKeyPressed(key_to_rl[key])
 }
 
-key_2_axis :: proc(x : struct {
-		pos : Key,
-		neg : Key,
-	}, y : struct {
-		pos : Key,
-		neg : Key,
-	}) -> Vec2 {
+key_2_axis :: proc(x : InputRange, y : InputRange) -> Vec2 {
 	x_axis : f32 = 0.0
 	x_axis -= 1.0 if is_key_down(x.neg) else 0.0
 	x_axis += 1.0 if is_key_down(x.pos) else 0.0

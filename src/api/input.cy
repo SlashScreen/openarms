@@ -3,11 +3,11 @@ use math
 type Range(pos, neg Key)
 
 type KeyBinding enum:
-	case camera_left
-	case camera_right
+	case camera_sprint
 	case camera_forward
 	case camera_backwards
-	case camera_sprint
+	case camera_left
+	case camera_right
 
 type Key enum:
 	case invalid

@@ -6,7 +6,7 @@ import "core:time"
 import rl "vendor:raylib"
 
 dt_tick : time.Tick
-success := false
+err_msg : string
 
 client_init :: proc() -> bool {
 	rl.SetTraceLogCallback(rl_log_callback)
@@ -18,6 +18,7 @@ client_init :: proc() -> bool {
 	entry_point, ok := get_game_entry_point()
 	if !ok {
 		vfs_deinit()
+		err_msg = "No games found."
 		return false
 	}
 
@@ -27,12 +28,20 @@ client_init :: proc() -> bool {
 	defer delete(code)
 	if !ok {
 		log_err("Failed to read game script")
+		err_msg = "Failed to read game script."
 		api_deinit()
 		return false
 	}
 	log("Attempting to run game script...")
 
-	return api_run_script(string(code))
+	s_ok, err := api_run_script(string(code))
+	if s_ok {
+		return true
+	} else {
+		delete(err_msg)
+		err_msg = err
+		return false
+	}
 }
 
 client_init_subsystems :: proc() {
@@ -60,11 +69,6 @@ client_tick :: proc() {
 
 	dt := f32(time.duration_seconds(time.tick_since(dt_tick)))
 	dt_tick = time.tick_now()
-
-	if !success {
-		error_screen_draw(dt)
-		return
-	}
 }
 
 client_tick_subsystems :: proc(dt : f32) {

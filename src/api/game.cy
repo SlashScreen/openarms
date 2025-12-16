@@ -7,7 +7,7 @@ type Options enum:
 
 type UnitSetTargetInfo(id UnitID, pos math.Vector2)
 
-#[bind] -host_setting(o Option, )
+#[bind] -fn host_setting(o Option, )
 fn setting(o Option, %T type) -> !T:
 	return host_setting(o, meta.type.id(T))
 
@@ -17,10 +17,10 @@ type EventPacket enum:
 	case key input.KeyEvent
 	case mouse input.MouseEvent
 
-#[bind] init()
-#[bind] gather_updates() -> []Event
-#[bind] get_delta() -> f32
-#[bind] update_simulation(dt f32)
-#[bind] draw()
-#[bind] should_be_running() -> bool
-#[bind] shutdown()
+#[bind] fn init()
+#[bind] fn gather_updates() -> []Event
+#[bind] fn get_delta() -> f32
+#[bind] fn update_simulation(dt f32)
+#[bind] fn draw()
+#[bind] fn should_be_running() -> bool
+#[bind] fn shutdown()

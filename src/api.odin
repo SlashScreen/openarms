@@ -52,10 +52,12 @@ api_init :: proc() {
 	add_module_loader("game", load_game_api)
 	add_module_loader("rendering", load_rendering_api)
 	add_module_loader("physics", load_physics_api)
+	add_module_loader("input", load_input_api)
+	add_module_loader("sim", load_sim_api)
 	add_module_loader("math", load_math_api)
 }
 
-api_run_script :: proc(src : string) -> bool {
+api_run_script :: proc(src : string) -> (bool, string) {
 	clstr := cyber.Bytes{strings.unsafe_string_to_cstring(src), len(src)}
 	res : cyber.EvalResult
 	//log_debug("Evaluating script: %s", strings.unsafe_string_to_cstring(src))
@@ -66,14 +68,13 @@ api_run_script :: proc(src : string) -> bool {
 		summary := cyber.vm_error_summary(vm)
 		defer cyber.vm_freeb(vm, summary)
 		s := strings.clone_from_cstring_bounded(summary.ptr, int(summary.len))
-		defer delete(s)
 		log_err("Cyber Error: %s", s)
-		return false
+		return false, s
 	case .Success, .Await:
 		log("Eval completed with code %v (%v)", exit_code, res)
-		return true
+		return true, ""
 	}
-	return true
+	return true, ""
 }
 
 api_deinit :: proc() {

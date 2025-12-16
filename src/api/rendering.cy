@@ -9,9 +9,9 @@ type Camera3D:
 	projection CameraProjection
 
 type CameraProjection enum:
-	.perspective
-	.orthagonal
+	case perspective
+	case orthagonal
 
-#[bind="screen_to_world_ray"] (&Camera3D) screen_to_world_ray(pos : math.Vector2) -> physics.Ray
+#[bind="screen_to_world_ray"] fn (&Camera3D) screen_to_world_ray(pos math.Vector2) -> physics.Ray
 
-#[bind] main_camera() -> ^Camera3D
+#[bind] fn main_camera() -> ^Camera3D

@@ -2,7 +2,7 @@ use game
 use input
 use physics
 use sim
-use render
+use rendering
 use math
 
 const CAM_ZOOM_SPEED f32 = 3.0
@@ -55,11 +55,11 @@ fn on_mouse_input(ev input.MouseEvent):
 		case .pressed:
 			switch ev.button:
 				case .left:
-					cam := render.main_camera()
+					cam := rendering.main_camera()
 					ray := cam.screen_to_world_ray(ev.position)
 					selected_unit = physics.query_ray(ray, 1000.0)
 				case .right:
-					cam := render.main_camera()
+					cam := rendering.main_camera()
 					ray := cam.screen_to_world_ray(ev.position)
 					if physics.query_ray_terrain(ray) |res|:
 						print("hit terrain")
@@ -82,7 +82,7 @@ fn on_update(delta f32):
 		input.Range(input.binding(.camera_left), input.binding(.camera_right)),
 		input.Range(input.binding(.camera_forward), input.binding(.camera_backward)),
 	)
-	cam := render.main_camera()
+	cam := rendering.main_camera()
 	cam_dist += (if (game.setting(.inverted_camera_scroll, bool)) input.scroll_movement() else -input.scroll_movement()) * CAM_ZOOM_SPEED
 	cam_dist = math.clamp(cam_dist, CAM_MIN_DIST, CAM_MAX_DIST)
 
