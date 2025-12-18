@@ -2,7 +2,6 @@ package libcyber
 
 import "base:intrinsics"
 import "core:c"
-import "core:reflect"
 import "core:strings"
 
 when ODIN_OS == .Windows {
@@ -307,6 +306,54 @@ FieldInit :: struct {
 	value : Value,
 }
 
+StackFrame :: struct {
+	// Name identifier (e.g. function name, or "main")
+	name :     Bytes,
+
+	// Starts at 0.
+	line :     u32,
+
+	// Starts at 0.
+	col :      u32,
+
+	// Where the line starts in the source file.
+	line_pos : u32,
+	chunk :    u32,
+}
+
+StackTrace :: struct {
+	frames :     ^StackFrame,
+	frames_len : c.size_t,
+}
+
+@(default_calling_convention = "c", link_prefix = "cl")
+foreign cyber {
+	DefaultEvalConfig :: proc() -> EvalConfig ---
+	DefaultCompileConfig :: proc() -> CompileConfig ---
+	// Expand type template for given arguments.
+	ExpandTypeTemplate :: proc(vm : ^VM, type_t : ^Sym, param_types : ^Type, args : ^Value, nargs : c.size_t) -> ^Type ---
+	// Similar to `clFindType` and also resolves any missing template expansions.
+	ResolveType :: proc(vm : ^VM, spec : Bytes) -> ^Type ---
+	// Types.
+	GetType :: proc(val : Value) -> ^Type ---
+	GetFuncSig :: proc(vm : ^VM, params : ^Type, nparams : c.size_t, ret_t : ^Type) -> ^FuncSig ---
+	ResultName :: proc(code : ResultCode) -> Bytes ---
+}
+
+MemoryCheck :: struct {
+	num_cyc_objects : u32,
+}
+
+TraceInfo :: struct {
+	num_retains :  u32,
+	num_releases : u32,
+}
+
+@(default_calling_convention = "c")
+foreign cyber {
+	clTypeId :: proc(type : ^Type) -> TypeId ---
+}
+
 @(default_calling_convention = "c", link_prefix = "cl_")
 foreign cyber {
 	// -----------------------------------
@@ -316,9 +363,8 @@ foreign cyber {
 	version :: proc() -> Bytes ---
 	build :: proc() -> Bytes ---
 	commit :: proc() -> Bytes ---
-	clResultName :: proc(code : ResultCode) -> Bytes ---
 
-	// Create a new VM with `malloc` as the allocator.
+	// Create a new VM with `mimalloc` as the allocator.
 	vm_init :: proc() -> ^VM ---
 	vm_initx :: proc(allocator : Allocator) -> ^VM ---
 
@@ -345,15 +391,13 @@ foreign cyber {
 	vm_eprinter :: proc(vm : ^VM) -> PrintErrorFn ---
 	vm_set_eprinter :: proc(vm : ^VM, print : PrintErrorFn) ---
 	vm_set_logger :: proc(vm : ^VM, log : LogFn) ---
-	clDefaultEvalConfig :: proc() -> EvalConfig ---
-	clDefaultCompileConfig :: proc() -> CompileConfig ---
 
 	// Resets the compiler and runtime state.
 	vm_reset :: proc(vm : ^VM) ---
 
 	// Evalutes the source code and returns the result code.
 	// Subsequent evals will reuse the same compiler and runtime state.
-	// If the last statement of the script is an expression, `outVal` will contain the value.
+	// If the last statement of the script is an expression, `res` will contain the value.
 	vm_eval :: proc(vm : ^VM, src : Bytes, res : ^EvalResult) -> ResultCode ---
 
 	// Accepts a `uri` and EvalConfig.
@@ -404,30 +448,6 @@ foreign cyber {
 	// -----------------------------------
 	thread_vm :: proc(t : ^Thread) -> ^VM ---
 	thread_allocator :: proc(t : ^Thread) -> Allocator ---
-}
-
-StackFrame :: struct {
-	// Name identifier (e.g. function name, or "main")
-	name :     Bytes,
-
-	// Starts at 0.
-	line :     u32,
-
-	// Starts at 0.
-	col :      u32,
-
-	// Where the line starts in the source file.
-	line_pos : u32,
-	chunk :    u32,
-}
-
-StackTrace :: struct {
-	frames :     ^StackFrame,
-	frames_len : c.size_t,
-}
-
-@(default_calling_convention = "c", link_prefix = "cl_")
-foreign cyber {
 	thread_panic_trace :: proc(t : ^Thread) -> StackTrace ---
 
 	/// Returns runtime panic summary. Must be freed with `cl_free`.
@@ -470,25 +490,6 @@ foreign cyber {
 	thread_dump_live_objects :: proc(t : ^Thread) ---
 	thread_signal_host_panic :: proc(t : ^Thread) ---
 	thread_signal_host_segfault :: proc(t : ^Thread) ---
-}
-
-MemoryCheck :: struct {
-	num_cyc_objects : u32,
-}
-
-@(default_calling_convention = "c", link_prefix = "cl_")
-foreign cyber {
-	// Check memory for reference cycles which indicates a bug in the program.
-	thread_check_memory :: proc(t : ^Thread) -> MemoryCheck ---
-}
-
-TraceInfo :: struct {
-	num_retains :  u32,
-	num_releases : u32,
-}
-
-@(default_calling_convention = "c", link_prefix = "cl_")
-foreign cyber {
 	thread_trace_info :: proc(t : ^Thread) -> TraceInfo ---
 
 	// -----------------------------------
@@ -509,18 +510,12 @@ foreign cyber {
 	mod_bind_math :: proc(vm : ^VM, mod : ^Sym) -> Bytes ---
 	mod_bind_test :: proc(vm : ^VM, mod : ^Sym) -> Bytes ---
 
-	// Expand type template for given arguments.
-	clExpandTypeTemplate :: proc(vm : ^VM, type_t : ^Sym, param_types : ^Type, args : ^Value, nargs : c.size_t) -> ^Type ---
-
 	// Find and return the type from a given type specifier.
 	// Returns `NULL` if the symbol could not be found or the symbol is not a type.
 	// Returns `NULL` if trying to resolve a template expansion that doesn't already exist.
 	// NOTE: Currently this behaves like `clResolveType`.
 	// If a type is returned, the type specifier is memoized to return the same result.
 	find_type :: proc(vm : ^VM, spec : Bytes) -> ^Type ---
-
-	// Similar to `clFindType` and also resolves any missing template expansions.
-	clResolveType :: proc(vm : ^VM, spec : Bytes) -> ^Type ---
 
 	// Returns a short description about a value given their type id.
 	// Specializes for common types. Other types will only output the type id and the address.
@@ -545,12 +540,7 @@ foreign cyber {
 	slice_init :: proc(t : ^Thread, byte_buffer_t : TypeId, num_elems : c.size_t, elem_size : c.size_t) -> Slice ---
 
 	// Functions.
-	clGetFuncSig :: proc(vm : ^VM, params : ^Type, nparams : c.size_t, ret_t : ^Type) -> ^FuncSig ---
 	new_func_union :: proc(t : ^Thread, union_t : ^Type, func : HostFn) -> Value ---
-
-	// Types.
-	clGetType :: proc(val : Value) -> ^Type ---
-	clTypeId :: proc(type : ^Type) -> TypeId ---
 
 	// Consumes and lifts a value (given as a pointer to the value) to the heap.
 	lift :: proc(t : ^Thread, type : ^Type, value : rawptr) -> Value ---
@@ -559,6 +549,8 @@ foreign cyber {
 	// Expects an array type `[]T` as `array_t` which can be obtained from `clExpandTypeTemplate` or `clResolveType`.
 	array_empty_new :: proc(vm : ^VM, array_t : ^Type) -> Value ---
 	map_empty_new :: proc(t : ^Thread, map_t : ^Type) -> Value ---
+	// Check memory for reference cycles which indicates a bug in the program.
+	thread_check_memory :: proc(t : ^Thread) -> MemoryCheck ---
 }
 
 // Utils

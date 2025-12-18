@@ -76,7 +76,6 @@ fn on_key_input(ev input.KeyEvent):
 					print("Space pressed.")
 
 
-
 fn on_update(delta f32):
 	mov := input.axis2(
 		input.Range(input.binding(.camera_left), input.binding(.camera_right)),

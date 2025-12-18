@@ -61,7 +61,7 @@ api_run_script :: proc(src : string) -> (bool, string) {
 	clstr := cyber.Bytes{strings.unsafe_string_to_cstring(src), len(src)}
 	res : cyber.EvalResult
 	//log_debug("Evaluating script: %s", strings.unsafe_string_to_cstring(src))
-	exit_code := cyber.vm_eval(vm, clstr, &res)
+	exit_code := cyber.vm_evalx(vm, cyber.Bytes{"main", 4}, clstr, cyber.DefaultEvalConfig(), &res)
 
 	switch exit_code {
 	case .ErrorCompile:
