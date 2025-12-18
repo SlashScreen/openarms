@@ -587,7 +587,7 @@ fn (Matrix2[]) `*` (other Self) -> Matrix2[T]:
 -type Vector[T Any, const %N len]:
 	internal [len]T
 
--fn axis_to_index(a string) -> int:
+-fn axis_to_index(a string) -> ?int:
 	switch a:
 		case 'x', 'r':
 			return 0
@@ -599,35 +599,58 @@ fn (Matrix2[]) `*` (other Self) -> Matrix2[T]:
 			return 3
 		case '0':
 			return -1
+		else:
+			return none
 
---fn (Vector[]) @get(%swizzle string) -> if (swizzle.len() == 1) T else [swizzle.len()]T:
---	#if N == 1:
---		idx := #axis_to_index(swizzle[0])
---		#if idx == -1:
---			return T{}
---		#else:
---			return self.internal[idx]
---	#else:
---		res := [#swizzle.len()]T{}
---		#for 0..#swizzle.len() |i|:
---			idx := #axis_to_index(swizzle[i])
---			res[i] = #if (idx == -1) T{} else self.internal[i]
---		return res
+-fn vector_get_type(T type, swizzle_len int) -> type:
+	if swizzle_len == 1:
+		return T
+	else:
+		return [swizzle_len]T
 
---fn (Vector[]) @set(%swizzle string, value #if (#swizzle.len() == 1) T else [#swizzle.len()]T):
---	#if N == 1:
---		idx := #axis_to_index(swizzle[0])
---		#if idx == -1:
---			meta.error("Cannot set a zero axis in a vector")
---		#else:
---			#internal[idx] = value
---	#else:
---		#for 0..#swizzle.len() |i|:
---			idx := #axis_to_index(swizzle[0])
---			#if idx == -1:
---				meta.error("Cannot set a zero axis in a vector")
---			#else:
---				#internal[idx] = value[i]
+fn (Vector[]) @get(%swizzle string) -> vector_get_type(f32, swizzle.len()):
+	#if N == 1:
+		idx := axis_to_index(swizzle[0])
+		#if a |idx|:
+			#if a == -1:
+				return T{}
+			#else:
+				return self.internal[a]
+		#else:
+			meta.error("Unsupported swizzle #{swizzle}")
+	#else:
+		res := [swizzle.len()]T{}
+		#for 0..swizzle.len() |i|:
+			idx := axis_to_index(swizzle[i])
+			#if a |idx|:
+				#if a == -1:
+					res[i] = T{}
+				#else:
+					res[i] = self.internal[a]
+			#else:
+				meta.error("Unsupported swizzle #{swizzle[i]}")
+		return res
+
+fn (Vector[]) @set(%swizzle string, value vector_get_type(f32, swizzle.len())):
+	#if N == 1:
+		idx := axis_to_index(swizzle[0])
+		#if a |idx|:
+			#if a == -1:
+				meta.error("Cannot set a zero axis in a vector")
+			#else:
+				internal[a] = value
+		#else:
+			meta.error("Unsupported swizzle #{swizzle}")
+	#else:
+		#for 0..swizzle.len() |i|:
+			idx := axis_to_index(swizzle[i])
+			#if a |idx|:
+				#if a == -1:
+					meta.error("Cannot set a zero axis in a vector")
+				#else:
+					internal[a] = value[i]
+			#else:
+				meta.error("Unsupported swizzle #{swizzle[i]}")
 
 type Vector4:
 	-internal [4]f32
