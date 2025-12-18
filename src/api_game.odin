@@ -108,7 +108,7 @@ FUNCS :: [?]struct {
 	{"draw", cy_draw},
 	{"should_be_running", cy_should_be_running},
 	{"shutdown", cy_shutdown},
-	{"setting", cy_setting},
+	{"host_setting", cy_setting},
 }
 
 @(private)

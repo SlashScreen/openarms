@@ -1,7 +1,6 @@
 use math
-
-type UnitID = r64
+use game
 
 type UnitSelectTargetInfo:
-	id UnitID
+	id game.UnitID
 	point math.Vector2

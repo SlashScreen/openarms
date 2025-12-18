@@ -138,7 +138,7 @@ type Key enum:
 	case menu
 	case back
 
-type MouseButtom enum:
+type MouseButton enum:
 	case left
 	case right
 	case middle

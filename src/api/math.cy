@@ -600,36 +600,37 @@ fn (Matrix2[]) `*` (other Self) -> Matrix2[T]:
 		case '0':
 			return -1
 
-fn (Vector[]) @get(%swizzle string) -> #if (#swizzle.len() == 1) T else [#swizzle.len()]T:
-	#if N == 1:
-		idx := #axis_to_index(swizzle[0])
-		#if idx == -1:
-			return T{}
-		#else:
-			return self.internal[idx]
-	#else:
-		res := [#swizzle.len()]T{}
-		#for 0..#swizzle.len() |i|:
-			idx := #axis_to_index(swizzle[i])
-			res[i] = #if (idx == -1) T{} else self.internal[i]
-		return res
+--fn (Vector[]) @get(%swizzle string) -> if (swizzle.len() == 1) T else [swizzle.len()]T:
+--	#if N == 1:
+--		idx := #axis_to_index(swizzle[0])
+--		#if idx == -1:
+--			return T{}
+--		#else:
+--			return self.internal[idx]
+--	#else:
+--		res := [#swizzle.len()]T{}
+--		#for 0..#swizzle.len() |i|:
+--			idx := #axis_to_index(swizzle[i])
+--			res[i] = #if (idx == -1) T{} else self.internal[i]
+--		return res
 
-fn (Vector[]) @set(%swizzle string, value #if (#swizzle.len() == 1) T else [#swizzle.len()]T):
-	#if N == 1:
-		idx := #axis_to_index(swizzle[0])
-		#if idx == -1:
-			meta.error("Cannot set a zero axis in a vector")
-		#else:
-			#internal[idx] = value
-	#else:
-		#for 0..#swizzle.len() |i|:
-			idx := #axis_to_index(swizzle[0])
-			#if idx == -1:
-				meta.error("Cannot set a zero axis in a vector")
-			#else:
-				#internal[idx] = value[i]
+--fn (Vector[]) @set(%swizzle string, value #if (#swizzle.len() == 1) T else [#swizzle.len()]T):
+--	#if N == 1:
+--		idx := #axis_to_index(swizzle[0])
+--		#if idx == -1:
+--			meta.error("Cannot set a zero axis in a vector")
+--		#else:
+--			#internal[idx] = value
+--	#else:
+--		#for 0..#swizzle.len() |i|:
+--			idx := #axis_to_index(swizzle[0])
+--			#if idx == -1:
+--				meta.error("Cannot set a zero axis in a vector")
+--			#else:
+--				#internal[idx] = value[i]
 
-type Vector4 = Vector[f32, 4]
+type Vector4:
+	-internal [4]f32
 #[bind="vec4_add_f32"] fn (&Vector4) `+` (scale f32) -> Self
 #[bind="vec4_add_vec4"] fn (&Vector4) `+` (other Vector4) -> Self
 #[bind="vec4_sub_f32"] fn (&Vector4) `-` (scale f32) -> Self
@@ -648,9 +649,8 @@ fn Vector4 :: zero() -> Self:
 		internal = {0.0, 0.0, 0.0, 0.0}
 	}
 
-type Vector4i = Vector[i32, 4]
-
-type Vector3 = Vector[f32, 3]
+type Vector3:
+	-intenral [3]f32
 #[bind="vec3_add_f32"] fn (&Vector3) `+` (scale f32) -> Self
 #[bind="vec3_add_vec3"] fn (&Vector3) `+` (other Vector3) -> Self
 #[bind="vec3_sub_f32"] fn (&Vector3) `-` (scale f32) -> Self
@@ -669,9 +669,8 @@ fn Vector3 :: zero() -> Self:
 		internal = {0.0, 0.0, 0.0}
 	}
 
-type Vector3i = Vector[i32, 3]
-
-type Vector2 = Vector[f32, 2]
+type Vector2:
+	-internal [2]f32
 #[bind="vec2_add_f32"] fn (&Vector2) `+` (scale f32) -> Self
 #[bind="vec2_add_vec2"] fn (&Vector2) `+` (other Vector2) -> Self
 #[bind="vec2_sub_f32"] fn (&Vector2) `-` (scale f32) -> Self
@@ -689,8 +688,6 @@ fn Vector2 :: zero() -> Self:
 	return {
 		internal = {0.0, 0.0}
 	}
-
-type Vector2i = Vector[i32, 2]
 
 -- Quaternion
 

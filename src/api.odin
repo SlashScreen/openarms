@@ -64,11 +64,17 @@ api_run_script :: proc(src : string) -> (bool, string) {
 	exit_code := cyber.vm_eval(vm, clstr, &res)
 
 	switch exit_code {
-	case .ErrorCompile, .ErrorPanic, .ErrorUnknown:
+	case .ErrorCompile:
+		summary := cyber.vm_compile_error_summary(vm)
+		defer cyber.vm_freeb(vm, summary)
+		s := strings.clone_from_cstring_bounded(summary.ptr, int(summary.len))
+		log_err("Cyber %s", s)
+		return false, s
+	case .ErrorPanic, .ErrorUnknown:
 		summary := cyber.vm_error_summary(vm)
 		defer cyber.vm_freeb(vm, summary)
 		s := strings.clone_from_cstring_bounded(summary.ptr, int(summary.len))
-		log_err("Cyber Error: %s", s)
+		log_err("Cyber %s", s)
 		return false, s
 	case .Success, .Await:
 		log("Eval completed with code %v (%v)", exit_code, res)
