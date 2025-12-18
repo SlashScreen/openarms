@@ -37,7 +37,7 @@ cy_init :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 }
 
 cy_gather_updates :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, cy.Slice)
+	res := cy.thread_get_ret(t, cy.Slice)
 
 	size := uint(len(event_queue) * size_of(EventPacket))
 	slice := cy.Slice {
@@ -50,14 +50,14 @@ cy_gather_updates :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 }
 
 cy_get_delta :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	ret := cy.get_ret(t, f32)
+	ret := cy.thread_get_ret(t, f32)
 	ret^ = raylib.GetFrameTime()
 	return .Ok
 }
 
 cy_update_simulation :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	context = runtime.default_context()
-	dt := cy.thread_f32(t)
+	dt := cy.thread_get_prim(t, f32)
 	client_tick_subsystems(dt)
 	return .Ok
 }
@@ -69,7 +69,7 @@ cy_draw :: proc "c" (_ : ^cy.Thread) -> cy.Ret {
 }
 
 cy_should_be_running :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	ret := cy.get_ret(t, bool)
+	ret := cy.thread_get_ret(t, bool)
 	ret^ = !raylib.WindowShouldClose()
 	return .Ok
 }
@@ -84,10 +84,10 @@ cy_shutdown :: proc "c" (_ : ^cy.Thread) -> cy.Ret {
 cy_setting :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	context = runtime.default_context()
 	// TODO
-	o := cy.get(t, Options)
-	id := cy.get(t, i32)
+	o := cy.thread_get(t, Options)
+	id := cy.thread_get(t, i32)
 	o_type, ok := cy.type_to_odin_type(cy.type_id_to_type(id^))
-	//res := cy.get_ret(t, cy.ErrorUnion(o_type))
+	//res := cy.thread_get_ret(t, cy.ErrorUnion(o_type))
 	if ok {
 		//		o_value := options_settings[o^]
 		//	res^ = cy.err_some(o_value, o_type)
@@ -114,10 +114,10 @@ FUNCS :: [?]struct {
 @(private)
 load_game_api :: proc(vm : ^cy.VM, mod : ^cy.Sym, res : ^cy.LoaderResult) -> bool {
 	for f in FUNCS {
-		cy.mod_add_func(mod, cy.alias_string_to_bytes(f.n), cy.bind_func(f.p))
+		cy.mod_add_func(mod, cy.alias_bytes(f.n), cy.bind_func(f.p))
 	}
 
-	res.src = cy.alias_string_to_bytes(#load("api/game.cy", string))
+	res.src = cy.const_bytes(#load("api/game.cy", string))
 
 	return true
 }

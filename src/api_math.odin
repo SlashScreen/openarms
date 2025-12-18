@@ -14,8 +14,8 @@ u_op :: proc "contextless" (
 	$fn : proc "contextless" (_ : T) -> T,
 	t : ^cy.Thread,
 ) -> cy.Ret {
-	res := cy.get_ret(t, T)
-	x := cy.get_prim(t, T)
+	res := cy.thread_get_ret(t, T)
+	x := cy.thread_get_prim(t, T)
 	res^ = fn(x)
 	return .Ok
 }
@@ -25,9 +25,9 @@ bin_op :: proc "contextless" (
 	$fn : proc "contextless" (_ : T, _ : T) -> T,
 	t : ^cy.Thread,
 ) -> cy.Ret {
-	res := cy.get_ret(t, T)
-	x := cy.get_prim(t, T)
-	y := cy.get_prim(t, T)
+	res := cy.thread_get_ret(t, T)
+	x := cy.thread_get_prim(t, T)
+	y := cy.thread_get_prim(t, T)
 	res^ = fn(x, y)
 	return .Ok
 }
@@ -127,17 +127,17 @@ cy_atan_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 // Atan2
 
 cy_atan2_f32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, f32)
-	y := cy.get_prim(t, f32)
-	x := cy.get_prim(t, f32)
+	res := cy.thread_get_ret(t, f32)
+	y := cy.thread_get_prim(t, f32)
+	x := cy.thread_get_prim(t, f32)
 	res^ = math.atan2(y, x)
 	return .Ok
 }
 
 cy_atan2_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, f64)
-	y := cy.get_prim(t, f64)
-	x := cy.get_prim(t, f64)
+	res := cy.thread_get_ret(t, f64)
+	y := cy.thread_get_prim(t, f64)
+	x := cy.thread_get_prim(t, f64)
 	res^ = math.atan2(y, x)
 	return .Ok
 }
@@ -181,91 +181,91 @@ cy_ceil_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 // Clamp
 
 cy_clamp_f32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, f32)
-	x := cy.get_prim(t, f32)
-	min := cy.get_prim(t, f32)
-	max := cy.get_prim(t, f32)
+	res := cy.thread_get_ret(t, f32)
+	x := cy.thread_get_prim(t, f32)
+	min := cy.thread_get_prim(t, f32)
+	max := cy.thread_get_prim(t, f32)
 	res^ = math.clamp(x, min, max)
 	return .Ok
 }
 
 cy_clamp_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, f64)
-	x := cy.get_prim(t, f64)
-	min := cy.get_prim(t, f64)
-	max := cy.get_prim(t, f64)
+	res := cy.thread_get_ret(t, f64)
+	x := cy.thread_get_prim(t, f64)
+	min := cy.thread_get_prim(t, f64)
+	max := cy.thread_get_prim(t, f64)
 	res^ = math.clamp(x, min, max)
 	return .Ok
 }
 
 cy_clamp_u8 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, u8)
-	x := cy.get_prim(t, u8)
-	min := cy.get_prim(t, u8)
-	max := cy.get_prim(t, u8)
+	res := cy.thread_get_ret(t, u8)
+	x := cy.thread_get_prim(t, u8)
+	min := cy.thread_get_prim(t, u8)
+	max := cy.thread_get_prim(t, u8)
 	res^ = math.clamp(x, min, max)
 	return .Ok
 }
 
 cy_clamp_u16 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, u16)
-	x := cy.get_prim(t, u16)
-	min := cy.get_prim(t, u16)
-	max := cy.get_prim(t, u16)
+	res := cy.thread_get_ret(t, u16)
+	x := cy.thread_get_prim(t, u16)
+	min := cy.thread_get_prim(t, u16)
+	max := cy.thread_get_prim(t, u16)
 	res^ = math.clamp(x, min, max)
 	return .Ok
 }
 
 cy_clamp_u32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, u32)
-	x := cy.get_prim(t, u32)
-	min := cy.get_prim(t, u32)
-	max := cy.get_prim(t, u32)
+	res := cy.thread_get_ret(t, u32)
+	x := cy.thread_get_prim(t, u32)
+	min := cy.thread_get_prim(t, u32)
+	max := cy.thread_get_prim(t, u32)
 	res^ = math.clamp(x, min, max)
 	return .Ok
 }
 
 cy_clamp_u64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, u64)
-	x := cy.get_prim(t, u64)
-	min := cy.get_prim(t, u64)
-	max := cy.get_prim(t, u64)
+	res := cy.thread_get_ret(t, u64)
+	x := cy.thread_get_prim(t, u64)
+	min := cy.thread_get_prim(t, u64)
+	max := cy.thread_get_prim(t, u64)
 	res^ = math.clamp(x, min, max)
 	return .Ok
 }
 
 cy_clamp_i8 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, i8)
-	x := cy.get_prim(t, i8)
-	min := cy.get_prim(t, i8)
-	max := cy.get_prim(t, i8)
+	res := cy.thread_get_ret(t, i8)
+	x := cy.thread_get_prim(t, i8)
+	min := cy.thread_get_prim(t, i8)
+	max := cy.thread_get_prim(t, i8)
 	res^ = math.clamp(x, min, max)
 	return .Ok
 }
 
 cy_clamp_i16 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, i16)
-	x := cy.get_prim(t, i16)
-	min := cy.get_prim(t, i16)
-	max := cy.get_prim(t, i16)
+	res := cy.thread_get_ret(t, i16)
+	x := cy.thread_get_prim(t, i16)
+	min := cy.thread_get_prim(t, i16)
+	max := cy.thread_get_prim(t, i16)
 	res^ = math.clamp(x, min, max)
 	return .Ok
 }
 
 cy_clamp_i32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, i32)
-	x := cy.get_prim(t, i32)
-	min := cy.get_prim(t, i32)
-	max := cy.get_prim(t, i32)
+	res := cy.thread_get_ret(t, i32)
+	x := cy.thread_get_prim(t, i32)
+	min := cy.thread_get_prim(t, i32)
+	max := cy.thread_get_prim(t, i32)
 	res^ = math.clamp(x, min, max)
 	return .Ok
 }
 
 cy_clamp_i64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, i64)
-	x := cy.get_prim(t, i64)
-	min := cy.get_prim(t, i64)
-	max := cy.get_prim(t, i64)
+	res := cy.thread_get_ret(t, i64)
+	x := cy.thread_get_prim(t, i64)
+	min := cy.thread_get_prim(t, i64)
+	max := cy.thread_get_prim(t, i64)
 	res^ = math.clamp(x, min, max)
 	return .Ok
 }
@@ -273,8 +273,8 @@ cy_clamp_i64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 // Clz (count leading zeros)
 
 cy_clz_f32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, i32)
-	x := cy.get_prim(t, f32)
+	res := cy.thread_get_ret(t, i32)
+	x := cy.thread_get_prim(t, f32)
 	res^ = bits.leading_zeros(transmute(i32)x)
 	return .Ok
 }
@@ -382,17 +382,17 @@ cy_frac_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 // Hypot
 
 cy_hypot_f32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, f32)
-	x := cy.get_prim(t, f32)
-	y := cy.get_prim(t, f32)
+	res := cy.thread_get_ret(t, f32)
+	x := cy.thread_get_prim(t, f32)
+	y := cy.thread_get_prim(t, f32)
 	res^ = math.hypot(x, y)
 	return .Ok
 }
 
 cy_hypot_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, f64)
-	x := cy.get_prim(t, f64)
-	y := cy.get_prim(t, f64)
+	res := cy.thread_get_ret(t, f64)
+	x := cy.thread_get_prim(t, f64)
+	y := cy.thread_get_prim(t, f64)
 	res^ = math.hypot(x, y)
 	return .Ok
 }
@@ -400,15 +400,15 @@ cy_hypot_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 // isInf
 
 cy_is_inf_f32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, bool)
-	x := cy.get_prim(t, f32)
+	res := cy.thread_get_ret(t, bool)
+	x := cy.thread_get_prim(t, f32)
 	res^ = x == math.inf_f32(int(math.sign(x)))
 	return .Ok
 }
 
 cy_is_inf_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, bool)
-	x := cy.get_prim(t, f64)
+	res := cy.thread_get_ret(t, bool)
+	x := cy.thread_get_prim(t, f64)
 	res^ = x == math.inf_f64(int(math.sign(x)))
 	return .Ok
 }
@@ -416,15 +416,15 @@ cy_is_inf_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 // isInt
 
 cy_is_int_f32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, bool)
-	x := cy.get_prim(t, f32)
+	res := cy.thread_get_ret(t, bool)
+	x := cy.thread_get_prim(t, f32)
 	res^ = linalg.fract(x) == 0.0
 	return .Ok
 }
 
 cy_is_int_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, bool)
-	x := cy.get_prim(t, f64)
+	res := cy.thread_get_ret(t, bool)
+	x := cy.thread_get_prim(t, f64)
 	res^ = linalg.fract(x) == 0.0
 	return .Ok
 }
@@ -432,15 +432,15 @@ cy_is_int_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 // isNaN
 
 cy_is_nan_f32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, bool)
-	x := cy.get_prim(t, f32)
+	res := cy.thread_get_ret(t, bool)
+	x := cy.thread_get_prim(t, f32)
 	res^ = math.is_nan(x)
 	return .Ok
 }
 
 cy_is_nan_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, bool)
-	x := cy.get_prim(t, f64)
+	res := cy.thread_get_ret(t, bool)
+	x := cy.thread_get_prim(t, f64)
 	res^ = math.is_nan(x)
 	return .Ok
 }
@@ -448,55 +448,55 @@ cy_is_nan_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 // Lerp
 
 cy_lerp_f32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, f32)
-	a := cy.get_prim(t, f32)
-	b := cy.get_prim(t, f32)
-	alpha := cy.get_prim(t, f32)
+	res := cy.thread_get_ret(t, f32)
+	a := cy.thread_get_prim(t, f32)
+	b := cy.thread_get_prim(t, f32)
+	alpha := cy.thread_get_prim(t, f32)
 	res^ = math.lerp(a, b, alpha)
 	return .Ok
 }
 
 cy_lerp_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, f64)
-	a := cy.get_prim(t, f64)
-	b := cy.get_prim(t, f64)
-	alpha := cy.get_prim(t, f64)
+	res := cy.thread_get_ret(t, f64)
+	a := cy.thread_get_prim(t, f64)
+	b := cy.thread_get_prim(t, f64)
+	alpha := cy.thread_get_prim(t, f64)
 	res^ = math.lerp(a, b, alpha)
 	return .Ok
 }
 
 cy_lerp_vec2 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, linalg.Vector2f32)
-	a := cy.get(t, linalg.Vector2f32)
-	b := cy.get(t, linalg.Vector2f32)
-	alpha := cy.get_prim(t, f32)
+	res := cy.thread_get_ret(t, linalg.Vector2f32)
+	a := cy.thread_get(t, linalg.Vector2f32)
+	b := cy.thread_get(t, linalg.Vector2f32)
+	alpha := cy.thread_get_prim(t, f32)
 	res^ = linalg.lerp(a^, b^, alpha)
 	return .Ok
 }
 
 cy_lerp_vec3 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, linalg.Vector3f32)
-	a := cy.get(t, linalg.Vector3f32)
-	b := cy.get(t, linalg.Vector3f32)
-	alpha := cy.get_prim(t, f32)
+	res := cy.thread_get_ret(t, linalg.Vector3f32)
+	a := cy.thread_get(t, linalg.Vector3f32)
+	b := cy.thread_get(t, linalg.Vector3f32)
+	alpha := cy.thread_get_prim(t, f32)
 	res^ = linalg.lerp(a^, b^, alpha)
 	return .Ok
 }
 
 cy_lerp_vec4 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, linalg.Vector4f32)
-	a := cy.get(t, linalg.Vector4f32)
-	b := cy.get(t, linalg.Vector4f32)
-	alpha := cy.get_prim(t, f32)
+	res := cy.thread_get_ret(t, linalg.Vector4f32)
+	a := cy.thread_get(t, linalg.Vector4f32)
+	b := cy.thread_get(t, linalg.Vector4f32)
+	alpha := cy.thread_get_prim(t, f32)
 	res^ = linalg.lerp(a^, b^, alpha)
 	return .Ok
 }
 
 cy_lerp_quat :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, linalg.Quaternionf32)
-	a := cy.get(t, linalg.Quaternionf32)
-	b := cy.get(t, linalg.Quaternionf32)
-	alpha := cy.get_prim(t, f32)
+	res := cy.thread_get_ret(t, linalg.Quaternionf32)
+	a := cy.thread_get(t, linalg.Quaternionf32)
+	b := cy.thread_get(t, linalg.Quaternionf32)
+	alpha := cy.thread_get_prim(t, f32)
 	res^ = linalg.lerp(a^, b^, alpha)
 	return .Ok
 }
@@ -614,25 +614,25 @@ cy_max_u64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 }
 
 cy_max_vec2 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, linalg.Vector2f32)
-	a := cy.get(t, linalg.Vector2f32)
-	b := cy.get(t, linalg.Vector2f32)
+	res := cy.thread_get_ret(t, linalg.Vector2f32)
+	a := cy.thread_get(t, linalg.Vector2f32)
+	b := cy.thread_get(t, linalg.Vector2f32)
 	res^ = linalg.max(a^, b^)
 	return .Ok
 }
 
 cy_max_vec3 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, linalg.Vector3f32)
-	a := cy.get(t, linalg.Vector3f32)
-	b := cy.get(t, linalg.Vector3f32)
+	res := cy.thread_get_ret(t, linalg.Vector3f32)
+	a := cy.thread_get(t, linalg.Vector3f32)
+	b := cy.thread_get(t, linalg.Vector3f32)
 	res^ = linalg.max(a^, b^)
 	return .Ok
 }
 
 cy_max_vec4 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, linalg.Vector4f32)
-	a := cy.get(t, linalg.Vector4f32)
-	b := cy.get(t, linalg.Vector4f32)
+	res := cy.thread_get_ret(t, linalg.Vector4f32)
+	a := cy.thread_get(t, linalg.Vector4f32)
+	b := cy.thread_get(t, linalg.Vector4f32)
 	res^ = linalg.max(a^, b^)
 	return .Ok
 }
@@ -690,25 +690,25 @@ cy_min_u64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 }
 
 cy_min_vec2 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, linalg.Vector2f32)
-	a := cy.get(t, linalg.Vector2f32)
-	b := cy.get(t, linalg.Vector2f32)
+	res := cy.thread_get_ret(t, linalg.Vector2f32)
+	a := cy.thread_get(t, linalg.Vector2f32)
+	b := cy.thread_get(t, linalg.Vector2f32)
 	res^ = linalg.min(a^, b^)
 	return .Ok
 }
 
 cy_min_vec3 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, linalg.Vector3f32)
-	a := cy.get(t, linalg.Vector3f32)
-	b := cy.get(t, linalg.Vector3f32)
+	res := cy.thread_get_ret(t, linalg.Vector3f32)
+	a := cy.thread_get(t, linalg.Vector3f32)
+	b := cy.thread_get(t, linalg.Vector3f32)
 	res^ = linalg.min(a^, b^)
 	return .Ok
 }
 
 cy_min_vec4 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, linalg.Vector4f32)
-	a := cy.get(t, linalg.Vector4f32)
-	b := cy.get(t, linalg.Vector4f32)
+	res := cy.thread_get_ret(t, linalg.Vector4f32)
+	a := cy.thread_get(t, linalg.Vector4f32)
+	b := cy.thread_get(t, linalg.Vector4f32)
 	res^ = linalg.min(a^, b^)
 	return .Ok
 }
@@ -749,16 +749,16 @@ cy_rad_to_deg_f32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 
 cy_random :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	context = runtime.default_context()
-	res := cy.get_ret(t, f32)
+	res := cy.thread_get_ret(t, f32)
 	res^ = rand.float32()
 	return .Ok
 }
 
 cy_randint :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	context = runtime.default_context()
-	res := cy.get_ret(t, i32)
-	min := cy.get_prim(t, i32)
-	max := cy.get_prim(t, i32)
+	res := cy.thread_get_ret(t, i32)
+	min := cy.thread_get_prim(t, i32)
+	max := cy.thread_get_prim(t, i32)
 	res^ = i32(rand.int_range(int(min), int(max)))
 	return .Ok
 }
@@ -766,34 +766,34 @@ cy_randint :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 // Remap
 
 cy_remap_f32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, f32)
-	x := cy.get_prim(t, f32)
-	in_min := cy.get_prim(t, f32)
-	in_max := cy.get_prim(t, f32)
-	out_min := cy.get_prim(t, f32)
-	out_max := cy.get_prim(t, f32)
+	res := cy.thread_get_ret(t, f32)
+	x := cy.thread_get_prim(t, f32)
+	in_min := cy.thread_get_prim(t, f32)
+	in_max := cy.thread_get_prim(t, f32)
+	out_min := cy.thread_get_prim(t, f32)
+	out_max := cy.thread_get_prim(t, f32)
 	res^ = math.remap(x, in_min, in_max, out_min, out_max)
 	return .Ok
 }
 
 cy_remap_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, f64)
-	x := cy.get_prim(t, f64)
-	in_min := cy.get_prim(t, f64)
-	in_max := cy.get_prim(t, f64)
-	out_min := cy.get_prim(t, f64)
-	out_max := cy.get_prim(t, f64)
+	res := cy.thread_get_ret(t, f64)
+	x := cy.thread_get_prim(t, f64)
+	in_min := cy.thread_get_prim(t, f64)
+	in_max := cy.thread_get_prim(t, f64)
+	out_min := cy.thread_get_prim(t, f64)
+	out_max := cy.thread_get_prim(t, f64)
 	res^ = math.remap(x, in_min, in_max, out_min, out_max)
 	return .Ok
 }
 
 cy_remap_vec2 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, linalg.Vector2f32)
-	x := cy.get(t, linalg.Vector2f32)
-	in_min := cy.get(t, linalg.Vector2f32)
-	in_max := cy.get(t, linalg.Vector2f32)
-	out_min := cy.get(t, linalg.Vector2f32)
-	out_max := cy.get(t, linalg.Vector2f32)
+	res := cy.thread_get_ret(t, linalg.Vector2f32)
+	x := cy.thread_get(t, linalg.Vector2f32)
+	in_min := cy.thread_get(t, linalg.Vector2f32)
+	in_max := cy.thread_get(t, linalg.Vector2f32)
+	out_min := cy.thread_get(t, linalg.Vector2f32)
+	out_max := cy.thread_get(t, linalg.Vector2f32)
 	res^ = linalg.Vector2f32 {
 		math.remap(x.x, in_min.x, in_max.x, out_min.x, out_max.x),
 		math.remap(x.y, in_min.y, in_max.y, out_min.y, out_max.y),
@@ -802,12 +802,12 @@ cy_remap_vec2 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 }
 
 cy_remap_vec3 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, linalg.Vector3f32)
-	x := cy.get(t, linalg.Vector3f32)
-	in_min := cy.get(t, linalg.Vector3f32)
-	in_max := cy.get(t, linalg.Vector3f32)
-	out_min := cy.get(t, linalg.Vector3f32)
-	out_max := cy.get(t, linalg.Vector3f32)
+	res := cy.thread_get_ret(t, linalg.Vector3f32)
+	x := cy.thread_get(t, linalg.Vector3f32)
+	in_min := cy.thread_get(t, linalg.Vector3f32)
+	in_max := cy.thread_get(t, linalg.Vector3f32)
+	out_min := cy.thread_get(t, linalg.Vector3f32)
+	out_max := cy.thread_get(t, linalg.Vector3f32)
 	res^ = linalg.Vector3f32 {
 		math.remap(x.x, in_min.x, in_max.x, out_min.x, out_max.x),
 		math.remap(x.y, in_min.y, in_max.y, out_min.y, out_max.y),
@@ -817,12 +817,12 @@ cy_remap_vec3 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 }
 
 cy_remap_vec4 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, linalg.Vector4f32)
-	x := cy.get(t, linalg.Vector4f32)
-	in_min := cy.get(t, linalg.Vector4f32)
-	in_max := cy.get(t, linalg.Vector4f32)
-	out_min := cy.get(t, linalg.Vector4f32)
-	out_max := cy.get(t, linalg.Vector4f32)
+	res := cy.thread_get_ret(t, linalg.Vector4f32)
+	x := cy.thread_get(t, linalg.Vector4f32)
+	in_min := cy.thread_get(t, linalg.Vector4f32)
+	in_max := cy.thread_get(t, linalg.Vector4f32)
+	out_min := cy.thread_get(t, linalg.Vector4f32)
+	out_max := cy.thread_get(t, linalg.Vector4f32)
 	res^ = linalg.Vector4f32 {
 		math.remap(x.x, in_min.x, in_max.x, out_min.x, out_max.x),
 		math.remap(x.y, in_min.y, in_max.y, out_min.y, out_max.y),
@@ -845,15 +845,15 @@ cy_round_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 }
 
 cy_round_to_int_f32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, i32)
-	x := cy.get_prim(t, f32)
+	res := cy.thread_get_ret(t, i32)
+	x := cy.thread_get_prim(t, f32)
 	res^ = i32(math.round(x))
 	return .Ok
 }
 
 cy_round_to_int_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, i64)
-	x := cy.get_prim(t, f64)
+	res := cy.thread_get_ret(t, i64)
+	x := cy.thread_get_prim(t, f64)
 	res^ = i64(math.round(x))
 	return .Ok
 }
@@ -998,9 +998,9 @@ cy_trunc_f64 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 // Matrix stuff
 
 mat_mul :: proc "c" ($N : int, $T : typeid, t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, matrix[N, N]T)
-	a := cy.get(t, matrix[N, N]T)
-	b := cy.get(t, matrix[N, N]T)
+	res := cy.thread_get_ret(t, matrix[N, N]T)
+	a := cy.thread_get(t, matrix[N, N]T)
+	b := cy.thread_get(t, matrix[N, N]T)
 	res^ = a^ * b^
 	return .Ok
 }
@@ -1134,89 +1134,89 @@ cy_mat4i64_mul :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 // Vector stuff
 
 vector_add_f32 :: proc "c" ($N : int, t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, [N]f32)
+	res := cy.thread_get_ret(t, [N]f32)
 
-	vec := cy.get(t, [N]f32)
-	scal := cy.get_prim(t, f32)
+	vec := cy.thread_get(t, [N]f32)
+	scal := cy.thread_get_prim(t, f32)
 	res^ = vec^ + scal
 
 	return .Ok
 }
 
 vector_add_vec :: proc "c" ($N : int, t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, [N]f32)
+	res := cy.thread_get_ret(t, [N]f32)
 
-	vec := cy.get(t, [N]f32)
-	b := cy.get(t, [N]f32)
+	vec := cy.thread_get(t, [N]f32)
+	b := cy.thread_get(t, [N]f32)
 	res^ = vec^ + b^
 
 	return .Ok
 }
 
 vector_sub_f32 :: proc "c" ($N : int, t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, [N]f32)
+	res := cy.thread_get_ret(t, [N]f32)
 
-	vec := cy.get(t, [N]f32)
-	scal := cy.get_prim(t, f32)
+	vec := cy.thread_get(t, [N]f32)
+	scal := cy.thread_get_prim(t, f32)
 	res^ = vec^ - scal
 
 	return .Ok
 }
 
 vector_sub_vec :: proc "c" ($N : int, t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, [N]f32)
+	res := cy.thread_get_ret(t, [N]f32)
 
-	vec := cy.get(t, [N]f32)
-	b := cy.get(t, [N]f32)
+	vec := cy.thread_get(t, [N]f32)
+	b := cy.thread_get(t, [N]f32)
 	res^ = vec^ - b^
 
 	return .Ok
 }
 
 vector_mul_f32 :: proc "c" ($N : int, t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, [N]f32)
+	res := cy.thread_get_ret(t, [N]f32)
 
-	vec := cy.get(t, [N]f32)
-	scal := cy.get_prim(t, f32)
+	vec := cy.thread_get(t, [N]f32)
+	scal := cy.thread_get_prim(t, f32)
 	res^ = vec^ * scal
 
 	return .Ok
 }
 
 vector_mul_vec :: proc "c" ($N : int, t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, [N]f32)
+	res := cy.thread_get_ret(t, [N]f32)
 
-	vec := cy.get(t, [N]f32)
-	b := cy.get(t, [N]f32)
+	vec := cy.thread_get(t, [N]f32)
+	b := cy.thread_get(t, [N]f32)
 	res^ = vec^ * b^
 
 	return .Ok
 }
 
 vector_div_f32 :: proc "c" ($N : int, t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, [N]f32)
+	res := cy.thread_get_ret(t, [N]f32)
 
-	vec := cy.get(t, [N]f32)
-	scal := cy.get_prim(t, f32)
+	vec := cy.thread_get(t, [N]f32)
+	scal := cy.thread_get_prim(t, f32)
 	res^ = vec^ / scal
 
 	return .Ok
 }
 
 vector_div_vec :: proc "c" ($N : int, t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, [N]f32)
+	res := cy.thread_get_ret(t, [N]f32)
 
-	vec := cy.get(t, [N]f32)
-	b := cy.get(t, [N]f32)
+	vec := cy.thread_get(t, [N]f32)
+	b := cy.thread_get(t, [N]f32)
 	res^ = vec^ / b^
 
 	return .Ok
 }
 
 vector_neg :: proc "c" ($N : int, t : ^cy.Thread) -> cy.Ret {
-	res := cy.get_ret(t, [N]f32)
+	res := cy.thread_get_ret(t, [N]f32)
 
-	vec := cy.get(t, [N]f32)
+	vec := cy.thread_get(t, [N]f32)
 	res^ = -vec^
 
 	return .Ok
@@ -1534,10 +1534,10 @@ FUNCS :: [?]struct {
 @(private)
 load_math_api :: proc(vm : ^cy.VM, mod : ^cy.Sym, res : ^cy.LoaderResult) -> bool {
 	for f in FUNCS {
-		cy.mod_add_func(mod, cy.alias_string_to_bytes(f.n), cy.bind_func(f.p))
+		cy.mod_add_func(mod, cy.alias_bytes(f.n), cy.bind_func(f.p))
 	}
 
-	res.src = cy.alias_string_to_bytes(#load("api/math.cy", string))
+	res.src = cy.const_bytes(#load("api/math.cy", string))
 
 	return true
 }

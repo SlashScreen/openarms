@@ -12,12 +12,12 @@ cyber_modules : map[string]CyberLoadModuleFn
 
 cyber_print_fn :: proc "c" (t : ^cyber.Thread, msg : cyber.Bytes) {
 	context = runtime.default_context()
-	log(string(msg.ptr))
+	log(cyber.bytes_to_string(msg))
 }
 
 cyber_print_err_fn :: proc "c" (t : ^cyber.Thread, msg : cyber.Bytes) {
 	context = runtime.default_context()
-	log_err(string(msg.ptr))
+	log_err(cyber.bytes_to_string(msg))
 }
 
 cyber_load_module :: proc "c" (
@@ -27,7 +27,7 @@ cyber_load_module :: proc "c" (
 	res : ^cyber.LoaderResult,
 ) -> bool {
 	context = runtime.default_context()
-	mod_name := strings.clone_from_cstring_bounded(uri.ptr, int(uri.len))
+	mod_name := cyber.clone_bytes_to_string(uri)
 	log_debug("Loading cyber module: %s", mod_name)
 	defer delete(mod_name)
 	if p, ok := cyber_modules[mod_name]; ok {
@@ -58,22 +58,28 @@ api_init :: proc() {
 }
 
 api_run_script :: proc(src : string) -> (bool, string) {
-	clstr := cyber.Bytes{strings.unsafe_string_to_cstring(src), len(src)}
+	clstr := cyber.alias_bytes(src)
 	res : cyber.EvalResult
 	//log_debug("Evaluating script: %s", strings.unsafe_string_to_cstring(src))
-	exit_code := cyber.vm_evalx(vm, cyber.Bytes{"main", 4}, clstr, cyber.DefaultEvalConfig(), &res)
+	exit_code := cyber.vm_eval(
+		vm,
+		cyber.const_bytes("main"),
+		clstr,
+		cyber.default_eval_config(),
+		&res,
+	)
 
 	switch exit_code {
 	case .ErrorCompile:
 		summary := cyber.vm_compile_error_summary(vm)
-		defer cyber.vm_freeb(vm, summary)
-		s := strings.clone_from_cstring_bounded(summary.ptr, int(summary.len))
+		defer cyber.vm_free(vm, summary)
+		s := cyber.clone_bytes_to_string(summary)
 		log_err("Cyber %s", s)
 		return false, s
 	case .ErrorPanic, .ErrorUnknown:
 		summary := cyber.vm_error_summary(vm)
-		defer cyber.vm_freeb(vm, summary)
-		s := strings.clone_from_cstring_bounded(summary.ptr, int(summary.len))
+		defer cyber.vm_free(vm, summary)
+		s := cyber.clone_bytes_to_string(summary)
 		log_err("Cyber %s", s)
 		return false, s
 	case .Success, .Await:

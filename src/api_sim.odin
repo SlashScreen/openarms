@@ -11,10 +11,10 @@ FUNCS :: [?]struct {
 @(private)
 load_sim_api :: proc(vm : ^cy.VM, mod : ^cy.Sym, res : ^cy.LoaderResult) -> bool {
 	for f in FUNCS {
-		cy.mod_add_func(mod, cy.alias_string_to_bytes(f.n), cy.bind_func(f.p))
+		cy.mod_add_func(mod, cy.alias_bytes(f.n), cy.bind_func(f.p))
 	}
 
-	res.src = cy.alias_string_to_bytes(#load("api/sim.cy", string))
+	res.src = cy.const_bytes(#load("api/sim.cy", string))
 
 	return true
 }
