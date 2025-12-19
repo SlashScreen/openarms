@@ -341,6 +341,8 @@ foreign cyber {
 
 	/// Some API callbacks use this to report errors.
 	ReportApiError :: proc(vm : ^VM, msg : Bytes) ---
+
+	Verbose : bool
 }
 
 MemoryCheck :: struct {
@@ -366,6 +368,8 @@ foreign cyber {
 	version :: proc() -> Bytes ---
 	build :: proc() -> Bytes ---
 	commit :: proc() -> Bytes ---
+
+	logger : GlobalLogFn
 
 	// Create a new VM with `mimalloc` as the allocator.
 	vm_init :: proc() -> ^VM ---

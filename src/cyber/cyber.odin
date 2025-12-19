@@ -138,6 +138,7 @@ vm_get_printer :: i_.vm_printer
 vm_set_printer :: i_.vm_set_printer
 vm_get_eprinter :: i_.vm_eprinter
 vm_set_eprinter :: i_.vm_set_eprinter
+// Used for compiler logging and `core.log`.
 vm_set_logger :: i_.vm_set_logger
 
 vm_reset :: i_.vm_reset
@@ -390,5 +391,21 @@ type_to_odin_type :: proc(id : TypeId) -> (typeid, bool) #optional_ok {
 	case:
 		return u8, false
 	}
+}
+
+expand_type_template :: i_.ExpandTypeTemplate
+resolve_type :: i_.ResolveType
+get_type_id_from_type :: i_.clTypeId
+value_get_type :: i_.GetType
+get_func_sig :: i_.GetFuncSig
+get_result_name :: i_.ResultName
+report_api_error :: i_.ReportApiError
+
+set_verbose :: proc "contextless" (v : bool) {
+	i_.Verbose = v
+}
+
+set_global_log_fn :: proc "contextless" (fn : GlobalLogFn) {
+	i_.logger = fn
 }
 

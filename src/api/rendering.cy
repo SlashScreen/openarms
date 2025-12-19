@@ -12,6 +12,6 @@ type CameraProjection enum:
 	case perspective
 	case orthagonal
 
-#[bind="screen_to_world_ray"] fn (&Camera3D) screen_to_world_ray(pos math.Vector2) -> physics.Ray
+#[bind="screen_to_world_ray"] fn screen_to_world_ray(cam ^Camera3D, pos math.Vector2) -> physics.Ray
 
 #[bind] fn main_camera() -> ^Camera3D

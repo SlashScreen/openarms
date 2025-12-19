@@ -56,11 +56,11 @@ fn on_mouse_input(ev input.MouseEvent):
 			switch ev.button:
 				case .left:
 					cam := rendering.main_camera()
-					ray := cam.screen_to_world_ray(ev.position)
+					ray := screen_to_world_ray(cam, ev.position)
 					selected_unit = physics.query_ray(ray, 1000.0)
 				case .right:
 					cam := rendering.main_camera()
-					ray := cam.screen_to_world_ray(ev.position)
+					ray := screen_to_world_ray(cam, ev.position)
 					if physics.query_ray_terrain(ray) |res|:
 						print("hit terrain")
 						if selected_unit |id|:
