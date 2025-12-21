@@ -11,12 +11,12 @@ const CAM_MAX_DIST f32 = 60.0
 const CAM_MAX_DIST_MOVEMENT_MODIFIER f32 = 5.0
 const CAM_SPRINT_MODIFIER f32 = 3.0
 
-var selected ?UnitID = none
-var cam_dist f32 = CAM_MIN_DIST
-var camera_movement_speed f32 = 8.0
-var camera_root_position math.Vector3 = math.Vector3.zero()
+-global selected_unit ?game.UnitID = none
+-global cam_dist f32 = CAM_MIN_DIST
+-global camera_movement_speed f32 = 8.0
+-global camera_root_position math.Vector3 = math.Vector3.zero()
 
-running := true
+-global running bool = true
 
 fn main():
 	game.init()
@@ -56,16 +56,20 @@ fn on_mouse_input(ev input.MouseEvent):
 			switch ev.button:
 				case .left:
 					cam := rendering.main_camera()
-					ray := screen_to_world_ray(cam, ev.position)
+					ray := rendering.screen_to_world_ray(cam, ev.position)
 					selected_unit = physics.query_ray(ray, 1000.0)
 				case .right:
 					cam := rendering.main_camera()
-					ray := screen_to_world_ray(cam, ev.position)
+					ray := rendering.screen_to_world_ray(cam, ev.position)
 					if physics.query_ray_terrain(ray) |res|:
 						print("hit terrain")
 						if selected_unit |id|:
 							info := game.UnitSetTargetInfo(id, res.point.xz)
-							game.broadcast(game.SET_UNIT_TARGET_COMMAND, &info)
+							game.broadcast("set_unit_target_command", &info)
+				else:
+					pass
+		else:
+			pass
 
 
 fn on_key_input(ev input.KeyEvent):
@@ -74,15 +78,19 @@ fn on_key_input(ev input.KeyEvent):
 			switch ev.key:
 				case .space:
 					print("Space pressed.")
+				else:
+					pass
+		else:
+			pass
 
 
 fn on_update(delta f32):
 	mov := input.axis2(
-		input.Range(input.binding(.camera_left), input.binding(.camera_right)),
-		input.Range(input.binding(.camera_forward), input.binding(.camera_backward)),
+		input.Range{input.binding(.camera_left), input.binding(.camera_right)},
+		input.Range{input.binding(.camera_forward), input.binding(.camera_backward)},
 	)
 	cam := rendering.main_camera()
-	cam_dist += (if (game.setting(.inverted_camera_scroll, bool)) input.scroll_movement() else -input.scroll_movement()) * CAM_ZOOM_SPEED
+	cam_dist += (if (game.setting(.inverted_camera_scroll, bool) !else false) input.scroll_movement() else -input.scroll_movement()) * CAM_ZOOM_SPEED
 	cam_dist = math.clamp(cam_dist, CAM_MIN_DIST, CAM_MAX_DIST)
 
 	cam_fac := math.remap(cam_dist, CAM_MIN_DIST, CAM_MAX_DIST, 0.0, 1.0)
@@ -98,5 +106,3 @@ fn on_update(delta f32):
 
 fn draw_hud():
 	pass
-
-main()

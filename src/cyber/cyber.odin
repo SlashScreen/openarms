@@ -231,7 +231,7 @@ thread_get_prim :: proc "contextless" (t : ^Thread, $T : typeid) -> T {
 		return i_.thread_float(t)
 	} else when T == Slice {
 		return i_.thread_slice(t)
-	} else when T == CyberStr {
+	} else when T == i_.CyberStr {
 		return i_.thread_str(t)
 	} else when T == rawptr {
 		return i_.thread_ptr(t)
@@ -315,6 +315,10 @@ bytes_to_string :: proc(b : Bytes) -> string {
 
 compare_string_to_bytes :: proc(str : string, bytes : Bytes) -> bool {
 	return str == bytes_to_string(bytes)
+}
+
+bytes_from_cyber_str :: proc(s : i_.CyberStr) -> Bytes {
+	return i_.str_bytes(s)
 }
 
 slice_init :: i_.slice_init

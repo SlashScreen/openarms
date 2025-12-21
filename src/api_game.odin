@@ -97,6 +97,16 @@ cy_setting :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	return .Ok
 }
 
+cy_broadcast :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+	context = runtime.default_context()
+	msg_name := cy.thread_get_prim(t, cy.Str)
+	msg_data := cy.thread_get_ptr(t)
+	bytes := cy.bytes_from_cyber_str(msg_name)
+	broadcast(cy.bytes_to_string(bytes), &msg_data)
+
+	return .Ok
+}
+
 FUNCS :: [?]struct {
 	n : string,
 	p : proc "c" (t : ^cy.Thread) -> cy.Ret,
@@ -109,6 +119,7 @@ FUNCS :: [?]struct {
 	{"should_be_running", cy_should_be_running},
 	{"shutdown", cy_shutdown},
 	{"host_setting", cy_setting},
+	{"broadcast", cy_broadcast},
 }
 
 @(private)

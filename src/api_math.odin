@@ -896,7 +896,7 @@ cy_sign_i16 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 		}, t)
 }
 
-cy_sign_int32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+cy_sign_i32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	T :: i32
 	return u_op(T, proc "contextless" (x : T) -> T {
 			if x > 0 {
@@ -1298,7 +1298,7 @@ cy_vec4_add_f32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	return vector_add_f32(4, t)
 }
 
-cy_vec4_add_vec3 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+cy_vec4_add_vec4 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	return vector_add_vec(4, t)
 }
 
@@ -1306,7 +1306,7 @@ cy_vec4_sub_f32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	return vector_sub_f32(4, t)
 }
 
-cy_vec4_sub_vec3 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+cy_vec4_sub_vec4 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	return vector_sub_vec(4, t)
 }
 
@@ -1314,7 +1314,7 @@ cy_vec4_mul_f32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	return vector_mul_f32(4, t)
 }
 
-cy_vec4_mul_vec3 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+cy_vec4_mul_vec4 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	return vector_mul_vec(4, t)
 }
 
@@ -1322,7 +1322,7 @@ cy_vec4_div_f32 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	return vector_div_f32(4, t)
 }
 
-cy_vec4_div_vec3 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
+cy_vec4_div_vec4 :: proc "c" (t : ^cy.Thread) -> cy.Ret {
 	return vector_div_vec(4, t)
 }
 
@@ -1456,7 +1456,7 @@ FUNCS :: [?]struct {
 	{"sign_f64", cy_sign_f64},
 	{"sign_i8", cy_sign_i8},
 	{"sign_i16", cy_sign_i16},
-	{"sign_int32", cy_sign_int32},
+	{"sign_i32", cy_sign_i32},
 	{"sign_i64", cy_sign_i64},
 	{"sin_f32", cy_sin_f32},
 	{"sin_f64", cy_sin_f64},
@@ -1490,13 +1490,13 @@ FUNCS :: [?]struct {
 	{"vec3_div_vec3", cy_vec3_div_vec3},
 	{"vec3_neg", cy_vec3_neg},
 	{"vec4_add_f32", cy_vec4_add_f32},
-	{"vec4_add_vec3", cy_vec4_add_vec3},
+	{"vec4_add_vec4", cy_vec4_add_vec4},
 	{"vec4_sub_f32", cy_vec4_sub_f32},
-	{"vec4_sub_vec3", cy_vec4_sub_vec3},
+	{"vec4_sub_vec4", cy_vec4_sub_vec4},
 	{"vec4_mul_f32", cy_vec4_mul_f32},
-	{"vec4_mul_vec3", cy_vec4_mul_vec3},
+	{"vec4_mul_vec4", cy_vec4_mul_vec4},
 	{"vec4_div_f32", cy_vec4_div_f32},
-	{"vec4_div_vec3", cy_vec4_div_vec3},
+	{"vec4_div_vec4", cy_vec4_div_vec4},
 	{"vec4_neg", cy_vec4_neg},
 	// Matrix operations
 	{"mat2f32_mul", cy_mat2f32_mul},

@@ -8,10 +8,17 @@ type Options enum:
 	case inverted_camera_scroll
 
 type UnitSetTargetInfo(id UnitID, pos math.Vector2)
+fn UnitSetTargetInfo :: @init (id UnitID, position math.Vector2) -> Self:
+	info := UnitSetTargetInfo{}
+	info.id = id
+	info.position = position
+	return info
 
 #[bind] -fn host_setting(o Options, t i64)
 fn setting(o Options, %T type) -> !T:
 	return host_setting(o, meta.type.id(T))
+
+#[bind] fn broadcast(%command EvalStr, data Ptr[void])
 
 -- Game loop
 
