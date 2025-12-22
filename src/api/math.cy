@@ -924,11 +924,121 @@ fn (&Vector[]) @get(%swizzle EvalStr) -> vector_get_type(T, swizzle):
 			internal = res
 		}
 
-fn (&Vector[]) len() -> T:
+fn (Vector[]) len() -> T:
 	sum := 0
 	#for 0..N |i|:
-		sum += self.internal[i] * self.internal[i]
+		sum += self.internal[i] ** 2
 	return sqrt(sum)
+
+fn (Vector[]) len_squared() -> T:
+	sum := 0
+	#for 0..N |i|:
+		sum += self.internal[i] ** 2
+	return sum
+
+fn (Vector[]) normalize() -> Self:
+	length := self.len()
+	if length == 0.0: // TODO: Approx equals?
+		return self
+	inv_len := 1.0 / length
+	return self * inv_len
+
+fn (Vector[]) dot(other Self) -> T:
+	sum := 0
+	#for 0..N |i|:
+		sum += self.internal[i] * other.internal[i]
+	return sum
+
+fn (Vector[]) scale_to(new_length T) -> Self:
+	current_length := self.len()
+	if current_length == 0.0: // TODO: Approx equals?
+		return self
+	scale := new_length / current_length
+	return self * scale
+
+fn (Vector[]) distance_to(other Self) -> T:
+	diff := self - other
+	return diff.len()
+
+fn (Vector[]) distance_squared_to(other Self) -> T:
+	diff := self - other
+	return diff.len_squared()
+
+fn (Vector[]) cross(other Self) -> Self:
+	if N != 3:
+		meta.error("Cross product is only defined for 3D vectors.")
+	x := self.internal[1] * other.internal[2] - self.internal[2] * other.internal[1]
+	y := self.internal[2] * other.internal[0] - self.internal[0] * other.internal[2]
+	z := self.internal[0] * other.internal[1] - self.internal[1] * other.internal[0]
+	return {
+		internal = [3]T{x, y, z}
+	}
+
+fn (Vector[]) rotate_axis(axis Self, rad T) -> Self:
+	if N != 3:
+		meta.error("Axis-angle rotation is only defined for 3D vectors.")
+	cos_theta := cos(angle_rad)
+	sin_theta := sin(angle_rad)
+	u := axis.normalize()
+	x := self.internal[0]
+	y := self.internal[1]
+	z := self.internal[2]
+	ux := u.internal[0]
+	uy := u.internal[1]
+	uz := u.internal[2]
+
+	rotated_x := (cos_theta + (1 - cos_theta) * ux * ux) * x +
+	             ((1 - cos_theta) * ux * uy - uz * sin_theta) * y +
+	             ((1 - cos_theta) * ux * uz + uy * sin_theta) * z
+
+	rotated_y := ((1 - cos_theta) * uy * ux + uz * sin_theta) * x +
+	             (cos_theta + (1 - cos_theta) * uy * uy) * y +
+	             ((1 - cos_theta) * uy * uz - ux * sin_theta) * z
+
+	rotated_z := ((1 - cos_theta) * uz * ux - uy * sin_theta) * x +
+	             ((1 - cos_theta) * uz * uy + ux * sin_theta) * y +
+	             (cos_theta + (1 - cos_theta) * uz * uz) * z
+
+	return {
+		internal = [3]T{rotated_x, rotated_y, rotated_z}
+	}
+
+fn (Vector[]) rotate_y(angle_rad T) -> Self:
+	if N != 3:
+		meta.error("Y-axis rotation is only defined for 3D vectors.")
+	cos_theta := cos(angle_rad)
+	sin_theta := sin(angle_rad)
+	x := self.internal[0]
+	y := self.internal[1]
+	z := self.internal[2]
+
+	rotated_x := cos_theta * x + sin_theta * z
+	rotated_y := y
+	rotated_z := -sin_theta * x + cos_theta * z
+
+	return {
+		internal = [3]T{rotated_x, rotated_y, rotated_z}
+	}
+
+fn (Vector[]) reflect(normal Self) -> Self:
+	dot_product := self.dot(normal)
+	return self - normal * (2 * dot_product)
+
+fn (Vector[]) div_w() -> Self:
+	if N != 4:
+		meta.error("div_w is only defined for 4D vectors.")
+	w := self.internal[3]
+	if w == 0.0: // TODO: Approx equals?
+		meta.error("Cannot divide by zero in div_w.")
+	inv_w := 1.0 / w
+	return {
+		internal = [4]T{
+			self.internal[0] * inv_w,
+			self.internal[1] * inv_w,
+			self.internal[2] * inv_w,
+			1.0
+		}
+	}
 
 -fn vector_get_type (%T type, %s EvalStr) -> type:
 	switch s.len():
