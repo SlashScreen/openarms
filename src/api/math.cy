@@ -584,6 +584,42 @@ fn (Matrix2[]) `*` (other Self) -> Matrix2[T]:
 
 -- Vector
 
+-- Functions for common vector operations.
+-- The most common vector types are accelerated with native SIMD instructions.
+
+-- Accelerated add
+#[bind] -fn vec2_add_f32(a Vector2, b f32) -> Vector2
+#[bind] -fn vec2_add_vec2(a, b Vector2) -> Vector2
+#[bind] -fn vec3_add_f32(a Vector3, b f32) -> Vector3
+#[bind] -fn vec3_add_vec3(a, b Vector3) -> Vector3
+#[bind] -fn vec4_add_f32(a Vector4, b f32) -> Vector4
+#[bind] -fn vec4_add_vec4(a, b Vector4) -> Vector4
+-- Accelerated sub
+#[bind] -fn vec2_sub_f32(a Vector2, b f32) -> Vector2
+#[bind] -fn vec2_sub_vec2(a, b Vector2) -> Vector2
+#[bind] -fn vec3_sub_f32(a Vector3, b f32) -> Vector3
+#[bind] -fn vec3_sub_vec3(a, b Vector3) -> Vector3
+#[bind] -fn vec4_sub_f32(a Vector4, b f32) -> Vector4
+#[bind] -fn vec4_sub_vec4(a, b Vector4) -> Vector4
+-- Accelerated mul
+#[bind] -fn vec2_mul_f32(a Vector2, b f32) -> Vector2
+#[bind] -fn vec2_mul_vec2(a, b Vector2) -> Vector2
+#[bind] -fn vec3_mul_f32(a Vector3, b f32) -> Vector3
+#[bind] -fn vec3_mul_vec3(a, b Vector3) -> Vector3
+#[bind] -fn vec4_mul_f32(a Vector4, b f32) -> Vector4
+#[bind] -fn vec4_mul_vec4(a, b Vector4) -> Vector4
+-- Accelerated div
+#[bind] -fn vec2_div_f32(a Vector2, b f32) -> Vector2
+#[bind] -fn vec2_div_vec2(a, b Vector2) -> Vector2
+#[bind] -fn vec3_div_f32(a Vector3, b f32) -> Vector3
+#[bind] -fn vec3_div_vec3(a, b Vector3) -> Vector3
+#[bind] -fn vec4_div_f32(a Vector4, b f32) -> Vector4
+#[bind] -fn vec4_div_vec4(a, b Vector4) -> Vector4
+-- Accelerated neg
+#[bind] -fn vec2_neg(a Vector2) -> Vector2
+#[bind] -fn vec3_neg(a Vector3) -> Vector3
+#[bind] -fn vec4_neg(a Vector4) -> Vector4
+
 type Vector[T Any, const N int]:
 	-internal [N]T
 
@@ -596,79 +632,215 @@ fn Vector[] :: zero() -> Self:
 	return {
 		internal = [N]T{}
 	}
--- TODO: SIMD
+
 fn (Vector[]) `+` (scale T) -> Self:
-	res := [N]T{}
-	#for 0..N |i|:
-		res[i] = self.internal[i] + scale
-	return {
-		internal = res
-	}
+	cy_add := fn(a, b Vector[T, N]) -> Vector[T, N]:
+		res := [N]T{}
+		#for 0..N |i|:
+			res[i] = self.internal[i] + scale
+		return {
+			internal = res
+		}
+
+	#switch T:
+		#case f32:
+			#switch N:
+				#case 2:
+					return vec2_add_f32(self, scale)
+				#case 3:
+					return vec3_add_f32(self, scale)
+				#case 4:
+					return vec4_add_f32(self, scale)
+				#else:
+					return cy_add(self, scale)
+		#else:
+			return cy_add(self, scale)
 
 fn (Vector[]) `+` (other Self) -> Self:
-	res := [N]T{}
-	#for 0..N |i|:
-		res[i] = self.internal[i] + other.internal[i]
-	return {
-		internal = res
-	}
+	cy_add := fn(a, b Vector[T, N]) -> Vector[T, N]:
+		res := [N]T{}
+		#for 0..N |i|:
+			res[i] = self.internal[i] + other.internal[i]
+		return {
+			internal = res
+		}
+
+	#switch T:
+		#case f32:
+			#switch N:
+				#case 2:
+					return vec2_add_vec2(self, other)
+				#case 3:
+					return vec3_add_vec3(self, other)
+				#case 4:
+					return vec4_add_vec4(self, other)
+				#else:
+					return cy_add(self, other)
+		#else:
+			return cy_add(self, other)
 
 fn (Vector[]) `-` (scale T) -> Self:
-	res := [N]T{}
-	#for 0..N |i|:
-		res[i] = self.internal[i] - scale
-	return {
-		internal = res
-	}
+	cy_sub := fn(a, b Vector[T, N]) -> Vector[T, N]:
+		res := [N]T{}
+		#for 0..N |i|:
+			res[i] = self.internal[i] - scale
+		return {
+			internal = res
+		}
+
+	#switch T:
+		#case f32:
+			#switch N:
+				#case 2:
+					return vec2_sub_f32(self, scale)
+				#case 3:
+					return vec3_sub_f32(self, scale)
+				#case 4:
+					return vec4_sub_f32(self, scale)
+				#else:
+					return cy_sub(self, scale)
+		#else:
+			return cy_sub(self, scale)
 
 fn (Vector[]) `-` (other Self) -> Self:
-	res := [N]T{}
-	#for 0..N |i|:
-		res[i] = self.internal[i] - other.internal[i]
-	return {
-		internal = res
-	}
+	cy_sub := fn(a, b Vector[T, N]) -> Vector[T, N]:
+		res := [N]T{}
+		#for 0..N |i|:
+			res[i] = self.internal[i] - other.internal[i]
+		return {
+			internal = res
+		}
+
+	#switch T:
+		#case f32:
+			#switch N:
+				#case 2:
+					return vec2_sub_vec2(self, other)
+				#case 3:
+					return vec3_sub_vec3(self, other)
+				#case 4:
+					return vec4_sub_vec4(self, other)
+				#else:
+					return cy_sub(self, other)
+		#else:
+			return cy_sub(self, other)
 
 fn (Vector[]) `*` (scale T) -> Self:
-	res := [N]T{}
-	#for 0..N |i|:
-		res[i] = self.internal[i] * scale
-	return {
-		internal = res
-	}
+	cy_mul := fn(a, b Vector[T, N]) -> Vector[T, N]:
+		res := [N]T{}
+		#for 0..N |i|:
+			res[i] = self.internal[i] * scale
+		return {
+			internal = res
+		}
+
+	#switch T:
+		#case f32:
+			#switch N:
+				#case 2:
+					return vec2_mul_f32(self, scale)
+				#case 3:
+					return vec3_mul_f32(self, scale)
+				#case 4:
+					return vec4_mul_f32(self, scale)
+				#else:
+					return cy_mul(self, scale)
+		#else:
+			return cy_mul(self, scale)
 
 fn (Vector[]) `*` (other Self) -> Self:
-	res := [N]T{}
-	#for 0..N |i|:
-		res[i] = self.internal[i] * other.internal[i]
-	return {
-		internal = res
-	}
+	cy_mul := fn(a, b Vector[T, N]) -> Vector[T, N]:
+		res := [N]T{}
+		#for 0..N |i|:
+			res[i] = self.internal[i] * other.internal[i]
+		return {
+			internal = res
+		}
+
+	#switch T:
+		#case f32:
+			#switch N:
+				#case 2:
+					return vec2_mul_vec2(self, other)
+				#case 3:
+					return vec3_mul_vec3(self, other)
+				#case 4:
+					return vec4_mul_vec4(self, other)
+				#else:
+					return cy_mul(self, other)
+		#else:
+			return cy_mul(self, other)
 
 fn (Vector[]) `/` (scale T) -> Self:
-	res := [N]T{}
-	#for 0..N |i|:
-		res[i] = self.internal[i] / scale
-	return {
-		internal = res
-	}
+	cy_div := fn(a, b Vector[T, N]) -> Vector[T, N]:
+		res := [N]T{}
+		#for 0..N |i|:
+			res[i] = self.internal[i] / scale
+		return {
+			internal = res
+		}
+
+	#switch T:
+		#case f32:
+			#switch N:
+				#case 2:
+					return vec2_div_f32(self, scale)
+				#case 3:
+					return vec3_div_f32(self, scale)
+				#case 4:
+					return vec4_div_f32(self, scale)
+				#else:
+					return cy_div(self, scale)
+		#else:
+			return cy_div(self, scale)
 
 fn (Vector[]) `/` (other Self) -> Self:
-	res := [N]T{}
-	#for 0..N |i|:
-		res[i] = self.internal[i] / other.internal[i]
-	return {
-		internal = res
-	}
+	cy_div := fn(a, b Vector[T, N]) -> Vector[T, N]:
+		res := [N]T{}
+		#for 0..N |i|:
+			res[i] = self.internal[i] / other.internal[i]
+		return {
+			internal = res
+		}
+
+	#switch T:
+		#case f32:
+			#switch N:
+				#case 2:
+					return vec2_div_vec2(self, other)
+				#case 3:
+					return vec3_div_vec3(self, other)
+				#case 4:
+					return vec4_div_vec4(self, other)
+				#else:
+					return cy_div(self, other)
+		#else:
+			return cy_div(self, other)
 
 fn (Vector[]) `-` () -> Self:
-	res := [N]T{}
-	#for 0..N |i|:
-		res[i] = -self.internal[i]
-	return {
-		internal = res
-	}
+	cy_neg := fn(a Vector[T, N]) -> Vector[T, N]:
+		res := [N]T{}
+		#for 0..N |i|:
+			res[i] = -self.internal[i]
+		return {
+			internal = res
+		}
 
+	#switch T:
+		#case f32:
+			#switch N:
+				#case 2:
+					return vec2_neg(self)
+				#case 3:
+					return vec3_neg(self)
+				#case 4:
+					return vec4_neg(self)
+				#else:
+					return cy_neg(self)
+		#else:
+			return cy_neg(self)
+
+-- TODO: Also SIMD these?...
 fn (Vector[]) `>` (other Self) -> bool:
 	#for 0..N |i|:
 		if self.internal[i] <= other.internal[i]:
