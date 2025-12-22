@@ -596,7 +596,7 @@ fn Vector[] :: zero() -> Self:
 	return {
 		internal = [N]T{}
 	}
-
+-- TODO: SIMD
 fn (Vector[]) `+` (scale T) -> Self:
 	res := [N]T{}
 	#for 0..N |i|:
@@ -705,55 +705,55 @@ fn (&Vector[]) @set_index(idx int, value T):
 
 fn (&Vector[]) @set(%swizzle EvalStr, value vector_get_type(T, swizzle)):
 	#if swizzle.len() == 1:
-		idx := axis_to_index(swizzle[0])
-		if idx != none:
-			a := idx.?
-			if a >= 0 and a < N:
-				self.internal[a] = value
-				return
-			else:
-				meta.error("Invalid swizzle axis: %{swizzle}")
-		else:
-			meta.error("Invalid swizzle axis: %{swizzle}")
+		idx := axis_to_index(swizzle[i])
+		#if idx == -99:
+			meta.error("Invalid swizzle axis (Unknown component): " + swizzle[i])
+		#else idx < 0 or idx >= N:
+			meta.error("Invalid swizzle axis (Component outside of vector length): " + swizzle[i])
+		#else:
+			self.internal[a] = value
 	#else:
 		#for 0..swizzle.len() |i|:
 			idx := axis_to_index(swizzle[i])
-			if idx != none:
-				a := idx.?
-				if a < 0 or a >= N:
-					meta.error("Invalid swizzle axis: %{swizzle}")
-				self.internal[a] = value.internal[i]
-			else:
-				meta.error("Invalid swizzle axis: %{swizzle}")
+			#if idx == -99:
+				meta.error("Invalid swizzle axis (Unknown component): " + swizzle[i])
+			#else idx < 0 or idx >= N:
+				meta.error("Invalid swizzle axis (Component outside of vector length): " + swizzle[i])
+			#else:
+				self.internal[idx] = value.internal[i]
 
 fn (&Vector[]) @get(%swizzle EvalStr) -> vector_get_type(T, swizzle):
-	#if swizzle.len() == 1:
-		idx := axis_to_index(swizzle[0])
-		if idx != none:
-			a := idx.?
-			if a >= 0 and a < N:
-				return self.internal[idx]
-			else:
-				meta.error("Invalid swizzle axis: %{swizzle}")
-		else:
-			meta.error("Invalid swizzle axis: %{swizzle}")
+	#s_l := swizzle.len()
+	#if s_l == 1:
+		#idx := axis_to_index(swizzle[0])
+		#if idx == -1:
+			return 0
+		#else idx == -99:
+			meta.error("Invalid swizzle axis (Unknown component): " + swizzle)
+		#else idx < N:
+			return self.internal[idx]
+		#else:
+			meta.error("Invalid swizzle axis (Component outside of vector length): " + swizzle[i])
 	#else:
-		res := [swizzle.len()]T{}
-		#for 0..swizzle.len() |i|:
-			idx := axis_to_index(swizzle[i])
-			if idx != none:
-				a := idx.?
-				if a < 0 or a >= N:
-					meta.error("Invalid swizzle axis: %{swizzle}")
-				res[i] = self.internal[a]
-			else:
-				meta.error("Invalid swizzle axis: %{swizzle}")
+		res := [s_l]T{}
+
+		#for 0..s_l |i|:
+			#idx := axis_to_index(swizzle[i])
+			#if idx == -1:
+				res[i] = 0
+			#else idx == -99:
+				meta.error("Invalid swizzle axis (Unknown component): " + swizzle)
+			#else idx < N:
+				res[i] = self.internal[idx]
+			#else:
+				meta.error("Invalid swizzle axis (Component outside of vector length): " + swizzle)
+
 		return {
 			internal = res
 		}
 
 fn (&Vector[]) len() -> T:
-	sum := T(0)
+	sum := 0
 	#for 0..N |i|:
 		sum += self.internal[i] * self.internal[i]
 	return sqrt(sum)
@@ -765,7 +765,7 @@ fn (&Vector[]) len() -> T:
 		else:
 			return Vector[T, s.len()]
 
--fn axis_to_index(a byte) -> ?int:
+-fn axis_to_index(a byte) -> int:
 	switch a:
 		case 'x', 'r':
 			return 0
@@ -778,7 +778,7 @@ fn (&Vector[]) len() -> T:
 		case '0':
 			return -1
 		else:
-			return none
+			return -99
 
 type Vector4 = Vector[f32, 4]
 type Vector3 = Vector[f32, 3]
