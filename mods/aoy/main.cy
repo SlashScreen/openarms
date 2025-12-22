@@ -14,7 +14,7 @@ const CAM_SPRINT_MODIFIER f32 = 3.0
 -global selected_unit ?game.UnitID = none
 -global cam_dist f32 = CAM_MIN_DIST
 -global camera_movement_speed f32 = 8.0
--global camera_root_position math.Vector3 = math.Vector3.zero()
+-global camera_root_position math.Vector3 = math.Vector3({0.0, 0.0, 0.0})
 
 -global running bool = true
 
@@ -94,13 +94,13 @@ fn on_update(delta f32):
 	cam_dist = math.clamp(cam_dist, CAM_MIN_DIST, CAM_MAX_DIST)
 
 	cam_fac := math.remap(cam_dist, CAM_MIN_DIST, CAM_MAX_DIST, 0.0, 1.0)
-	mov_3D := math.Vector3(mov.x, 0.0, mov.y) *
+	mov_3D := math.Vector3({mov.x, 0.0, mov.y}) *
 		(camera_movement_speed * math.lerp(1.0, CAM_MAX_DIST_MOVEMENT_MODIFIER, cam_fac)) *
 		(if (input.key_down(input.binding(.camera_sprint))) CAM_SPRINT_MODIFIER else 1.0) *
 		delta
 
 	camera_root_position += mov_3D
-	cam.position = camera_root_position + (-math.Vector3(0.0, -1.0, 1.0) * cam_dist)
+	cam.position = camera_root_position + (-math.Vector3({0.0, -1.0, 1.0}) * cam_dist)
 	cam.target = camera_root_position
 
 

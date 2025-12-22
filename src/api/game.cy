@@ -14,9 +14,9 @@ fn UnitSetTargetInfo :: @init (id UnitID, position math.Vector2) -> Self:
 	info.position = position
 	return info
 
-#[bind] -fn host_setting(o Options, t i64)
+#[bind] -fn host_setting[T Any](o Options, t i64) -> !T
 fn setting(o Options, %T type) -> !T:
-	return host_setting(o, meta.type.id(T))
+	return host_setting[T](o, meta.type.id(T))
 
 #[bind] fn broadcast(%command EvalStr, data Ptr[void])
 

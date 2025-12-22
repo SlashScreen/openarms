@@ -1,3 +1,5 @@
+use meta
+
 --| Euler's number and the base of natural logarithms; approximately 2.718.
 const e = 2.71828182845904523536028747135266249775724709369995
 
@@ -582,10 +584,188 @@ fn (Matrix2[]) `*` (other Self) -> Matrix2[T]:
 
 -- Vector
 
--type Vector[T Any, const N len]:
-	internal [len]T
+type Vector[T Any, const N int]:
+	-internal [N]T
 
--fn axis_to_index(a str) -> ?int:
+fn Vector[] :: @init(elements [N]T) -> Self:
+	return {
+		internal = elements
+	}
+
+fn Vector[] :: zero() -> Self:
+	return {
+		internal = [N]T{}
+	}
+
+fn (Vector[]) `+` (scale T) -> Self:
+	res := [N]T{}
+	#for 0..N |i|:
+		res[i] = self.internal[i] + scale
+	return {
+		internal = res
+	}
+
+fn (Vector[]) `+` (other Self) -> Self:
+	res := [N]T{}
+	#for 0..N |i|:
+		res[i] = self.internal[i] + other.internal[i]
+	return {
+		internal = res
+	}
+
+fn (Vector[]) `-` (scale T) -> Self:
+	res := [N]T{}
+	#for 0..N |i|:
+		res[i] = self.internal[i] - scale
+	return {
+		internal = res
+	}
+
+fn (Vector[]) `-` (other Self) -> Self:
+	res := [N]T{}
+	#for 0..N |i|:
+		res[i] = self.internal[i] - other.internal[i]
+	return {
+		internal = res
+	}
+
+fn (Vector[]) `*` (scale T) -> Self:
+	res := [N]T{}
+	#for 0..N |i|:
+		res[i] = self.internal[i] * scale
+	return {
+		internal = res
+	}
+
+fn (Vector[]) `*` (other Self) -> Self:
+	res := [N]T{}
+	#for 0..N |i|:
+		res[i] = self.internal[i] * other.internal[i]
+	return {
+		internal = res
+	}
+
+fn (Vector[]) `/` (scale T) -> Self:
+	res := [N]T{}
+	#for 0..N |i|:
+		res[i] = self.internal[i] / scale
+	return {
+		internal = res
+	}
+
+fn (Vector[]) `/` (other Self) -> Self:
+	res := [N]T{}
+	#for 0..N |i|:
+		res[i] = self.internal[i] / other.internal[i]
+	return {
+		internal = res
+	}
+
+fn (Vector[]) `-` () -> Self:
+	res := [N]T{}
+	#for 0..N |i|:
+		res[i] = -self.internal[i]
+	return {
+		internal = res
+	}
+
+fn (Vector[]) `>` (other Self) -> bool:
+	#for 0..N |i|:
+		if self.internal[i] <= other.internal[i]:
+			return false
+	return true
+
+fn (Vector[]) `>=` (other Self) -> bool:
+	#for 0..N |i|:
+		if self.internal[i] < other.internal[i]:
+			return false
+	return true
+
+fn (Vector[]) `<` (other Self) -> bool:
+	#for 0..N |i|:
+		if self.internal[i] >= other.internal[i]:
+			return false
+	return true
+
+fn (Vector[]) `<=` (other Self) -> bool:
+	#for 0..N |i|:
+		if self.internal[i] > other.internal[i]:
+			return false
+	return true
+
+fn (&Vector[]) @index(idx int) -> T:
+	if idx < 0 || idx >= N:
+		meta.error("Index out of bounds: %{idx}")
+	return self.internal[idx]
+
+fn (&Vector[]) @set_index(idx int, value T):
+	if idx < 0 || idx >= N:
+		meta.error("Index out of bounds: %{idx}")
+	self.internal[idx] = value
+
+fn (&Vector[]) @set(%swizzle EvalStr, value vector_get_type(T, swizzle)):
+	#if swizzle.len() == 1:
+		idx := axis_to_index(swizzle[0])
+		if idx != none:
+			a := idx.?
+			if a >= 0 and a < N:
+				self.internal[a] = value
+				return
+			else:
+				meta.error("Invalid swizzle axis: %{swizzle}")
+		else:
+			meta.error("Invalid swizzle axis: %{swizzle}")
+	#else:
+		#for 0..swizzle.len() |i|:
+			idx := axis_to_index(swizzle[i])
+			if idx != none:
+				a := idx.?
+				if a < 0 or a >= N:
+					meta.error("Invalid swizzle axis: %{swizzle}")
+				self.internal[a] = value.internal[i]
+			else:
+				meta.error("Invalid swizzle axis: %{swizzle}")
+
+fn (&Vector[]) @get(%swizzle EvalStr) -> vector_get_type(T, swizzle):
+	#if swizzle.len() == 1:
+		idx := axis_to_index(swizzle[0])
+		if idx != none:
+			a := idx.?
+			if a >= 0 and a < N:
+				return self.internal[idx]
+			else:
+				meta.error("Invalid swizzle axis: %{swizzle}")
+		else:
+			meta.error("Invalid swizzle axis: %{swizzle}")
+	#else:
+		res := [swizzle.len()]T{}
+		#for 0..swizzle.len() |i|:
+			idx := axis_to_index(swizzle[i])
+			if idx != none:
+				a := idx.?
+				if a < 0 or a >= N:
+					meta.error("Invalid swizzle axis: %{swizzle}")
+				res[i] = self.internal[a]
+			else:
+				meta.error("Invalid swizzle axis: %{swizzle}")
+		return {
+			internal = res
+		}
+
+fn (&Vector[]) len() -> T:
+	sum := T(0)
+	#for 0..N |i|:
+		sum += self.internal[i] * self.internal[i]
+	return sqrt(sum)
+
+-fn vector_get_type (%T type, %s EvalStr) -> type:
+	switch s.len():
+		case 1:
+			return T
+		else:
+			return Vector[T, s.len()]
+
+-fn axis_to_index(a byte) -> ?int:
 	switch a:
 		case 'x', 'r':
 			return 0
@@ -600,136 +780,9 @@ fn (Matrix2[]) `*` (other Self) -> Matrix2[T]:
 		else:
 			return none
 
--fn vector_get_type(swizzle_len int) -> type:
-	switch swizzle_len:
-		case 1:
-			return f32
-		case 2:
-			return Vector2
-		case 3:
-			return Vector3
-		case 4:
-			return Vector4
-		else:
-			meta.error('Unsupported swizzle length #{swizzle_len}')
-
--fn swizz_get[T Any] (vec &T, %swizzle EvalStr) -> vector_get_type(swizzle.len()):
-	#v_t := vector_get_type(swizzle.len())
-	#if swizzle.len() == 1:
-		idx := axis_to_index(swizzle[0])
-		#if a |idx|:
-			#if a == -1:
-				return T{}
-			#else:
-				return vec.internal[a]
-		#else:
-			meta.error('Unsupported swizzle #{swizzle}')
-	#else:
-		res := [swizzle.len()]T{}
-		#for 0..swizzle.len() |i|:
-			idx := axis_to_index(swizzle[i])
-			#if a |idx|:
-				#if a == -1:
-					res[i] = T{}
-				#else:
-					res[i] = vec.internal[a]
-			#else:
-				meta.error('Unsupported swizzle #{swizzle[i]}')
-
-		return as[v_t] res
-
-fn swizz_set[T Any] (vec &T, %swizzle EvalStr, value vector_get_type(swizzle.len())):
-	#if swizzle.len() == 1:
-		idx := axis_to_index(swizzle[0])
-		#if a |idx|:
-			#if a == -1:
-				meta.error('Cannot set a zero axis in a vector')
-			#else:
-				vec.internal[a] = value
-		#else:
-			meta.error('Unsupported swizzle #{swizzle}')
-	#else:
-		#for 0..swizzle.len() |i|:
-			idx := axis_to_index(swizzle[i])
-			#if a |idx|:
-				#if a == -1:
-					meta.error('Cannot set a zero axis in a vector')
-				#else:
-					vec.internal[a] = value[i]
-			#else:
-				meta.error('Unsupported swizzle #{swizzle[i]}')
-
-type Vector4:
-	-internal [4]f32
-#[bind='vec4_add_f32'] fn (Vector4) `+` (scale f32) -> Self
-#[bind='vec4_add_vec4'] fn (Vector4) `+` (other Vector4) -> Self
-#[bind='vec4_sub_f32'] fn (Vector4) `-` (scale f32) -> Self
-#[bind='vec4_sub_vec4'] fn (Vector4) `-` (other Vector4) -> Self
-#[bind='vec4_mul_f32'] fn (Vector4) `*` (scale f32) -> Self
-#[bind='vec4_mul_vec4'] fn (Vector4) `*` (other Vector4) -> Self
-#[bind='vec4_div_f32'] fn (Vector4) `/` (scale f32) -> Self
-#[bind='vec4_div_vec4'] fn (Vector4) `/` (other Vector4) -> Self
-#[bind='vec4_neg'] fn (Vector4) `-` () -> Self
-fn Vector4 :: @init(x, y, z, w f32) -> Self:
-	return {
-		internal = {x, y, z, w}
-	}
-fn Vector4 :: zero() -> Self:
-	return {
-		internal = {0.0, 0.0, 0.0, 0.0}
-	}
-fn (&Vector4) @get(%swizzle EvalStr) -> vector_get_type(swizzle.len()):
-	return swizz_get(self, swizzle)
-fn (&Vector4) @set(%swizzle EvalStr, value vector_get_type(swizzle.len())):
-	swizz_set(self, swizzle, value)
-
-type Vector3:
-	-intenral [3]f32
-#[bind='vec3_add_f32'] fn (Vector3) `+` (scale f32) -> Self
-#[bind='vec3_add_vec3'] fn (Vector3) `+` (other Vector3) -> Self
-#[bind='vec3_sub_f32'] fn (Vector3) `-` (scale f32) -> Self
-#[bind='vec3_sub_vec3'] fn (Vector3) `-` (other Vector3) -> Self
-#[bind='vec3_mul_f32'] fn (Vector3) `*` (scale f32) -> Self
-#[bind='vec3_mul_vec3'] fn (Vector3) `*` (other Vector3) -> Self
-#[bind='vec3_div_f32'] fn (Vector3) `/` (scale f32) -> Self
-#[bind='vec3_div_vec3'] fn (Vector3) `/` (other Vector3) -> Self
-#[bind='vec3_neg'] fn (Vector3) `-` () -> Self
-fn Vector3 :: @init(x, y, z f32) -> Self:
-	return {
-		internal = {x, y, z}
-	}
-fn Vector3 :: zero() -> Self:
-	return {
-		internal = {0.0, 0.0, 0.0}
-	}
-fn (&Vector3) @get(%swizzle EvalStr) -> vector_get_type(swizzle.len()):
-	return swizz_get(self, swizzle)
-fn (&Vector3) @set(%swizzle EvalStr, value vector_get_type(swizzle.len())):
-	swizz_set(self, swizzle, value)
-
-type Vector2:
-	-internal [2]f32
-#[bind='vec2_add_f32'] fn (Vector2) `+` (scale f32) -> Self
-#[bind='vec2_add_vec2'] fn (Vector2) `+` (other Vector2) -> Self
-#[bind='vec2_sub_f32'] fn (Vector2) `-` (scale f32) -> Self
-#[bind='vec2_sub_vec2'] fn (Vector2) `-` (other Vector2) -> Self
-#[bind='vec2_mul_f32'] fn (Vector2) `*` (scale f32) -> Self
-#[bind='vec2_mul_vec2'] fn (Vector2) `*` (other Vector2) -> Self
-#[bind='vec2_div_f32'] fn (Vector2) `/` (scale f32) -> Self
-#[bind='vec2_div_vec2'] fn (Vector2) `/` (other Vector2) -> Self
-#[bind='vec2_neg'] fn (Vector2) `-` () -> Self
-fn Vector2 :: @init(x, y f32) -> Self:
-	return {
-		internal = {x, y}
-	}
-fn Vector2 :: zero() -> Self:
-	return {
-		internal = {0.0, 0.0}
-	}
-fn (&Vector2) @get(%swizzle EvalStr) -> vector_get_type(swizzle.len()):
-	return swizz_get(self, swizzle)
-fn (&Vector2) @set(%swizzle EvalStr, value vector_get_type(swizzle.len())):
-	swizz_set(self, swizzle, value)
+type Vector4 = Vector[f32, 4]
+type Vector3 = Vector[f32, 3]
+type Vector2 = Vector[f32, 2]
 
 -- Quaternion
 
