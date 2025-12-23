@@ -62,7 +62,7 @@ api_init :: proc() {
 	cyber.vm_set_loader(vm, cyber_load_module)
 	cyber.vm_set_logger(vm, cyber_log_fn)
 	cyber.set_global_log_fn(cyber_global_log_fn)
-	//cyber.set_verbose(true)
+	if LOG_CYBER {cyber.set_verbose(true)}
 
 	add_module_loader("core", load_core_api)
 	add_module_loader("meta", load_meta_api)

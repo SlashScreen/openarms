@@ -634,10 +634,10 @@ fn Vector[] :: zero() -> Self:
 	}
 
 fn (Vector[]) `+` (scale T) -> Self:
-	cy_add := fn(a, b Vector[T, N]) -> Vector[T, N]:
+	cy_add := fn(a Vector[T, N], s T) -> Vector[T, N]:
 		res := [N]T{}
 		#for 0..N |i|:
-			res[i] = self.internal[i] + scale
+			res[i] = a.internal[i] + s
 		return {
 			internal = res
 		}
@@ -660,7 +660,7 @@ fn (Vector[]) `+` (other Self) -> Self:
 	cy_add := fn(a, b Vector[T, N]) -> Vector[T, N]:
 		res := [N]T{}
 		#for 0..N |i|:
-			res[i] = self.internal[i] + other.internal[i]
+			res[i] = a.internal[i] + b.internal[i]
 		return {
 			internal = res
 		}
@@ -680,10 +680,10 @@ fn (Vector[]) `+` (other Self) -> Self:
 			return cy_add(self, other)
 
 fn (Vector[]) `-` (scale T) -> Self:
-	cy_sub := fn(a, b Vector[T, N]) -> Vector[T, N]:
+	cy_sub := fn(a Vector[T, N], s T) -> Vector[T, N]:
 		res := [N]T{}
 		#for 0..N |i|:
-			res[i] = self.internal[i] - scale
+			res[i] = a.internal[i] - s
 		return {
 			internal = res
 		}
@@ -706,7 +706,7 @@ fn (Vector[]) `-` (other Self) -> Self:
 	cy_sub := fn(a, b Vector[T, N]) -> Vector[T, N]:
 		res := [N]T{}
 		#for 0..N |i|:
-			res[i] = self.internal[i] - other.internal[i]
+			res[i] = a.internal[i] - b.internal[i]
 		return {
 			internal = res
 		}
@@ -726,10 +726,10 @@ fn (Vector[]) `-` (other Self) -> Self:
 			return cy_sub(self, other)
 
 fn (Vector[]) `*` (scale T) -> Self:
-	cy_mul := fn(a, b Vector[T, N]) -> Vector[T, N]:
+	cy_mul := fn(a Vector[T, N], s T) -> Vector[T, N]:
 		res := [N]T{}
-		#for 0..N |i|:
-			res[i] = self.internal[i] * scale
+		for 0..N |i|:
+			res[i] = (a.internal[i] * s)
 		return {
 			internal = res
 		}
@@ -752,7 +752,7 @@ fn (Vector[]) `*` (other Self) -> Self:
 	cy_mul := fn(a, b Vector[T, N]) -> Vector[T, N]:
 		res := [N]T{}
 		#for 0..N |i|:
-			res[i] = self.internal[i] * other.internal[i]
+			res[i] = a.internal[i] * b.internal[i]
 		return {
 			internal = res
 		}
@@ -772,10 +772,10 @@ fn (Vector[]) `*` (other Self) -> Self:
 			return cy_mul(self, other)
 
 fn (Vector[]) `/` (scale T) -> Self:
-	cy_div := fn(a, b Vector[T, N]) -> Vector[T, N]:
+	cy_div := fn(a Vector[T, N], s T) -> Vector[T, N]:
 		res := [N]T{}
 		#for 0..N |i|:
-			res[i] = self.internal[i] / scale
+			res[i] = a.internal[i] / s
 		return {
 			internal = res
 		}
@@ -798,7 +798,7 @@ fn (Vector[]) `/` (other Self) -> Self:
 	cy_div := fn(a, b Vector[T, N]) -> Vector[T, N]:
 		res := [N]T{}
 		#for 0..N |i|:
-			res[i] = self.internal[i] / other.internal[i]
+			res[i] = a.internal[i] / b.internal[i]
 		return {
 			internal = res
 		}
@@ -821,7 +821,7 @@ fn (Vector[]) `-` () -> Self:
 	cy_neg := fn(a Vector[T, N]) -> Vector[T, N]:
 		res := [N]T{}
 		#for 0..N |i|:
-			res[i] = -self.internal[i]
+			res[i] = -a.internal[i]
 		return {
 			internal = res
 		}
@@ -875,7 +875,7 @@ fn (&Vector[]) @set_index(idx int, value T):
 		meta.error("Index out of bounds: %{idx}")
 	self.internal[idx] = value
 
-fn (&Vector[]) @set(%swizzle EvalStr, value vector_get_type(T, swizzle)):
+fn (&Vector[]) @set(%swizzle EvalStr, value vector_get_type(T, swizzle.len())):
 	#if swizzle.len() == 1:
 		idx := axis_to_index(swizzle[i])
 		#if idx == -99:
@@ -894,35 +894,51 @@ fn (&Vector[]) @set(%swizzle EvalStr, value vector_get_type(T, swizzle)):
 			#else:
 				self.internal[idx] = value.internal[i]
 
-fn (&Vector[]) @get(%swizzle EvalStr) -> vector_get_type(T, swizzle):
-	#s_l := swizzle.len()
-	#if s_l == 1:
-		#idx := axis_to_index(swizzle[0])
-		#if idx == -1:
-			return 0
-		#else idx == -99:
-			meta.error("Invalid swizzle axis (Unknown component): " + swizzle)
-		#else idx < N:
-			return self.internal[idx]
+fn (&Vector[]) @get(%swizzle EvalStr) -> vector_get_type(T, swizzle.len()):
+	#switch swizzle:
+		#case "x":
+			return 0.0
+		#case "y":
+			return 0.0
+		#case "z":
+			return 0.0
+		#case "xz":
+			return Vector[T, 2]({0.0, 0.0})
 		#else:
-			meta.error("Invalid swizzle axis (Component outside of vector length): " + swizzle[i])
-	#else:
-		res := [s_l]T{}
+			meta.error("dklsjalkgfl;fhgklsjdhjkls " + swizzle)
+	-- TODO: FIgure out how much of this I can do at compile time
+	--s_l := swizzle.len()
+	--if s_l == 1:
+	--	idx := axis_to_index(swizzle[0])
+	--	#var dbg Raw[64] = swizzle[0]
+	--	meta.error("Swizzle is 1 somehow in string " + #{swizzle[0].fmt()})
+	--	if idx == -1:
+	--		return 0
+	--	else idx == -99:
+	--		meta.error("Invalid swizzle axis (Unknown component): " + swizzle[0].fmt())
+	--	else idx < N:
+	--		return self.internal[idx]
+	--	else:
+	--		meta.error("Invalid swizzle axis (Component outside of vector length): " + swizzle[i])
+	--else:
+	--	res := [s_l]T{}
+	--	if s_l == 0:
+	--		meta.error("What on earth happened here")
 
-		#for 0..s_l |i|:
-			#idx := axis_to_index(swizzle[i])
-			#if idx == -1:
-				res[i] = 0
-			#else idx == -99:
-				meta.error("Invalid swizzle axis (Unknown component): " + swizzle)
-			#else idx < N:
-				res[i] = self.internal[idx]
-			#else:
-				meta.error("Invalid swizzle axis (Component outside of vector length): " + swizzle)
+	--	for 0..s_l |i|:
+	--		idx := axis_to_index(swizzle[i])
+	--		if idx == -1:
+	--			res[i] = 0
+	--		else idx == -99:
+	--			meta.error("Invalid swizzle axis (Unknown component): " + swizzle)
+	--		else idx < N:
+	--			res[i] = self.internal[idx]
+	--		else:
+	--			meta.error("Invalid swizzle axis (Component outside of vector length): " + swizzle)
 
-		return {
-			internal = res
-		}
+	--	return {
+	--		internal = res
+	--	}
 
 fn (Vector[]) len() -> T:
 	sum := 0
@@ -938,7 +954,7 @@ fn (Vector[]) len_squared() -> T:
 
 fn (Vector[]) normalize() -> Self:
 	length := self.len()
-	if length == 0.0: // TODO: Approx equals?
+	if length == 0.0: -- TODO: Approx equals?
 		return self
 	inv_len := 1.0 / length
 	return self * inv_len
@@ -951,7 +967,7 @@ fn (Vector[]) dot(other Self) -> T:
 
 fn (Vector[]) scale_to(new_length T) -> Self:
 	current_length := self.len()
-	if current_length == 0.0: // TODO: Approx equals?
+	if current_length == 0.0: -- TODO: Approx equals?
 		return self
 	scale := new_length / current_length
 	return self * scale
@@ -1028,7 +1044,7 @@ fn (Vector[]) div_w() -> Self:
 	if N != 4:
 		meta.error("div_w is only defined for 4D vectors.")
 	w := self.internal[3]
-	if w == 0.0: // TODO: Approx equals?
+	if w == 0.0: -- TODO: Approx equals?
 		meta.error("Cannot divide by zero in div_w.")
 	inv_w := 1.0 / w
 	return {
@@ -1040,12 +1056,12 @@ fn (Vector[]) div_w() -> Self:
 		}
 	}
 
--fn vector_get_type (%T type, %s EvalStr) -> type:
-	switch s.len():
+-fn vector_get_type (T type, N int) -> type:
+	switch N:
 		case 1:
 			return T
 		else:
-			return Vector[T, s.len()]
+			return Vector[T, N]
 
 -fn axis_to_index(a byte) -> int:
 	switch a:
@@ -1060,7 +1076,7 @@ fn (Vector[]) div_w() -> Self:
 		case '0':
 			return -1
 		else:
-			return -99
+			return -99 -- Sentinel for invalid axis.
 
 type Vector4 = Vector[f32, 4]
 type Vector3 = Vector[f32, 3]
