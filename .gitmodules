@@ -1,3 +1,6 @@
 [submodule "slot_map"]
 	path = slot_map
 	url = git@github.com:LouisTruch/odin-slotmap.git
+[submodule "src/umka"]
+	path = src/umka
+	url = git@github.com:kryffon/odin-umka.git

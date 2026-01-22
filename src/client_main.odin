@@ -24,6 +24,7 @@ client_init :: proc() {
 	game_init()
 	navigation_init()
 	hud_init()
+	api_init()
 	//gs_init()
 	//net_init()
 
